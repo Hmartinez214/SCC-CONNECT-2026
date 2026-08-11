@@ -3,6 +3,10 @@ libs/build
 libs/clone/*
 !libs/clone/MFC
 !libs/clone/WRF
+libs/spack-opt
+
+.spack-env
+spack.yaml
 
 outputs
 venv
