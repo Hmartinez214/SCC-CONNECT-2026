@@ -1,9 +1,9 @@
-[submodule "libs/MFC"]
+[submodule "libs/clone/MFC"]
 	path = libs/clone/MFC
 	url = git@github.com:Hmartinez214/MFC.git
 [submodule "HPC-Tools"]
 	path = HPC-Tools
 	url = git@github.com:caleblin125/HPC-Tools.git
-[submodule "libs/WRF"]
+[submodule "libs/clone/WRF"]
 	path = libs/clone/WRF
-	url = https://github.com/wrf-model/WRF
+	url = https://github.com/wrf-model/WRF.git

@@ -18,5 +18,5 @@ mkdir -p $OUTDIR
 module load gnu13 cmake
 module load openmpi5
 
-cd libs/MFC
+cd libs/clone/MFC
 ./mfc.sh run examples/3D_IGR_jet/case.py --case-optimization -n $SLURM_NTASKS --binary mpirun
