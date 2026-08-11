@@ -1,12 +1,45 @@
 #!bin/bash
 
-
-export CC=gcc
-export CXX=g++
-export FC=gfortran
+#export CC=gcc
+#export CXX=g++
+#export FC=gfortran
 
 export CFLAGS="-O3 -march=native -ffast-math -funroll-loops"
 export CXXFLAGS="$CFLAGS"
 export FCFLAGS="$CFLAGS"
 
-export LDFLAGS="-march=nativ"
+export LDFLAGS="-march=native"
+
+SCC_DIR=$(pwd)
+if [[ "$(basename "$SCC_DIR")" == "SCC-CONNECT-2026" ]]; then
+    echo "Setting up environment"
+else
+    echo "please setup inside SCC-CONNECT-2026"
+    exit 1
+fi
+
+git submodule sync --recursive
+git submodule update --init --recursive
+
+source HPC-Tools/add_build.sh
+source HPC-Tools/basic_build.sh
+export INSTALL_DIR=$SCC_DIR/opt
+export BUILD_DIR=$SCC_DIR/build
+export CLONE_DIR=$SCC_DIR/clone
+
+if command -v python3 &>/dev/null; then
+    echo "Python exists"
+    if [[ -d "./venv" ]]; then
+    	echo "venv exists"
+    else
+    	echo "venv not found"
+	python3 -m venv --prompt SCC-CONNECT venv
+    fi
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+    	deactivate
+    fi
+    source venv/bin/activate
+    echo "Using SCC-CONNECT venv"
+else
+    echo "Python not found"
+fi

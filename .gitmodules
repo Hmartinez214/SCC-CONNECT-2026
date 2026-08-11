@@ -1,3 +1,6 @@
 [submodule "libs/MFC"]
 	path = libs/MFC
 	url = git@github.com:Hmartinez214/MFC.git
+[submodule "HPC-Tools"]
+	path = HPC-Tools
+	url = git@github.com:caleblin125/HPC-Tools.git
