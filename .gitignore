@@ -7,6 +7,7 @@ libs/spack-opt
 
 .spack-env
 spack.yaml
+spack.lock
 
 outputs
 venv

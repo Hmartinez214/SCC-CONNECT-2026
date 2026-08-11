@@ -41,6 +41,13 @@ command -v spack >/dev/null 2>&1 || {
     return 1
 }
 
+if [[ "$(spack config get config | awk '/install_tree:/{f=1;next} f && /root:/{print $2; exit}')" != "$SPACK_INSTALL_ROOT" ]]; then
+    spack config add "config:install_tree:root:$SPACK_INSTALL_ROOT" || {
+        echo "Error: failed to configure Spack install tree"
+        return 1
+    }
+fi
+
 echo "Spack: $(spack --version)"
 
 if [[ ! -f "$SCC_DIR/spack.yaml" ]]; then
