@@ -1,0 +1,3 @@
+[submodule "libs/MFC"]
+	path = libs/MFC
+	url = git@github.com:Hmartinez214/MFC.git
