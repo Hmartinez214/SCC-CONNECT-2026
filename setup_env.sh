@@ -24,6 +24,8 @@ else
     exit 1
 fi
 
+mkdir -p outputs/slurm
+
 git submodule sync --recursive
 git submodule update --init --recursive --remote
 

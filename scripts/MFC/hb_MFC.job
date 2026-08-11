@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH --output=output/slurm/job_%j.out
+#SBATCH --error=output/slurm/job_%j.err
+
+# I run this in the SCC-CONNECT root folder
+
+FILENAME="MFC_RUN"
+DESCRIPTION="$FILENAME"
+
+ROOT=$(pwd)
+OUTPUT=$ROOT/output
+
+echo "$SLURM_JOB_ID : $DESCRIPTION" >> $OUTPUT/descriptions.txt
+
+OUTDIR=$OUTDIR/$FILENAME
+mkdir -p $OUTDIR
+
+module load gnu13 cmake
+module load openmpi5
+
+cd libs/MFC
+./mfc.sh run examples/3D_IGR_jet/case.py --case-optimization -n $SLURM_NTASKS --binary mpirun

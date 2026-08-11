@@ -19,4 +19,4 @@ libs will contain all the external code we need. HPC-Tools will help compile lib
 - libs/build stores the build artifacts
 - libs/opt contains the installed libraries and headers (use add\_build)
 - These directories are specified by INSTALL\_DIR, BUILD\_DIR, CLONE\_DIR environment variables
-
+- MFC and WRF are already in clone
