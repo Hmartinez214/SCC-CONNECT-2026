@@ -1,5 +1,5 @@
-opt
-build
-clone
+libs/opt
+libs/build
+libs/clone
 output
 venv
