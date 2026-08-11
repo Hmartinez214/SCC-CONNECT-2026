@@ -7,3 +7,6 @@
 [submodule "libs/clone/WRF"]
 	path = libs/clone/WRF
 	url = https://github.com/wrf-model/WRF.git
+[submodule "libs/spack"]
+	path = libs/spack
+	url = https://github.com/spack/spack.git

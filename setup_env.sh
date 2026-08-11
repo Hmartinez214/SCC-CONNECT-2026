@@ -43,8 +43,8 @@ if command -v python3 &>/dev/null; then
     	echo "venv not found"
 	python3 -m venv --prompt SCC-CONNECT venv
     fi
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-    	deactivate
+    if declare -F deactivate >/dev/null; then
+	deactivate
     fi
     source venv/bin/activate
     echo "Using SCC-CONNECT venv"
