@@ -1,2 +1,2 @@
 # SCC-CONNECT-2026
-UCSC SCC Connect repo 
+UCSC SCC Connect Repo 
