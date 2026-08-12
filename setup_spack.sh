@@ -12,6 +12,8 @@ fi
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCC_DIR="$SCRIPT_DIR"
+export SPACK_ROOT="$SCC_DIR/libs/spack"
+export SPACK_INSTALL_ROOT="$SCC_DIR/libs/spack-opt"
 
 echo "Setting up Spack"
 
@@ -41,12 +43,23 @@ command -v spack >/dev/null 2>&1 || {
     return 1
 }
 
-if [[ "$(spack config get config | awk '/install_tree:/{f=1;next} f && /root:/{print $2; exit}')" != "$SPACK_INSTALL_ROOT" ]]; then
-    spack config add "config:install_tree:root:$SPACK_INSTALL_ROOT" || {
-        echo "Error: failed to configure Spack install tree"
-        return 1
-    }
-fi
+SPACK_INSTALL_ROOT="$SCC_DIR/libs/spack-opt"
+
+mkdir -p "$SPACK_INSTALL_ROOT" || {
+    echo "Error: cannot create $SPACK_INSTALL_ROOT"
+    return 1
+}
+
+mkdir -p "$HOME/.spack" || {
+    echo "Error: cannot create $HOME/.spack"
+    return 1
+}
+
+cat > "$HOME/.spack/config.yaml" <<EOF
+config:
+  install_tree:
+    root: $SPACK_INSTALL_ROOT
+EOF
 
 echo "Spack: $(spack --version)"
 

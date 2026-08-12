@@ -1,6 +1,7 @@
 #!/bin/bash
-
 set -e
+
+# DOESN'T WORK
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
@@ -17,12 +18,14 @@ module load netcdf/4.9.2
 module load netcdf-fortran/4.6.1
 module load cmake
 
+# Tune down
 export CFLAGS="-O2 -march=native"
 export CXXFLAGS="$CFLAGS"
 export FCFLAGS="$CFLAGS"
 export FFLAGS="$FCFLAGS"
 export LDFLAGS="-march=native"
 
+# had difficulties running, needed to specify every compiler
 basic_cmake_github https://github.com/wrf-model/WRF.git --cmake-args \
     -DCMAKE_C_COMPILER="$(which gcc)" \
     -DCMAKE_Fortran_COMPILER="$(which gfortran)" \
