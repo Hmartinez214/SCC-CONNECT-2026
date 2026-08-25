@@ -13,6 +13,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 import subprocess
+import json
 
 #config
 
@@ -60,7 +61,6 @@ def build_matrix(compilers, ranks, bindings) -> list[Config]:
 SBATCH_TEMPLATE='''\
 #!/usr/bin/env bash
 #SBATCH --job-name=mfcsweep_{compiler}
-#SBATCH --dependency=singleton
 #SBATCH --account={account}
 #SBATCH --constraint=cpu
 #SBATCH --qos={qos}
@@ -125,8 +125,16 @@ def submit(script_text:str, script_path: Path, dry_run:bool) ->str | None:
         check=True, capture_output=True, text=True,
     )
     return result.stdout.strip()
-    
 
+
+def prepare_workdir(cfg: Config, stamp: str, dry_run: bool) -> Path:
+    workdir = SWEEP_ROOT / 'runs' / stamp / cfg.tag
+    workdir.mkdir(parents=True, exist_ok=True)
+    shutil.copy(CASE_FILE, workdir / 'case.py') #copies case file to new dir, output files will be in that
+    return workdir
+
+def write_manifest(rows: list[dict], path: Path) -> None:
+    
 
 
 def main() -> int:
