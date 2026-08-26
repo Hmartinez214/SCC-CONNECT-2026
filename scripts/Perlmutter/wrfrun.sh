@@ -1,7 +1,7 @@
 #!/bin/bash 
 #SBATCH -N 1
-#SBATCH -q debug
-#SBATCH -t 00:30:00
+#SBATCH -q regular
+#SBATCH -t 02:00:00
 #SBATCH -J test
 #SBATCH -A m4007   #userdependent
 #SBATCH -L scratch,cfs
@@ -12,8 +12,8 @@ pwd
 ntile=4  #number of OpenMP threads per MPI task
 #need to set the "numtiles" variable in the wrf namelist (namelist.input) to be the same 
 
-wrfexe="PATH_to_your_wrf.exe" #recommend to save the executable in global common or scratch space
-rundir="/pscratch/sd/e/elvis/simulation/WRF/run" #where to run WRF; user needs to change this
+wrfexe="/global/homes/h/hmartine/SCC-CONNECT-2026/libs/clone/WRF/main/wrf.exe" #recommend to save the executable in global common or scratch space
+rundir="/pscratch/sd/h/hmartine/wrf/benchmark/v4_bench_conus12km" #where to run WRF; user needs to change this
 
 #Modules --------------------------------------------------------------------
 #general modules
