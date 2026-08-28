@@ -1,0 +1,3 @@
+smac>=2.1
+# DeepCAVE is only needed on whatever machine you view results from (e.g. laptop):
+#   pip install deepcave

@@ -1,0 +1,13 @@
+# nccl-tests is fetched by scripts/setup.sh, not vendored
+/nccl-tests/
+
+# NCCL built from source (optional)
+/nccl/
+
+# run outputs
+/results/
+/explore/
+
+# python
+__pycache__/
+*.pyc
