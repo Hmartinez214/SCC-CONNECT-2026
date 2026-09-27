@@ -1,7 +1,9 @@
 libs/opt
 libs/build
+libs/clone
 !libs/clone/MFC
 !libs/clone/WRF
+!libs/clone/WPS
 libs/spack-opt
 
 .spack-env
