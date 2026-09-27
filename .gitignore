@@ -1,6 +1,5 @@
 libs/opt
 libs/build
-libs/clone/*
 !libs/clone/MFC
 !libs/clone/WRF
 libs/spack-opt

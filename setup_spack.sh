@@ -43,38 +43,38 @@ command -v spack >/dev/null 2>&1 || {
     return 1
 }
 
-SPACK_INSTALL_ROOT="$SCC_DIR/libs/spack-opt"
+# SPACK_INSTALL_ROOT="$SCC_DIR/libs/spack-opt"
 
-mkdir -p "$SPACK_INSTALL_ROOT" || {
-    echo "Error: cannot create $SPACK_INSTALL_ROOT"
-    return 1
-}
+# mkdir -p "$SPACK_INSTALL_ROOT" || {
+#     echo "Error: cannot create $SPACK_INSTALL_ROOT"
+#     return 1
+# }
 
-mkdir -p "$HOME/.spack" || {
-    echo "Error: cannot create $HOME/.spack"
-    return 1
-}
+# mkdir -p "$HOME/.spack" || {
+#     echo "Error: cannot create $HOME/.spack"
+#     return 1
+# }
 
-cat > "$HOME/.spack/config.yaml" <<EOF
-config:
-  install_tree:
-    root: $SPACK_INSTALL_ROOT
-EOF
+# cat > "$HOME/.spack/config.yaml" <<EOF
+# config:
+#   install_tree:
+#     root: $SPACK_INSTALL_ROOT
+# EOF
 
-echo "Spack: $(spack --version)"
+# echo "Spack: $(spack --version)"
 
-if [[ ! -f "$SCC_DIR/spack.yaml" ]]; then
-    echo "Creating SCC-CONNECT Spack environment..."
+# if [[ ! -f "$SCC_DIR/spack.yaml" ]]; then
+#     echo "Creating SCC-CONNECT Spack environment..."
 
-    spack env create --dir "$SCC_DIR" || {
-        echo "Error: failed to create Spack environment"
-        return 1
-    }
-fi
+#     spack env create --dir "$SCC_DIR" || {
+#         echo "Error: failed to create Spack environment"
+#         return 1
+#     }
+# fi
 
-spack env activate "$SCC_DIR" || {
-    echo "Error: failed to activate Spack environment"
-    return 1
-}
+# spack env activate "$SCC_DIR" || {
+#     echo "Error: failed to activate Spack environment"
+#     return 1
+# }
 
-echo "Spack environment active."
+# echo "Spack environment active."

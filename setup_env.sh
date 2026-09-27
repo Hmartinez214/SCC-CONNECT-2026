@@ -1,8 +1,8 @@
 #!bin/bash
 
-#export CC=gcc
-#export CXX=g++
-#export FC=gfortran
+export CC=gcc
+export CXX=g++
+export FC=gfortran
 
 export CFLAGS="-O3 -march=native -ffast-math -funroll-loops"
 export CXXFLAGS="$CFLAGS"
@@ -29,11 +29,17 @@ mkdir -p outputs/slurm
 git submodule sync --recursive
 git submodule update --init --recursive --remote
 
+
 source HPC-Tools/add_build.sh
 source HPC-Tools/basic_build.sh
 export INSTALL_DIR=$SCC_DIR/libs/opt
 export BUILD_DIR=$SCC_DIR/libs/build
 export CLONE_DIR=$SCC_DIR/libs/clone
+
+pushd $CLONE_DIR/WRF
+git submodule sync --recursive
+git submodule update --init --recursive
+popd
 
 if command -v python3 &>/dev/null; then
     echo "Python exists"

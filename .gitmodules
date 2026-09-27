@@ -10,3 +10,6 @@
 [submodule "libs/clone/MFC"]
 	path = libs/clone/MFC
 	url = https://github.com/MFlowCode/MFC.git
+[submodule "libs/clone/WPS"]
+	path = libs/clone/WPS
+	url = https://github.com/wrf-model/WPS.git
