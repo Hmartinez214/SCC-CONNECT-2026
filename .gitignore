@@ -12,3 +12,13 @@ spack.lock
 
 outputs
 venv
+
+simulations/*/gfs/
+simulations/**/met_em*
+simulations/**/geo_em*
+simulations/**/FILE:*
+simulations/**/GRIBFILE*
+simulations/**/wrfinput*
+simulations/**/wrfbdy*
+simulations/**/wrfout*
+simulations/**/rsl.*
