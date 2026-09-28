@@ -4,12 +4,16 @@
 [submodule "libs/clone/WRF"]
 	path = libs/clone/WRF
 	url = https://github.com/wrf-model/WRF.git
+	ignore = dirty
 [submodule "libs/spack"]
 	path = libs/spack
 	url = https://github.com/spack/spack.git
+	ignore = dirty
 [submodule "libs/clone/MFC"]
 	path = libs/clone/MFC
 	url = https://github.com/MFlowCode/MFC.git
+	ignore = dirty
 [submodule "libs/clone/WPS"]
 	path = libs/clone/WPS
 	url = https://github.com/wrf-model/WPS.git
+	ignore = dirty
