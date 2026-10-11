@@ -1,6 +1,6 @@
 libs/opt
 libs/build
-libs/clone
+libs/clone/*
 !libs/clone/MFC
 !libs/clone/WRF
 !libs/clone/WPS
@@ -12,4 +12,13 @@ spack.lock
 
 outputs
 venv
-simulations
+
+simulations/*/gfs/
+simulations/**/met_em*
+simulations/**/geo_em*
+simulations/**/FILE:*
+simulations/**/GRIBFILE*
+simulations/**/wrfinput*
+simulations/**/wrfbdy*
+simulations/**/wrfout*
+simulations/**/rsl.*
