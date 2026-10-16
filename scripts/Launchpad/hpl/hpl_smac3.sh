@@ -18,6 +18,17 @@ HPL_SPEC="${HPL_SPEC:-hpl/zqzkvyu}"
 spack load "$HPL_SPEC" || exit 1
 HPL_EXE="$(spack location -i "$HPL_SPEC")/bin/xhpl"
 export HPL_EXE
+# Both HPL binaries need Intel MPI's mpirun. Load it explicitly and put it
+# first: launchpad_env.sh loads HPC-X Open MPI, and once it has also loaded
+# intel-oneapi-mkl, `spack load hpl` no longer brings Intel MPI along -- the
+# Open MPI mpirun then wins and every run fails instantly.
+spack load intel-oneapi-mpi || exit 1
+PATH="$(spack location -i intel-oneapi-mpi)/mpi/latest/bin:$PATH"
+export PATH
+if ! mpirun --version 2>/dev/null | grep -q "Intel(R) MPI"; then
+    echo "ERROR: mpirun is not Intel MPI: $(command -v mpirun)" >&2
+    exit 1
+fi
 # Intel's Distribution for LINPACK, prebuilt in that MKL against that Intel MPI
 # (used by the default config, hpl_smac3.yaml; netlib: hpl_netlib_smac3.yaml).
 INTEL_HPL_EXE="$(spack location -i intel-oneapi-mkl)/mkl/latest/share/mkl/benchmarks/mp_linpack/xhpl_intel64_dynamic"

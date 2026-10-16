@@ -26,6 +26,7 @@ Results written by the Launchpad tuners and benchmark scripts. Everything here i
 | `autotuning/smac3_launchpad_ranks` | netlib (spack) HPL, 64/128 ranks + MPI binding | Finished; best 3171 GFLOPS |
 | `autotuning/stream_smac3` | STREAM Triad (MB/s) | Seeded from `stream/`; best ~472 GB/s |
 | `autotuning/superseded/smac3_launchpad_bind` | netlib HPL, binding space before RANKS existed | 1 run; superseded |
+| `autotuning/superseded/smac3_intel_hpl_v2_openmpi_failures` | Intel HPL (merged tuner's first start) | **Invalid**: mpirun was Open MPI, so 81 instant failures; re-seeded |
 | `autotuning/invalid_socket1_only/*` | netlib HPL | **Invalid**: ran inside a tmux server pinned to socket 1, so all ranks shared 32 cores |
 
 Plots: `python scripts/Launchpad/plot_tuning.py --run-group <group>` and `python scripts/Launchpad/plot_compare.py <group> <group> ...` (write to `plots/`).
