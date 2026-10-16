@@ -24,4 +24,13 @@ simulations/**/wrfbdy*
 simulations/**/wrfout*
 simulations/**/rsl.*
 
+
+# Python / tool caches
 __pycache__/
+*.pyc
+.cache/
+smac3_output/
+
+# Generated figures (regenerate with scripts/Launchpad/plot_*.py)
+plots/*
+!plots/README.md
