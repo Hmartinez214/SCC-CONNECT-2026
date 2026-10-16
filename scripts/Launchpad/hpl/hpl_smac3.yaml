@@ -1,16 +1,22 @@
 # SMAC3 autotuning of Intel's Distribution for LINPACK (MKL mp_linpack,
 # xhpl_intel64_dynamic) on the Launchpad node, driven by hpl_autotune.py
-# (IntelHPLApplication). The netlib/spack-HPL setup is hpl_netlib_smac3.yaml.
+# (IntelHPLApplication): Intel's documented launch variables, a NUMA
+# memory-policy knob, up to 8 ranks, and N up to ~80% of RAM. The spack
+# netlib-HPL setup is hpl_netlib_smac3.yaml.
 #
-# Runs "indefinitely" and resumes from outputs/autotuning/<run_group>/
-# evaluations.jsonl on restart.
+# This merges the first Intel setup (run group smac3_intel_hpl: small N,
+# grids 1x1/1x2/2x1) into the extended space: on first start the run group is
+# seeded with every finished smac3_intel_hpl run, filled in with what those
+# runs used (MEM_POLICY=default, HPL_LARGEPAGE=0). Resumes from
+# outputs/autotuning/<run_group>/ on restart.
 
 experiment:
   name: hpl-intel-launchpad-smac3
   optimizer: smac3
-  run_group: smac3_intel_hpl
+  run_group: smac3_intel_hpl_v2
   budget: 1000000000
   seed: 42
+  priors: outputs/autotuning/smac3_intel_hpl/evaluations.jsonl
 
 objective:
   metric: gflops
@@ -20,11 +26,13 @@ application:
   type: hpl_intel
   # Resolved by hpl_smac3.sh from spack's intel-oneapi-mkl.
   executable: ${INTEL_HPL_EXE}
-  # Problem size is tuned in [0.80, 0.90] of this target (N ~= 89k-95k) to
-  # keep runs short; confirm the winner at full-memory N afterwards.
-  node_memory_bytes: 80GB
+  # N is tuned over [0.059, 0.80] of total RAM (1007 GiB): N ~= 89k (the old
+  # lower bound, so earlier results stay inside the space) to ~329k (~805 GiB
+  # matrix, leaving ~200 GiB for the OS and other users). Runtime grows as
+  # N^3: ~2 min at 89k, ~1.5 h at 329k.
+  node_memory_bytes: 1007GiB
   memory_factor: 1.0
-  memory_fraction_bounds: [0.80, 0.90]
+  memory_fraction_bounds: [0.059, 0.80]
   tunable:
     - N
     - NB          # 256-2048 (Intel recommends 1536 on 4th-gen Xeon Scalable)
@@ -39,17 +47,21 @@ application:
     - L1
     - U
     - EQUIL
-    - GRID        # 1x2 | 2x1 (one rank per NUMA node) | 1x1 (one rank)
-    - HUGEPAGES   # off | thp (glibc.malloc.hugetlb=1)
+    - GRID        # 1x1 | 1x2 | 2x1 (HPL_HOST_NODE) | 2x2 1x4 4x1 2x4 4x2 (HPL_HOST_CORE)
+    - MEM_POLICY  # default | interleave (numactl --interleave=all)
+    # HPL_LARGEPAGE: move to this list only after reserving huge pages
+    # (see SYSTEM_TUNING.md); with none reserved every =1 run fails.
   fixed:
     SWAP_THRESH: 64
     ALIGN: 8
+    HPL_LARGEPAGE: 0
+    HPL_LOG: 2        # most informative: all column roots + start/end times
+    HUGEPAGES: "off"  # Intel's HPL already uses transparent huge pages itself
 
 # Reused by the local scheduler: time is the per-run wall limit (runs over it
-# are killed and recorded as TIMEOUT). ntasks is unused by the Intel launch
-# (GRID sets the rank count).
+# are killed and recorded as TIMEOUT); sized for the largest N.
 slurm:
   nodes: 1
   ntasks: 2
-  time: "00:30:00"
+  time: "03:00:00"
   submit_retries: 3

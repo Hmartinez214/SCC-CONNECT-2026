@@ -10,7 +10,8 @@ libs/spack-opt
 spack.yaml
 spack.lock
 
-outputs
+outputs/*
+!outputs/README.md
 venv
 
 simulations/*/gfs/

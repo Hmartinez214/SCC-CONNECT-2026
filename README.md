@@ -20,3 +20,18 @@ libs will contain all the external code we need. HPC-Tools will help compile lib
 - libs/opt contains the installed libraries and headers (use add\_build)
 - These directories are specified by INSTALL\_DIR, BUILD\_DIR, CLONE\_DIR environment variables
 - MFC and WRF are already in clone
+
+## Repository layout
+
+Each folder has a README describing its contents.
+
+| Folder | Contents |
+|---|---|
+| `scripts/` | Per-machine scripts; `scripts/Launchpad/` holds the HPL/STREAM autotuners |
+| `outputs/` | Generated results (gitignored; see `outputs/README.md`) |
+| `plots/` | Figures (WRF renders, tuning progress) |
+| `libs/` | External code and installs (spack, clones, builds) |
+| `HPC-Tools/` | Build helpers and the autotuner framework (submodule) |
+| `nvccl/` | NCCL benchmarking and tuning |
+| `simulations/` | WRF cases |
+| `docs/`, `utilities/` | Guides and helper scripts |

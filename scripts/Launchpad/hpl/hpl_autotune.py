@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """HPL applications for the Launchpad SMAC3 autotuner (see ../autotune_local.py).
 
-``IntelHPLApplication`` (type ``hpl_intel``, the default config) runs Intel's
+``IntelHPLApplication`` (type ``hpl_intel``, hpl_smac3.yaml) runs Intel's
 Distribution for LINPACK from MKL. ``LocalHPLApplication`` (type ``hpl_local``,
 hpl_netlib_smac3.yaml) launches spack's netlib xhpl with Intel MPI's ``mpirun`` instead of
 ``srun``, adds MPI rank-count / binding / NUMA / huge-page launch knobs to the
@@ -289,99 +289,36 @@ class LocalHPLApplication(HPLApplication):
 class IntelHPLApplication(LocalHPLApplication):
     """Intel's Distribution for LINPACK (``xhpl_intel64_dynamic`` from MKL's
     ``benchmarks/mp_linpack``), launched the way Intel's runme scripts do:
-    one MPI rank per NUMA node (or one for the whole machine), each rank
-    multithreading across its node's cores and told which node it owns via
-    ``HPL_HOST_NODE``. Same HPL.dat parameters and residual check as netlib.
+    each rank multithreads across the cores it owns. Same HPL.dat parameters
+    and residual check as netlib.
 
-    Differences from the netlib launch knobs:
+    Launch knobs (replacing netlib's RANKS/P/MPI_BIND/MPI_MAP):
 
-    * ``GRID`` replaces RANKS/P/MPI_BIND/MPI_MAP: "1x2"/"2x1" = one rank per
-      NUMA node (P x Q), "1x1" = a single rank spanning both nodes.
-    * NB spans 256-2048 (Intel recommends 1536 on 4th-gen Xeon Scalable).
-    * MEM_POLICY: with GRID=1x1 the single rank's matrix lands almost
-      entirely on NUMA node 0 (measured: 50.6 of 50.9 GiB), so socket 1's
-      threads work from remote memory; "interleave" spreads it across both
-      nodes (numactl --interleave=all). Intel's HPL still binds the few
-      regions it places explicitly.
+    * ``GRID`` (P x Q). Up to one rank per NUMA node uses ``HPL_HOST_NODE``
+      (1x1 = one rank over every node); more ranks split each node's cores
+      into equal contiguous blocks given via ``HPL_HOST_CORE`` (verified: each
+      rank threads on exactly its block). Follows the real NUMA layout, so it
+      stays correct with sub-NUMA clustering.
+    * ``MEM_POLICY``: with GRID=1x1 the matrix lands almost entirely on NUMA
+      node 0 (measured 50.6 of 50.9 GiB); "interleave" spreads it
+      (numactl --interleave=all).
+    * ``HPL_LARGEPAGE`` 0/1: 1 maps memory with explicit 2 MB huge pages
+      (hugetlbfs) and fails ("Memory Allocation Error") unless enough are
+      reserved (vm.nr_hugepages), so the job checks first and fails in
+      seconds. At 0 Intel's HPL already backs ~all memory with THP.
+    * ``HPL_LOG`` 0/1/2 (recorded, not tuned): 2 is the most informative --
+      every process-column root prints progress, plus solve start/end times.
+      Unset behaves like 1.
+    * ``HUGEPAGES`` (glibc THP hint) is kept only so older records still fit;
+      Intel's HPL uses THP itself.
 
-    The binary also reads undocumented HPL_* variables (HPL_HOST_CORE,
-    HPL_LARGEPAGE, HPL_HT, HPL_NUMTHREADS, HPL_SWAPWIDTH, ...); they are left
-    at Intel's defaults until their meaning is confirmed.
+    NB spans 256-2048 (Intel recommends 1536 on 4th-gen Xeon Scalable).
     """
 
     HPL_PARAMETER_DEFAULTS = {
         **HPLApplication.HPL_PARAMETER_DEFAULTS,
         "NB": ("int", (256, 2048), 1536),
     }
-
-    LAUNCH_PARAMETERS: dict[str, tuple[list[Any], Any]] = {
-        "GRID": (["1x2", "2x1", "1x1"], "1x2"),
-        "HUGEPAGES": (["off", "thp"], "off"),
-        "MEM_POLICY": (["default", "interleave"], "default"),
-    }
-
-    def resolve_configuration(self, configuration: dict[str, Any]) -> dict[str, Any]:
-        # Skip LocalHPLApplication's RANKS-based grid; the grid comes from GRID.
-        resolved = HPLApplication.resolve_configuration(self, configuration)
-        p, q = (int(v) for v in str(resolved["GRID"]).split("x"))
-        resolved.update({"P": p, "Q": q, "RANKS": p * q})
-        return resolved
-
-    def launch_lines(self, configuration: dict[str, Any]) -> list[str]:
-        c = {name: configuration.get(name, default) for name, (_, default) in self.LAUNCH_PARAMETERS.items()}
-        p, q = (int(v) for v in str(c["GRID"]).split("x"))
-        ranks = p * q
-        n_numa = len(_cpu_topology())  # one NUMA node per socket here (SNC off)
-        numa_per_rank = n_numa // ranks
-        lines = [
-            "for v in $(compgen -e | grep '^I_MPI_PIN'); do unset \"$v\"; done",
-            "export I_MPI_DEBUG=4",
-            # Each rank's MPI pin domain is the NUMA node(s) it owns; Intel's
-            # HPL then threads across that domain's cores.
-            "export I_MPI_PIN=1",
-            f"export I_MPI_PIN_DOMAIN={'numa' if numa_per_rank == 1 else 'node'}",
-            f"export MPI_PER_NODE={ranks} NUMA_PER_MPI={numa_per_rank}",
-            # The runner pins these to 1 for the MPI-only netlib build; Intel's
-            # HPL must be free to thread across its NUMA node.
-            "unset OMP_NUM_THREADS MKL_NUM_THREADS",
-            # Intel's runme_intel64_prv: rank r owns NUMA nodes
-            # [r*NUMA_PER_MPI, (r+1)*NUMA_PER_MPI - 1].
-            "cat > \"$RUNDIR/intel_rank.sh\" <<'RANK'",
-            "#!/bin/bash",
-            "r=${MPI_LOCALRANKID:-${PMI_RANK:-0}}",
-            "export HPL_HOST_NODE=$((r * NUMA_PER_MPI))-$(((r + 1) * NUMA_PER_MPI - 1))",
-            'echo "intel_rank: rank $r HPL_HOST_NODE=$HPL_HOST_NODE"',
-            'exec "$@"',
-            "RANK",
-            "chmod +x \"$RUNDIR/intel_rank.sh\"",
-        ]
-        if c["HUGEPAGES"] == "thp":
-            lines.append("export GLIBC_TUNABLES=glibc.malloc.hugetlb=1")
-        else:
-            lines.append("unset GLIBC_TUNABLES")
-        prefix = self._MEM_POLICY_PREFIX[c["MEM_POLICY"]]
-        lines.append(f"{self.mpirun} -np {ranks} -perhost {ranks} \"$RUNDIR/intel_rank.sh\" {prefix}{self.executable}")
-        return lines
-
-
-class IntelHPLApplicationV2(IntelHPLApplication):
-    """Intel HPL with Intel's documented launch variables (type ``hpl_intel_v2``).
-
-    Adds to ``hpl_intel``:
-
-    * ``GRID`` up to 8 ranks (2x2, 1x4, 4x1, 2x4, 4x2). Up to one rank per
-      NUMA node uses ``HPL_HOST_NODE`` as before; more ranks split each node's
-      cores into equal contiguous blocks given to each rank via
-      ``HPL_HOST_CORE`` (verified: each rank threads on exactly its block).
-    * ``HPL_LARGEPAGE`` 0/1: 1 maps memory with explicit 2 MB huge pages
-      (hugetlbfs). It fails ("Memory Allocation Error") unless enough pages
-      are reserved (vm.nr_hugepages), so the job checks first and fails in
-      seconds. Note Intel's HPL already backs ~all its memory with
-      transparent huge pages at HPL_LARGEPAGE=0.
-    * ``HPL_LOG`` 0/1/2 (not tuned; recorded). 2 is the most informative: every
-      process-column root prints progress, plus solve start/end times. Unset
-      behaves like 1.
-    """
 
     LAUNCH_PARAMETERS: dict[str, tuple[list[Any], Any]] = {
         "GRID": (["1x1", "1x2", "2x1", "2x2", "1x4", "4x1", "2x4", "4x2"], "1x1"),
@@ -391,6 +328,13 @@ class IntelHPLApplicationV2(IntelHPLApplication):
         # Kept for record compatibility; Intel's HPL already uses THP itself.
         "HUGEPAGES": (["off", "thp"], "off"),
     }
+
+    def resolve_configuration(self, configuration: dict[str, Any]) -> dict[str, Any]:
+        # Skip LocalHPLApplication's RANKS-based grid; the grid comes from GRID.
+        resolved = HPLApplication.resolve_configuration(self, configuration)
+        p, q = (int(v) for v in str(resolved["GRID"]).split("x"))
+        resolved.update({"P": p, "Q": q, "RANKS": p * q})
+        return resolved
 
     def launch_lines(self, configuration: dict[str, Any]) -> list[str]:
         c = {name: configuration.get(name, default) for name, (_, default) in self.LAUNCH_PARAMETERS.items()}
@@ -491,20 +435,6 @@ def _build_intel_hpl(config: ExperimentConfig) -> IntelHPLApplication:
 
 common.register_application("hpl_intel", _build_intel_hpl)
 
-
-def _build_intel_hpl_v2(config: ExperimentConfig) -> IntelHPLApplicationV2:
-    return IntelHPLApplicationV2.for_benchmark(
-        executable=os.path.expandvars(config.executable) if config.executable else None,
-        node_memory_bytes=config.node_memory_bytes,
-        memory_factor=config.memory_factor,
-        memory_fraction_bounds=config.memory_fraction_bounds,
-        ntasks=config.slurm.ntasks,
-        tunable=config.tunable,
-        fixed=config.fixed,
-    )
-
-
-common.register_application("hpl_intel_v2", _build_intel_hpl_v2)
 
 
 def _validate_grid(config: dict[str, Any], slurm: Any) -> None:

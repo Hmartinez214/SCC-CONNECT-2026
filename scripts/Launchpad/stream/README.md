@@ -11,3 +11,5 @@ python scripts/Launchpad/plot_tuning.py --run-group stream_smac3 --metric triad_
 - The first start seeds SMAC with the compatible trials from the earlier random sweep (`outputs/stream/trials.jsonl`, via `streamsweep.py`).
 - `stream_autotune.py --config stream_smac3.yaml --check-replay` audits that history (no runs).
 - HPL and STREAM tuners share a node lock, so their runs never overlap.
+
+- Other files: `streamsweep.py`/`streamsweep.sh` (earlier random sweep -> `outputs/stream/`), `streambest.py` (rank its results), `stream.sh` (spack STREAM build), `runstream.sh` (run spack's STREAM).

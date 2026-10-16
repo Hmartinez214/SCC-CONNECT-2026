@@ -7,9 +7,9 @@
 **What limits it:** each socket is held at **250 W** (its TDP), so all-core AVX-512 runs at ~2.0–2.5 GHz. Raising the limit from Linux (RAPL) is ignored; it's enforced below the OS. Most gains left on the CPU come from:
 - getting more clock out of the same 250 W;
 - removing interference;
-- a larger N (the v2 tuner now goes up to N ≈ 329k).
+- a larger N (the tuner now goes up to N ≈ 329k).
 
-Expect a few percent at most from each item below. Change **one thing at a time** and A/B it with the tuner's best config at a fixed N (`hpl_intel_v2_smac3.yaml` with N fixed).
+Expect a few percent at most from each item below. Change **one thing at a time** and A/B it with the tuner's best config at a fixed N (`hpl_smac3.yaml` with N fixed).
 
 ## 1. OS settings (runtime, reset on reboot)
 
@@ -31,7 +31,7 @@ Run as root (`sudo`). "Now" is the measured state.
 - Reserved pages are locked away from every other user until released. Reserve only for the run, then set it back to 0.
 - Drop caches and compact memory first (last table row), then: `sysctl -w vm.nr_hugepages=<pages>`.
 - Check `grep HugePages_ /proc/meminfo`: on a fragmented system the kernel may reserve fewer than you asked for.
-- Then move `HPL_LARGEPAGE` from `fixed:` to `tunable:` in the v2 yaml, with a new `run_group` whose `priors` point at the current one. Without reserved pages every `HPL_LARGEPAGE=1` run fails with "Memory Allocation Error"; the tuner checks first and skips such runs in seconds.
+- Then move `HPL_LARGEPAGE` from `fixed:` to `tunable:` in `hpl_smac3.yaml`, with a new `run_group` whose `priors` point at the current one. Without reserved pages every `HPL_LARGEPAGE=1` run fails with "Memory Allocation Error"; the tuner checks first and skips such runs in seconds.
 
 **Before a run**
 - No other heavy jobs on the node: check `top`, and your own STREAM/HPL tmux sessions.
@@ -59,7 +59,7 @@ Run as root (`sudo`). "Now" is the measured state.
 
 ```bash
 sudo turbostat --quiet --interval 5 --show Package,Bzy_MHz,UncMHz,PkgWatt,RAMWatt,PkgTmp   # during a run
-python scripts/Launchpad/hpl/hpl_autotune.py --config scripts/Launchpad/hpl/hpl_intel_v2_smac3.yaml --check-replay   # history sanity
+python scripts/Launchpad/hpl/hpl_autotune.py --config scripts/Launchpad/hpl/hpl_smac3.yaml --check-replay   # history sanity
 python scripts/Launchpad/plot_compare.py smac3_intel_hpl smac3_intel_hpl_v2                                          # progress
 ```
 
