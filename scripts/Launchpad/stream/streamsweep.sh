@@ -9,4 +9,4 @@ python3 scripts/Launchpad/stream/streamsweep.py \
   --output outputs/stream
 
 python3 scripts/Launchpad/stream/streambest.py \
-    outputs/stream/trials.csv
+    outputs/stream/trials.jsonl

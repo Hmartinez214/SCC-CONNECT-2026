@@ -1,0 +1,63 @@
+# SMAC3 netlib-HPL autotuning (spack hpl) on the Launchpad node (2x Xeon Gold 6548Y+, 64 cores,
+# 1 TB RAM), driven by scripts/Launchpad/hpl/hpl_autotune.py.
+#
+# Runs "indefinitely": the budget is effectively unbounded, and the experiment
+# resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+#
+# The "slurm" block is reused by the local scheduler: ntasks is the base rank
+# count whose divisors are the choices for P (the tuned RANKS value, 64 or
+# 128, sets the actual count and Q = RANKS / P), and time is the per-run wall
+# limit (runs over it are killed and recorded as TIMEOUT).
+
+experiment:
+  name: hpl-launchpad-smac3
+  optimizer: smac3
+  run_group: smac3_launchpad_ranks
+  budget: 1000000000
+  seed: 42
+
+objective:
+  metric: gflops
+  direction: maximize
+
+application:
+  type: hpl_local
+  # Spack HPL (gcc build linked to MKL + Intel MPI), resolved by hpl_smac3.sh.
+  # The oneapi-compiled build (hpl/gqvmmph) fails HPL's residual check.
+  executable: ${HPL_EXE}
+  # Problem size is tuned in the band [0.80, 0.90] of this target, i.e.
+  # N ~= 89k-95k (~3 min per run). Raise it to tune closer to a full-memory
+  # run at the cost of fewer evaluations per hour.
+  node_memory_bytes: 80GB
+  memory_factor: 1.0
+  memory_fraction_bounds: [0.80, 0.90]
+  tunable:
+    - N
+    - NB
+    - P
+    - PMAP
+    - PFACT
+    - NBMIN
+    - NDIV
+    - RFACT
+    - BCAST
+    - DEPTH
+    - SWAP
+    - L1
+    - U
+    - EQUIL
+    # MPI launch knobs (see LocalHPLApplication in hpl_autotune.py):
+    - RANKS        # 64 (one per core) | 128 (one per HW thread)
+    - MPI_BIND     # none | hwthread | core | socket | node
+    - MPI_MAP      # block | cyclic  (rank -> socket layout)
+    - MEM_POLICY   # default | interleave  (numactl)
+    - HUGEPAGES    # off | thp  (glibc.malloc.hugetlb=1)
+  fixed:
+    SWAP_THRESH: 64
+    ALIGN: 8
+
+slurm:
+  nodes: 1
+  ntasks: 64
+  time: "00:30:00"
+  submit_retries: 3

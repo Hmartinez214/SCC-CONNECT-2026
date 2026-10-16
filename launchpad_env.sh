@@ -20,3 +20,5 @@ export FCFLAGS="$CFLAGS"
 
 spack compiler find
 spack external find openmpi
+
+spack load intel-oneapi-mkl

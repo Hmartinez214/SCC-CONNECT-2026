@@ -1,0 +1,44 @@
+# SMAC3 STREAM autotuning on the Launchpad node, driven by
+# scripts/Launchpad/stream/stream_autotune.py (see its docstring for the space).
+#
+# Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+# On first start the run group is seeded with the compatible results of the
+# earlier random sweep (experiment.priors), so SMAC starts from them.
+
+experiment:
+  name: stream-launchpad-smac3
+  optimizer: smac3
+  run_group: stream_smac3
+  budget: 1000000000
+  seed: 42
+  priors: outputs/stream/trials.jsonl
+
+objective:
+  metric: triad_mb_s
+  direction: maximize
+
+application:
+  type: stream_local
+  executable: stream.c          # STREAM source, relative to the repo root
+  tunable:
+    - ARRAY_SIZE
+    - NTIMES
+    - OFFSET
+    - OPT
+    - ISA
+    - STORES
+    - EXTRA
+    - OMP_THREADS
+    - KMP_AFFINITY
+    - OMP_PROC_BIND
+    - OMP_PLACES
+    - NUMA
+  fixed: {}
+
+# Reused by the local scheduler: time is the per-run wall limit (compile +
+# run); runs over it are killed and recorded as TIMEOUT.
+slurm:
+  nodes: 1
+  ntasks: 1
+  time: "00:05:00"
+  submit_retries: 3

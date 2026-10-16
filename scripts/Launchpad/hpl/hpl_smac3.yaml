@@ -1,0 +1,55 @@
+# SMAC3 autotuning of Intel's Distribution for LINPACK (MKL mp_linpack,
+# xhpl_intel64_dynamic) on the Launchpad node, driven by hpl_autotune.py
+# (IntelHPLApplication). The netlib/spack-HPL setup is hpl_netlib_smac3.yaml.
+#
+# Runs "indefinitely" and resumes from outputs/autotuning/<run_group>/
+# evaluations.jsonl on restart.
+
+experiment:
+  name: hpl-intel-launchpad-smac3
+  optimizer: smac3
+  run_group: smac3_intel_hpl
+  budget: 1000000000
+  seed: 42
+
+objective:
+  metric: gflops
+  direction: maximize
+
+application:
+  type: hpl_intel
+  # Resolved by hpl_smac3.sh from spack's intel-oneapi-mkl.
+  executable: ${INTEL_HPL_EXE}
+  # Problem size is tuned in [0.80, 0.90] of this target (N ~= 89k-95k) to
+  # keep runs short; confirm the winner at full-memory N afterwards.
+  node_memory_bytes: 80GB
+  memory_factor: 1.0
+  memory_fraction_bounds: [0.80, 0.90]
+  tunable:
+    - N
+    - NB          # 256-2048 (Intel recommends 1536 on 4th-gen Xeon Scalable)
+    - PMAP
+    - PFACT
+    - NBMIN
+    - NDIV
+    - RFACT
+    - BCAST
+    - DEPTH
+    - SWAP
+    - L1
+    - U
+    - EQUIL
+    - GRID        # 1x2 | 2x1 (one rank per NUMA node) | 1x1 (one rank)
+    - HUGEPAGES   # off | thp (glibc.malloc.hugetlb=1)
+  fixed:
+    SWAP_THRESH: 64
+    ALIGN: 8
+
+# Reused by the local scheduler: time is the per-run wall limit (runs over it
+# are killed and recorded as TIMEOUT). ntasks is unused by the Intel launch
+# (GRID sets the rank count).
+slurm:
+  nodes: 1
+  ntasks: 2
+  time: "00:30:00"
+  submit_retries: 3

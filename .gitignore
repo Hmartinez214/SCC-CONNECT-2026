@@ -22,3 +22,5 @@ simulations/**/wrfinput*
 simulations/**/wrfbdy*
 simulations/**/wrfout*
 simulations/**/rsl.*
+
+__pycache__/
