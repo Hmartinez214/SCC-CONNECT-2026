@@ -4,7 +4,7 @@ each run group, overlaid (runs are counted per group, so lengths may differ).
 
     python scripts/Launchpad/plot_compare.py                     # HPL groups below
     python scripts/Launchpad/plot_compare.py smac3_launchpad_ranks smac3_intel_hpl
-    python scripts/Launchpad/plot_compare.py --output plots/hpl_compare.png
+    python scripts/Launchpad/plot_compare.py --output plots/hpl/hpl_compare.png
 
 A group name may carry a label after "=", e.g. smac3_intel_hpl="Intel HPL".
 """
@@ -19,15 +19,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from plot_tuning import GRID, REPO, SURFACE, TEXT, TEXT_2, load  # noqa: E402
-
-# Reference categorical palette (dataviz skill), fixed order.
-SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7"]
+from plot_style import GRID, SERIES, SURFACE, TEXT, TEXT_2, load_runs, plot_dir, style_axes  # noqa: E402
 
 DEFAULT_GROUPS = [
-    'invalid_socket1_only/smac3_launchpad=netlib HPL, socket 1 only (affinity bug)',
     "smac3_launchpad_ranks=netlib HPL (spack), MPI-only",
-    "smac3_intel_hpl=Intel HPL (MKL mp_linpack), current",
+    "smac3_intel_hpl=Intel HPL, small N",
+    "smac3_intel_hpl_v2=Intel HPL, N up to 329k (+80 imported)",
+    "smac3_intel_hpl_fast=Intel HPL, all knobs, small N (current; +89 imported)",
 ]
 
 
@@ -37,22 +35,18 @@ def main() -> None:
     p.add_argument("--metric", default="gflops")
     p.add_argument("--unit", default="GFLOPS")
     p.add_argument("--title", default="HPL autotuning runs: GFLOPS per run and best so far")
-    p.add_argument("--output", default=str(REPO / "plots" / "hpl_compare.png"))
+    p.add_argument("--output", default=None, help="PNG path (default: plots/<hpl|stream>/<hpl|stream>_compare.png)")
     args = p.parse_args()
 
     plt.rcParams.update({"font.size": 10, "axes.edgecolor": GRID, "axes.labelcolor": TEXT_2,
                          "xtick.color": TEXT_2, "ytick.color": TEXT_2})
     fig, ax = plt.subplots(figsize=(11, 6.5), dpi=150, facecolor=SURFACE)
-    ax.set_facecolor(SURFACE)
-    ax.grid(axis="y", color=GRID, linewidth=0.8)
-    ax.set_axisbelow(True)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
+    style_axes(ax)
 
     top, longest = 0.0, 0
     for color, spec in zip(SERIES, args.groups):
         group, _, label = spec.partition("=")
-        records = load(group)
+        records = load_runs(group)
         values = [float(r["metrics"].get(args.metric, r.get("objective"))) if r.get("success") else None
                   for r in records]
         index = list(range(1, len(values) + 1))
@@ -77,7 +71,11 @@ def main() -> None:
     ax.set_title(args.title, loc="left", color=TEXT, fontsize=12, pad=12)
     ax.legend(loc="upper left", bbox_to_anchor=(0, -0.12), frameon=False, labelcolor=TEXT_2,
               title="line = best so far, dots = each run", title_fontsize=8, alignment="left")
-    out = Path(args.output)
+    if args.output:
+        out = Path(args.output)
+    else:
+        d = plot_dir(*(g.partition("=")[0] for g in args.groups))
+        out = d / f"{d.name}_compare.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
     fig.savefig(out, facecolor=SURFACE)

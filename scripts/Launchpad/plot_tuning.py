@@ -3,7 +3,10 @@
 
     python scripts/Launchpad/plot_tuning.py                      # current HPL run group
     python scripts/Launchpad/plot_tuning.py --run-group stream_smac3 --metric triad_mb_s --scale 1e-3 --unit "GB/s"
-    python scripts/Launchpad/plot_tuning.py --output plots/hpl.png
+    python scripts/Launchpad/plot_tuning.py --output plots/hpl/custom.png
+
+Figures go to plots/<benchmark>/: plots/stream/ for stream* run groups,
+plots/hpl/ for the rest.
 
 Reads outputs/autotuning/<run-group>/evaluations.jsonl (final record per
 attempt). Failed / timed-out runs sit on the baseline as hollow rings;
@@ -13,7 +16,6 @@ imported prior results (if any) are shaded.
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 import matplotlib
@@ -21,39 +23,20 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-REPO = Path(__file__).resolve().parents[2]
-
-# Reference palette (dataviz skill): one series hue, neutral ink for the rest.
-BEST = "#2a78d6"
-RUN = "#a3a29b"
-TEXT = "#0b0b0b"
-TEXT_2 = "#52514e"
-GRID = "#e8e7e2"
-SURFACE = "#fcfcfb"
-
-
-def load(run_group: str) -> list[dict]:
-    path = REPO / "outputs" / "autotuning" / run_group / "evaluations.jsonl"
-    final: dict[int, dict] = {}
-    for line in path.read_text().splitlines():
-        if line.strip():
-            rec = json.loads(line)
-            if rec.get("status") != "SUBMITTED":
-                final[int(rec["attempt"])] = rec
-    return [final[a] for a in sorted(final)]
+from plot_style import BEST, GRID, RUN, SURFACE, TEXT, TEXT_2, is_imported, load_runs, plot_dir, style_axes  # noqa: E402
 
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    p.add_argument("--run-group", default="smac3_launchpad_ranks")
+    p.add_argument("--run-group", default="smac3_intel_hpl_fast")
     p.add_argument("--metric", default="gflops", help="record field / metric to plot (default: gflops)")
     p.add_argument("--scale", type=float, default=1.0, help="multiply values by this (e.g. 1e-3 for MB/s -> GB/s)")
     p.add_argument("--unit", default="GFLOPS")
     p.add_argument("--title", default=None)
-    p.add_argument("--output", default=None, help="PNG path (default: plots/<run-group>_progress.png)")
+    p.add_argument("--output", default=None, help="PNG path (default: plots/<hpl|stream>/<run-group>_progress.png)")
     args = p.parse_args()
 
-    records = load(args.run_group)
+    records = load_runs(args.run_group)
 
     def value(rec: dict) -> float | None:
         if not rec.get("success"):
@@ -63,7 +46,7 @@ def main() -> None:
 
     attempts = [r["attempt"] for r in records]
     values = [value(r) for r in records]
-    priors = [r for r in records if (r.get("metadata") or {}).get("imported_from")]
+    priors = [r for r in records if is_imported(r)]
 
     best, running = float("-inf"), []
     for v in values:
@@ -78,11 +61,7 @@ def main() -> None:
     plt.rcParams.update({"font.size": 10, "axes.edgecolor": GRID, "axes.labelcolor": TEXT_2,
                          "xtick.color": TEXT_2, "ytick.color": TEXT_2})
     fig, ax = plt.subplots(figsize=(10, 5), dpi=150, facecolor=SURFACE)
-    ax.set_facecolor(SURFACE)
-    ax.grid(axis="y", color=GRID, linewidth=0.8)
-    ax.set_axisbelow(True)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
+    style_axes(ax)
 
     if priors:
         last_prior = max(r["attempt"] for r in priors)
@@ -112,7 +91,7 @@ def main() -> None:
     ax.set_title(title, loc="left", color=TEXT, fontsize=12, pad=12)
     ax.legend(loc="lower right", frameon=False, labelcolor=TEXT_2)
 
-    out = Path(args.output) if args.output else REPO / "plots" / f"{args.run_group}_progress.png"
+    out = Path(args.output) if args.output else plot_dir(args.run_group) / f"{args.run_group}_progress.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
     fig.savefig(out, facecolor=SURFACE)
