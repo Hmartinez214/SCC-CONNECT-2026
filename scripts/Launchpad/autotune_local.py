@@ -14,6 +14,10 @@ only what this node needs:
   history (and any imported prior results).
 * ``main()`` -- the controller entry point, including ``--check-replay``,
   which audits what SMAC actually received from the log without running jobs.
+* Job-script helpers for machine-wide settings a run may change (uncore
+  frequency cap, THP mode, reserved huge pages), each restored on exit.
+* ``final_records`` / ``import_evaluations`` -- reading a run group's
+  evaluations.jsonl and seeding a new run group from it.
 
 A driver registers its application with HPC-Tools' ``register_application``
 and calls ``main()``. If the application has a ``prior_records(path)``
@@ -25,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import json
 import math
 import os
 import shutil
@@ -34,7 +39,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import yaml
 
@@ -42,6 +47,7 @@ from hpc_autotuner.experiments import common
 from hpc_autotuner.experiments.config import ExperimentConfig
 from hpc_autotuner.optimizers.smac3 import SMAC3Optimizer
 from hpc_autotuner.schedulers.base import Scheduler
+from hpc_autotuner.core.space import ParameterSpace
 from hpc_autotuner.storage.filesystem import FilesystemStorage
 
 # ---------------------------------------------------------------------------
@@ -214,6 +220,197 @@ class LocalScheduler(Scheduler):
 
 
 # ---------------------------------------------------------------------------
+# per-job system settings (shell lines for job scripts)
+# ---------------------------------------------------------------------------
+#
+# Machine-wide settings a job may change for its own run. Every change
+# registers a restore function in _cleanup, which an EXIT trap runs (normal
+# exit, error, or the scheduler's SIGTERM), so a job never leaves the node
+# changed. Paths are overridable for tests.
+
+UNCORE_SYSFS = "/sys/devices/system/cpu/intel_uncore_frequency/package_*_die_*"
+THP_ENABLED = "/sys/kernel/mm/transparent_hugepage/enabled"
+NR_HUGEPAGES = "/proc/sys/vm/nr_hugepages"
+EPB_SYSFS = "/sys/devices/system/cpu/cpu*/power/energy_perf_bias"
+CPUIDLE_SYSFS = "/sys/devices/system/cpu/cpu*/cpuidle/state*"
+MEMINFO = "/proc/meminfo"
+DROP_CACHES = "/proc/sys/vm/drop_caches"
+COMPACT_MEMORY = "/proc/sys/vm/compact_memory"
+
+
+def cleanup_header() -> list[str]:
+    return [
+        "_cleanup=()",
+        "trap 'for _f in \"${_cleanup[@]}\"; do \"$_f\"; done' EXIT",
+        "trap 'exit 143' TERM INT HUP",
+    ]
+
+
+def uncore_lines(mhz: int, sysfs: str = UNCORE_SYSFS, pin: bool = False) -> list[str]:
+    """Cap the uncore (mesh/LLC/memory controller) max frequency; with
+    ``pin``, also raise its min to the cap so it never clocks down. Restore
+    after (min first, so min <= max holds at every step)."""
+    lines = [
+        f"_unc=({sysfs})",
+        '_unc_found=(); _unc_min=(); for _d in "${_unc[@]}"; do _unc_found+=("$(cat "$_d/max_freq_khz")"); '
+        '_unc_min+=("$(cat "$_d/min_freq_khz")"); done',
+        "_unc_restore() { local i=0; for _d in \"${_unc[@]}\"; do "
+        "echo \"${_unc_min[$i]}\" | sudo -n tee \"$_d/min_freq_khz\" >/dev/null; "
+        "echo \"${_unc_found[$i]}\" | sudo -n tee \"$_d/max_freq_khz\" >/dev/null; i=$((i + 1)); done; }",
+        "_cleanup+=(_unc_restore)",
+        f'for _d in "${{_unc[@]}}"; do echo {mhz * 1000} | sudo -n tee "$_d/max_freq_khz" >/dev/null '
+        f'|| {{ echo "cannot set uncore max to {mhz} MHz (needs passwordless sudo)"; exit 1; }}; done',
+        f'echo "uncore max: {mhz} MHz (was ${{_unc_found[*]}} kHz)"',
+    ]
+    if pin:
+        lines += [
+            f'for _d in "${{_unc[@]}}"; do echo {mhz * 1000} | sudo -n tee "$_d/min_freq_khz" >/dev/null '
+            f'|| {{ echo "cannot pin uncore min to {mhz} MHz"; exit 1; }}; done',
+            f'echo "uncore min: pinned to {mhz} MHz (was ${{_unc_min[*]}} kHz)"',
+        ]
+    return lines
+
+
+def sysfs_lines(tag: str, value: str, what: str, files: str = "", select: list[str] | None = None) -> list[str]:
+    """Write ``value`` to many sysfs files (a glob, or the bash array _<tag>
+    filled by ``select``) with one sudo call; restore every file's old value
+    after (one call per distinct old value)."""
+    arr = f"_{tag}"
+    return [
+        *(select or [f"{arr}=({files})"]),
+        f'{arr}_found=(); for _p in "${{{arr}[@]}}"; do {arr}_found+=("$(cat "$_p")"); done',
+        f"{arr}_restore() {{ local v i _p; for v in $(printf '%s\\n' \"${{{arr}_found[@]}}\" | sort -u); do "
+        f'local sel=(); i=0; for _p in "${{{arr}[@]}}"; do [[ "${{{arr}_found[$i]}}" == "$v" ]] && sel+=("$_p"); '
+        f'i=$((i + 1)); done; echo "$v" | sudo -n tee "${{sel[@]}}" >/dev/null; done; }}',
+        f"_cleanup+=({arr}_restore)",
+        f'echo {value} | sudo -n tee "${{{arr}[@]}}" >/dev/null || {{ echo "cannot set {what} to {value}"; exit 1; }}',
+        f'echo "{what}: {value} on ${{#{arr}[@]}} files (was $(printf \'%s\\n\' "${{{arr}_found[@]}}" | sort | uniq -c | xargs))"',
+    ]
+
+
+def epb_lines(value: int, sysfs: str = EPB_SYSFS) -> list[str]:
+    """Energy-performance bias on every CPU (0 performance .. 15 powersave;
+    the firmware also uses it for uncore and memory power management)."""
+    return sysfs_lines("epb", str(value), "EPB", files=sysfs)
+
+
+def cstate_lines(disable: list[str], sysfs: str = CPUIDLE_SYSFS) -> list[str]:
+    """Disable the named idle states (e.g. C1E, C6) on every CPU; restore after."""
+    if not disable:
+        return []
+    pattern = "|".join(disable)
+    select = ["_cst=()", f'for _s in {sysfs}; do case "$(cat "$_s/name")" in {pattern}) _cst+=("$_s/disable");; esac; done']
+    return sysfs_lines("cst", "1", f"{'/'.join(disable)} disable", select=select)
+
+
+def thp_lines(mode: str, path: str = THP_ENABLED) -> list[str]:
+    """Set the system transparent-huge-page mode (always | madvise | never);
+    restore after. Unlike madvise, `always` also covers static (.bss) arrays."""
+    return [
+        f"_thp_found=$(sed -E 's/.*\\[([a-z]+)\\].*/\\1/' {path})",
+        f'_thp_restore() {{ echo "$_thp_found" | sudo -n tee {path} >/dev/null; }}',
+        "_cleanup+=(_thp_restore)",
+        f'echo {mode} | sudo -n tee {path} >/dev/null || {{ echo "cannot set THP to {mode}"; exit 1; }}',
+        f'echo "THP: {mode} (was $_thp_found)"',
+    ]
+
+
+def gpu_lines(device: int, sm_mhz: int, power_w: int) -> list[str]:
+    """Lock one GPU's SM clock (0 = leave it unlocked) and set its power
+    limit, with persistence mode on so both survive until the benchmark's
+    CUDA context opens; restore all three after (clocks back to unlocked)."""
+    q = f"nvidia-smi -i {device} --format=csv,noheader,nounits --query-gpu"
+    lines = [
+        f"_gpu_pm=$({q}=persistence_mode)",
+        f"_gpu_pl=$({q}=power.limit)",
+        f"_gpu_restore() {{ sudo -n nvidia-smi -i {device} -rgc >/dev/null; "
+        f'sudo -n nvidia-smi -i {device} -pl "$_gpu_pl" >/dev/null; '
+        f'[[ "$_gpu_pm" == Enabled ]] || sudo -n nvidia-smi -i {device} -pm 0 >/dev/null; }}',
+        "_cleanup+=(_gpu_restore)",
+        f'sudo -n nvidia-smi -i {device} -pm 1 >/dev/null || {{ echo "cannot enable persistence mode on GPU {device}"; exit 1; }}',
+        f'sudo -n nvidia-smi -i {device} -pl {power_w} >/dev/null || {{ echo "cannot set GPU {device} power limit to {power_w} W"; exit 1; }}',
+    ]
+    if sm_mhz:
+        lines.append(f'sudo -n nvidia-smi -i {device} -lgc {sm_mhz},{sm_mhz} >/dev/null '
+                     f'|| {{ echo "cannot lock GPU {device} SM clock to {sm_mhz} MHz"; exit 1; }}')
+    else:
+        lines.append(f"sudo -n nvidia-smi -i {device} -rgc >/dev/null")
+    lines.append(f'echo "GPU {device}: SM clock {sm_mhz or "unlocked"}, power limit {power_w} W '
+                 f'(was $_gpu_pl W, persistence $_gpu_pm)"')
+    return lines
+
+
+def hugepage_lines(pages: int, nr_hugepages: str = NR_HUGEPAGES, meminfo: str = MEMINFO,
+                   drop_caches: str = DROP_CACHES, compact_memory: str = COMPACT_MEMORY) -> list[str]:
+    """Reserve ``pages`` 2 MB hugetlbfs pages for this job (dropping caches and
+    compacting memory first so they can be found), fail in seconds if the
+    kernel cannot provide them, and put the old reservation back after."""
+    return [
+        f"_hp_found=$(cat {nr_hugepages})",
+        f'_hp_restore() {{ echo "$_hp_found" | sudo -n tee {nr_hugepages} >/dev/null; }}',
+        "_cleanup+=(_hp_restore)",
+        f"sync; echo 3 | sudo -n tee {drop_caches} >/dev/null; echo 1 | sudo -n tee {compact_memory} >/dev/null",
+        f"echo {pages} | sudo -n tee {nr_hugepages} >/dev/null",
+        f"_hp_free=$(awk '/HugePages_Free/{{print $2}}' {meminfo})",
+        f'echo "huge pages: asked {pages}, free $_hp_free"',
+        f'if [ "$_hp_free" -lt {pages} ]; then echo "only $_hp_free of {pages} huge pages '
+        'could be reserved; skipping run"; exit 1; fi',
+    ]
+
+
+# ---------------------------------------------------------------------------
+# evaluation logs: reading them and seeding a run group from another one
+# ---------------------------------------------------------------------------
+
+
+def final_records(path: Path) -> dict[int, dict[str, Any]]:
+    """attempt -> last record for that attempt (a log holds a SUBMITTED record
+    and then the final one; only the last describes the attempt)."""
+    final: dict[int, dict[str, Any]] = {}
+    for line in Path(path).read_text().splitlines():
+        if line.strip():
+            rec = json.loads(line)
+            final[int(rec.get("attempt", 0))] = rec
+    return final
+
+
+def import_evaluations(
+    application: Any, path: Path,
+    fill: Callable[[dict[str, Any], dict[str, Any]], None] | None = None,
+) -> list[dict[str, Any]]:
+    """Finished runs of another run group, as prior records for this one.
+
+    ``fill(record, configuration)`` adds values for knobs the old runs
+    predate -- what they actually ran with. Fixed values fill the rest; runs
+    outside this application's search space are skipped.
+    """
+    space = ParameterSpace(application.tunable_parameters)
+    records, skipped = [], 0
+    for attempt, rec in sorted(final_records(path).items()):
+        if rec.get("status") not in common.TERMINAL_STATES or not attempt:
+            continue
+        rec = dict(rec)
+        config = dict(rec["configuration"])
+        if fill is not None:
+            fill(rec, config)
+        for name, value in application.fixed_values.items():
+            config.setdefault(name, value)
+        config = application.resolve_configuration(config)
+        try:
+            space.validate(config)
+        except ValueError:
+            skipped += 1
+            continue
+        rec["configuration"] = config
+        rec["job_id"] = None
+        rec.setdefault("metadata", {})["imported_from"] = f"{path}#attempt={attempt}"
+        records.append(rec)
+    if skipped:
+        print(f"[priors] skipped {skipped} runs outside the current search space", flush=True)
+    return records
+
+
+# ---------------------------------------------------------------------------
 # optimizer: SMAC3 that can be warm-started from the evaluation log
 # ---------------------------------------------------------------------------
 
@@ -240,8 +437,12 @@ class ResumableSMAC3Optimizer(SMAC3Optimizer):
     #: results count towards it.
     initial_design_size = 24
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, forbidden: Callable[[Any], list[Any]] | None = None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        # forbidden(cs) -> ConfigSpace forbidden clauses: combinations SMAC
+        # must never suggest (e.g. more threads than CPUs).
+        if forbidden is not None:
+            self.cs.add(forbidden(self.cs))
         self.replay: list[dict[str, Any]] = []
         self._replay_seen: dict[tuple, int] = {}
         self._build_facade(self.initial_design_size)
@@ -311,9 +512,7 @@ class ResumableSMAC3Optimizer(SMAC3Optimizer):
 def _replay_records(storage: FilesystemStorage) -> list[dict[str, Any]]:
     """Records run_experiment() will replay, in replay order (the interrupted
     attempt, if any, last)."""
-    by_attempt: dict[int, dict[str, Any]] = {}
-    for rec in storage.read_evaluations():
-        by_attempt[int(rec.get("attempt", 0))] = rec
+    by_attempt = final_records(storage.evaluations_file) if storage.evaluations_file.exists() else {}
     terminal = [
         by_attempt[a] for a in sorted(by_attempt)
         if by_attempt[a].get("status") in common.TERMINAL_STATES
@@ -356,61 +555,33 @@ def check_replay(config: ExperimentConfig, storage: FilesystemStorage, applicati
     what the log says. Returns 0 when everything matches."""
     records = _replay_records(storage)
     finished = [r for r in records if r.get("status") in common.TERMINAL_STATES]
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_storage = FilesystemStorage(root=Path(tmp) / storage.root.name, run_group=storage.root.name)
-        tmp_storage.root.mkdir(parents=True, exist_ok=True)
-        for rec in finished:
-            tmp_storage.append_evaluation(rec)
-        cwd = os.getcwd()
-        os.chdir(tmp)
-        try:
-            optimizer = ResumableSMAC3Optimizer(
-                application.tunable_parameters, seed=config.seed,
-                direction=config.objective_direction, n_trials=config.budget,
-            )
-            optimizer.set_replay([r["configuration"] for r in finished])
-            started = time.monotonic()
-            messages: list[str] = []
-            common.run_experiment(
-                optimizer=optimizer, application=application, scheduler=None,  # type: ignore[arg-type]
-                storage=tmp_storage, budget=len(finished), seed=config.seed,
-                run_group=storage.root.name, optimizer_name="smac3", slurm=config.slurm,
-                output_root=Path(tmp), project_root=Path(tmp), log=messages.append,
-            )
-            elapsed = time.monotonic() - started
-        finally:
-            os.chdir(cwd)
+    if not finished:
+        print(f"run group:           {storage.root}\nRESULT:              OK (no finished runs to replay yet)")
+        return 0
+    started = time.monotonic()
+    optimizer, warnings = _replay_into_fresh_optimizer(config, storage, application, finished)
+    elapsed = time.monotonic() - started
 
-    rh = optimizer.smac.runhistory
     names = list(optimizer.cs.keys())
-    n_seeds = len(optimizer.smac.intensifier.get_instance_seed_keys_of_interest())
 
     def ident(cfg: dict[str, Any]) -> tuple:
         return tuple(_native(cfg.get(n)) for n in names)
 
+    rh = optimizer.smac.runhistory
+    n_seeds = len(optimizer.smac.intensifier.get_instance_seed_keys_of_interest())
     held: dict[tuple, list[float]] = {}
     running = 0
     for key, value in rh.items():
         if value.status.name == "RUNNING":
             running += 1
-            continue
-        held.setdefault(ident(dict(rh.get_config(key.config_id))), []).append(value.cost)
+        else:
+            held.setdefault(ident(dict(rh.get_config(key.config_id))), []).append(value.cost)
     logged: dict[tuple, list[float]] = {}
     for rec in finished:
         logged.setdefault(ident(rec["configuration"]), []).append(optimizer._to_loss(rec))
-    expected_trials = sum(min(len(c), n_seeds) for c in logged.values())
+    expected = sum(min(len(c), n_seeds) for c in logged.values())
     dropped = sum(max(len(c) - n_seeds, 0) for c in logged.values())
-
-    mismatches = 0
-    for cfg, costs in logged.items():
-        got = sorted(held.get(cfg, []))
-        want = sorted(costs[:n_seeds])
-        if len(got) != len(want) or any(not math.isclose(g, w, rel_tol=1e-9, abs_tol=1e-9)
-                                         for g, w in zip(got, want)):
-            mismatches += 1
-            if mismatches <= 5:
-                print(f"  MISMATCH {dict(zip(names, cfg))}: log costs {want} vs SMAC {got}")
-    problems = [m for m in messages if "warning" in m]
+    mismatches = _count_cost_mismatches(logged, held, n_seeds, names)
 
     metric = config.objective_metric
     best = min(finished, key=optimizer._to_loss) if finished else None
@@ -421,22 +592,69 @@ def check_replay(config: ExperimentConfig, storage: FilesystemStorage, applicati
     print(f"run group:           {storage.root}")
     print(f"log records:         {len(finished)} finished, {len(logged)} distinct configurations"
           + (", plus 1 interrupted (re-run on restart)" if len(records) > len(finished) else ""))
-    print(f"SMAC runhistory:     {len(rh) - running} finished trials (expected {expected_trials}"
-          + (f"; {dropped} repeats beyond {n_seeds} seeds/config not held" if dropped else "") + f"), "
-          f"{running} running")
+    print(f"SMAC runhistory:     {len(rh) - running} finished trials (expected {expected}"
+          + (f"; {dropped} repeats beyond {n_seeds} seeds/config not held" if dropped else "")
+          + f"), {running} running")
     print(f"cost mismatches:     {mismatches}")
-    print(f"replay warnings:     {len(problems)}" + (f" ({problems[0]})" if problems else ""))
+    print(f"replay warnings:     {len(warnings)}" + (f" ({warnings[0]})" if warnings else ""))
     if best is not None:
         print(f"best single run:     attempt {best['attempt']}, {metric}={best.get('objective')}")
     if inc is not None:
         mean = -sum(inc_runs) / len(inc_runs) if inc_runs else float("nan")
+        same = best is not None and ident(dict(inc)) == ident(best["configuration"])
         print(f"SMAC incumbent:      mean {metric}={mean:.6g} over {len(inc_runs)} run(s)"
-              + (" (same configuration as best single run)" if best and ident(dict(inc)) == ident(best["configuration"]) else ""))
+              + (" (same configuration as best single run)" if same else ""))
     print(f"replay time:         {elapsed:.1f} s")
-    ok = (mismatches == 0 and not problems and running == 0
-          and len(rh) == expected_trials and (inc is None or ident(dict(inc)) in logged))
+    ok = (mismatches == 0 and not warnings and running == 0
+          and len(rh) == expected and (inc is None or ident(dict(inc)) in logged))
     print("RESULT:              " + ("OK" if ok else "PROBLEMS FOUND"))
     return 0 if ok else 1
+
+
+def _replay_into_fresh_optimizer(config: ExperimentConfig, storage: FilesystemStorage, application: Any,
+                                 finished: list[dict[str, Any]]) -> tuple["ResumableSMAC3Optimizer", list[str]]:
+    """Run the controller's resume path on a scratch copy of the log with a
+    budget that schedules no new jobs; return the primed optimizer and any
+    replay warnings it logged."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_storage = FilesystemStorage(root=Path(tmp) / storage.root.name, run_group=storage.root.name)
+        tmp_storage.root.mkdir(parents=True, exist_ok=True)
+        for rec in finished:
+            tmp_storage.append_evaluation(rec)
+        cwd = os.getcwd()
+        os.chdir(tmp)  # SMAC writes smac3_output/ relative to the cwd
+        try:
+            optimizer = ResumableSMAC3Optimizer(
+                application.tunable_parameters, seed=config.seed,
+                direction=config.objective_direction, n_trials=config.budget,
+                forbidden=getattr(application, "forbidden_clauses", None),
+            )
+            optimizer.set_replay([r["configuration"] for r in finished])
+            messages: list[str] = []
+            common.run_experiment(
+                optimizer=optimizer, application=application,
+                scheduler=None,  # type: ignore[arg-type]  # budget == history: nothing is submitted
+                storage=tmp_storage, budget=len(finished), seed=config.seed,
+                run_group=storage.root.name, optimizer_name="smac3", slurm=config.slurm,
+                output_root=Path(tmp), project_root=Path(tmp), log=messages.append,
+            )
+        finally:
+            os.chdir(cwd)
+    return optimizer, [m for m in messages if "warning" in m]
+
+
+def _count_cost_mismatches(logged: dict[tuple, list[float]], held: dict[tuple, list[float]],
+                           n_seeds: int, names: list[str]) -> int:
+    mismatches = 0
+    for cfg, costs in logged.items():
+        got = sorted(held.get(cfg, []))
+        want = sorted(costs[:n_seeds])
+        if len(got) != len(want) or any(not math.isclose(g, w, rel_tol=1e-9, abs_tol=1e-9)
+                                         for g, w in zip(got, want)):
+            mismatches += 1
+            if mismatches <= 5:
+                print(f"  MISMATCH {dict(zip(names, cfg))}: log costs {want} vs SMAC {got}")
+    return mismatches
 
 
 def _native(value: Any) -> Any:
@@ -448,7 +666,7 @@ def _native(value: Any) -> Any:
 # ---------------------------------------------------------------------------
 
 
-def main(argv: list[str] | None = None, *, description: str = "") -> int:
+def _parse_args(argv: list[str] | None, description: str) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--config", required=True)
     parser.add_argument("--budget", type=int, default=None)
@@ -456,17 +674,63 @@ def main(argv: list[str] | None = None, *, description: str = "") -> int:
     parser.add_argument("--project-root", default=None)
     parser.add_argument("--check-replay", action="store_true",
                         help="Audit how the run group's log replays into SMAC, then exit (runs no jobs).")
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
 
+
+def _load_config(args: argparse.Namespace) -> tuple[ExperimentConfig, str | None]:
     config = ExperimentConfig.from_yaml(args.config)
-    # Not part of HPC-Tools' schema: prior results to seed a new run group.
-    priors = (yaml.safe_load(Path(args.config).read_text()).get("experiment") or {}).get("priors")
     if args.budget is not None:
         config.budget = args.budget
     if args.run_group:
         config.run_group = args.run_group
     if args.project_root:
         config.project_root = args.project_root
+    # Not part of HPC-Tools' schema: prior results to seed a new run group.
+    priors = (yaml.safe_load(Path(args.config).read_text()).get("experiment") or {}).get("priors")
+    return config, priors
+
+
+def _claim_run_group(storage: FilesystemStorage) -> Any:
+    """One controller per run group at a time; returns the held lock (keep it
+    referenced), or None if another controller has it."""
+    lock = open(storage.root / ".lock", "w")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        return None
+    return lock
+
+
+def _reset_affinity() -> None:
+    """A restricted CPU mask is inherited by the benchmark and silently squeezes
+    it onto those CPUs (the default tmux server here was started with socket 1
+    only). Binding is the optimizer's job, so start from all CPUs."""
+    all_cpus = set(range(os.cpu_count() or 1))
+    inherited = os.sched_getaffinity(0)
+    if inherited != all_cpus:
+        print(f"[local] resetting inherited CPU affinity ({len(inherited)} of {len(all_cpus)} CPUs) "
+              "to all CPUs", flush=True)
+        os.sched_setaffinity(0, all_cpus)
+
+
+def _stop_on_signals(scheduler: LocalScheduler) -> None:
+    def on_signal(signum: int, _frame: Any) -> None:
+        # Kill the job before printing: when the tmux session goes away the
+        # tee reading our stdout dies too, and the print would raise.
+        scheduler.kill()
+        try:
+            print(f"\n[local] caught signal {signum}; stopped the current job. Re-run to resume.", flush=True)
+        except OSError:
+            pass
+        os._exit(128 + signum)
+
+    for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+        signal.signal(sig, on_signal)
+
+
+def main(argv: list[str] | None = None, *, description: str = "") -> int:
+    args = _parse_args(argv, description)
+    config, priors = _load_config(args)
     root = config.resolved_project_root()
     output = config.resolved_output_root()
     run_group = config.run_group
@@ -477,12 +741,8 @@ def main(argv: list[str] | None = None, *, description: str = "") -> int:
         return check_replay(config, storage, application)
 
     storage.root.mkdir(parents=True, exist_ok=True)
-
-    # One controller per run group at a time.
-    lock = open(storage.root / ".lock", "w")
-    try:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except BlockingIOError:
+    lock = _claim_run_group(storage)  # noqa: F841 - held for the controller's lifetime
+    if lock is None:
         print(f"ERROR: another controller is already running run group '{run_group}'", file=sys.stderr)
         return 3
 
@@ -491,16 +751,7 @@ def main(argv: list[str] | None = None, *, description: str = "") -> int:
         if seeded:
             print(f"[priors] seeded '{run_group}' with {seeded} prior results from {priors}", flush=True)
 
-    # A restricted CPU mask is inherited by the benchmark and silently squeezes
-    # it onto those CPUs (the default tmux server here was started with
-    # socket 1 only). Binding is the optimizer's job, so start from all CPUs.
-    all_cpus = set(range(os.cpu_count() or 1))
-    inherited = os.sched_getaffinity(0)
-    if inherited != all_cpus:
-        print(f"[local] resetting inherited CPU affinity ({len(inherited)} of {len(all_cpus)} CPUs) "
-              "to all CPUs", flush=True)
-        os.sched_setaffinity(0, all_cpus)
-
+    _reset_affinity()
     # SMAC writes its scratch output (smac3_output/) relative to the cwd; keep
     # it with the run group. Every other path used below is absolute.
     os.chdir(storage.root)
@@ -508,44 +759,21 @@ def main(argv: list[str] | None = None, *, description: str = "") -> int:
     scheduler = LocalScheduler(root, config.slurm, pidfile=storage.root / ".child_pgid",
                                node_lock=output / ".node.lock")
     scheduler.kill_stale()
-
-    def on_signal(signum: int, _frame: Any) -> None:
-        # Kill the job before printing: when the tmux session goes away the
-        # tee reading our stdout dies too, and the print would raise.
-        scheduler.kill()
-        try:
-            print(f"\n[local] caught signal {signum}; stopped the current job. "
-                  "Re-run to resume.", flush=True)
-        except OSError:
-            pass
-        os._exit(128 + signum)
-
-    for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
-        signal.signal(sig, on_signal)
+    _stop_on_signals(scheduler)
 
     optimizer = ResumableSMAC3Optimizer(
-        application.tunable_parameters,
-        seed=config.seed,
-        direction=config.objective_direction,
-        n_trials=config.budget,
+        application.tunable_parameters, seed=config.seed,
+        direction=config.objective_direction, n_trials=config.budget,
+        forbidden=getattr(application, "forbidden_clauses", None),
     )
     optimizer.set_replay([r["configuration"] for r in _replay_records(storage)])
-
     print(f"project_root={root}\noutput={storage.root}\n"
           f"optimizer=smac3 budget={config.budget} seed={config.seed} "
           f"replaying={len(optimizer.replay)}", flush=True)
 
     common.run_experiment(
-        optimizer=optimizer,
-        application=application,
-        scheduler=scheduler,
-        storage=storage,
-        budget=config.budget,
-        seed=config.seed,
-        run_group=run_group,
-        optimizer_name="smac3",
-        slurm=config.slurm,
-        output_root=output,
-        project_root=root,
+        optimizer=optimizer, application=application, scheduler=scheduler, storage=storage,
+        budget=config.budget, seed=config.seed, run_group=run_group, optimizer_name="smac3",
+        slurm=config.slurm, output_root=output, project_root=root,
     )
     return 0
