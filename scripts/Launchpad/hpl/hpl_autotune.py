@@ -16,7 +16,6 @@ Usage (inside the launchpad env, see hpl_smac3.sh):
 
 from __future__ import annotations
 
-import json
 import os
 import re
 import sys
@@ -25,7 +24,6 @@ from typing import Any
 
 from hpc_autotuner.applications.hpl import HPLApplication
 from hpc_autotuner.core.parameter import Parameter
-from hpc_autotuner.core.space import ParameterSpace
 from hpc_autotuner.experiments import common
 from hpc_autotuner.experiments.config import ExperimentConfig
 
@@ -66,6 +64,23 @@ def _numa_cores() -> list[list[int]]:
         if cores:
             nodes.append(cores)
     return nodes
+
+
+def _mask(cpus: list[int]) -> str:
+    """Intel MPI pin-domain mask for a set of logical CPUs."""
+    return hex(sum(1 << cpu for cpu in cpus))
+
+
+def _cpulist(cpus: list[int]) -> str:
+    """Sorted CPU ids as a list with ranges ("0-15,64-79")."""
+    out, start = [], None
+    for k, cpu in enumerate(cpus):
+        if start is None:
+            start = cpu
+        if k + 1 == len(cpus) or cpus[k + 1] != cpu + 1:
+            out.append(f"{start}-{cpu}" if cpu != start else f"{cpu}")
+            start = None
+    return ",".join(out)
 
 
 class LocalHPLApplication(HPLApplication):
@@ -141,6 +156,10 @@ class LocalHPLApplication(HPLApplication):
                 app.parameters.append(Parameter(name, "categorical", choices=choices, fixed_value=value))
         return app
 
+    def _launch_values(self, configuration: dict[str, Any]) -> dict[str, Any]:
+        """This run's launch knobs, defaults filled in."""
+        return {name: configuration.get(name, default) for name, (_, default) in self.LAUNCH_PARAMETERS.items()}
+
     def _rank_slots(self, mapping: str, ranks: int) -> list[tuple[int, list[int], int]]:
         """(socket, HW threads of the core, the rank's own HW thread) for each
         rank, in rank order. Ranks fill physical cores first; with more ranks
@@ -175,11 +194,7 @@ class LocalHPLApplication(HPLApplication):
 
     def launch_lines(self, configuration: dict[str, Any]) -> list[str]:
         """Shell lines that apply the launch knobs and start xhpl."""
-        c = {name: configuration.get(name, default) for name, (_, default) in self.LAUNCH_PARAMETERS.items()}
-
-        def mask(cpus: list[int]) -> str:
-            return hex(sum(1 << cpu for cpu in cpus))
-
+        c = self._launch_values(configuration)
         lines = [
             # Start from a clean slate so nothing inherited overrides a knob.
             "for v in $(compgen -e | grep '^I_MPI_PIN'); do unset \"$v\"; done",
@@ -222,11 +237,11 @@ class LocalHPLApplication(HPLApplication):
                 cpus = ",".join(str(cpu) for _, _, cpu in ranks)
                 lines.append(f"export I_MPI_PIN_PROCESSOR_LIST={cpus}")
             elif bind == "core":
-                masks = ",".join(mask(threads) for _, threads, _ in ranks)
+                masks = ",".join(_mask(threads) for _, threads, _ in ranks)
                 lines.append(f"export I_MPI_PIN_DOMAIN=[{masks}]")
             elif bind == "socket":
                 topo = _cpu_topology()
-                socket_masks = [mask([cpu for core in cores for cpu in core]) for cores in topo]
+                socket_masks = [_mask([cpu for core in cores for cpu in core]) for cores in topo]
                 masks = ",".join(socket_masks[s] for s, _, _ in ranks)
                 lines.append(f"export I_MPI_PIN_DOMAIN=[{masks}]")
             else:
@@ -249,30 +264,14 @@ class LocalHPLApplication(HPLApplication):
         return text
 
     def prior_records(self, path: Path) -> list[dict[str, Any]]:
-        """Finished runs from another run group's evaluations.jsonl, for
-        seeding a new run group whose space added launch knobs: a knob the
-        old record lacks gets its fixed value or default -- what the old run
-        actually used. Used via ``experiment.priors`` (see autotune_local)."""
-        final: dict[int, dict[str, Any]] = {}
-        for line in path.read_text().splitlines():
-            if line.strip():
-                rec = json.loads(line)
-                if rec.get("status") in common.TERMINAL_STATES and rec.get("attempt"):
-                    final[int(rec["attempt"])] = rec
-        space = ParameterSpace(self.tunable_parameters)
-        records = []
-        for attempt in sorted(final):
-            rec = dict(final[attempt])
-            config = dict(rec["configuration"])
+        """Finished runs of another run group (``experiment.priors``); a launch
+        knob an old run predates gets its fixed value or default -- what that
+        run actually used."""
+        def fill(_record: dict[str, Any], config: dict[str, Any]) -> None:
             for name, (_, default) in self.LAUNCH_PARAMETERS.items():
                 config.setdefault(name, self.fixed_values.get(name, default))
-            config = self.resolve_configuration(config)
-            space.validate(config)
-            rec["configuration"] = config
-            rec["job_id"] = None
-            rec.setdefault("metadata", {})["imported_from"] = f"{path}#attempt={attempt}"
-            records.append(rec)
-        return records
+
+        return autotune_local.import_evaluations(self, path, fill)
 
     def parse_result(self, output: str) -> dict[str, Any]:
         parsed = super().parse_result(output)
@@ -302,15 +301,22 @@ class IntelHPLApplication(LocalHPLApplication):
     * ``MEM_POLICY``: with GRID=1x1 the matrix lands almost entirely on NUMA
       node 0 (measured 50.6 of 50.9 GiB); "interleave" spreads it
       (numactl --interleave=all).
-    * ``HPL_LARGEPAGE`` 0/1: 1 maps memory with explicit 2 MB huge pages
-      (hugetlbfs) and fails ("Memory Allocation Error") unless enough are
-      reserved (vm.nr_hugepages), so the job checks first and fails in
-      seconds. At 0 Intel's HPL already backs ~all memory with THP.
-    * ``HPL_LOG`` 0/1/2 (recorded, not tuned): 2 is the most informative --
-      every process-column root prints progress, plus solve start/end times.
-      Unset behaves like 1.
-    * ``HUGEPAGES`` (glibc THP hint) is kept only so older records still fit;
-      Intel's HPL uses THP itself.
+    * Intel HPL environment knobs (semantics from the binary's
+      mkl_mplinpack_ginit; see hpl/README.md): ``HPL_HT`` (use hyperthreads;
+      pin domains / HPL_HOST_CORE then include the siblings),
+      ``HPL_NUMTHREADS`` (threads per rank: all, all-1/-2/-4, 3/4, 1/2),
+      ``HPL_PAIR`` x ``HPL_UMODE`` (update thread grouping / tiling),
+      ``HPL_SWAPWIDTH``, ``HPL_SWAPTHRESHOLD``, and ``HPL_LARGEPAGE``
+      (-1 THP off, 0 THP, 1 hugetlbfs: the job reserves the 2 MB pages it
+      needs, matrix + 5% + 8 GB, and releases them on exit). ``HPL_LOG`` is recorded, not tuned
+      (2 = most informative). Left out on purpose: HPL_HOST_LARGEPAGE (same
+      as HPL_LARGEPAGE without offload), HPL_NUMPFACTS / HPL_SORTMODE /
+      HPL_MEM_AFFINITY (no effect), HPL_HBM / HPL_MIC_* / HPL_PFACT_INFO
+      (not this hardware), MKL_ENABLE_INSTRUCTIONS (can only force older
+      kernels).
+    * ``UNCORE_MAX_MHZ``: machine-wide uncore frequency cap, set per job and
+      restored after (``manage_uncore = False`` leaves the uncore alone, for
+      callers that control it themselves, e.g. system_ab.sh).
 
     NB spans 256-2048 (Intel recommends 1536 on 4th-gen Xeon Scalable).
     """
@@ -323,10 +329,18 @@ class IntelHPLApplication(LocalHPLApplication):
     LAUNCH_PARAMETERS: dict[str, tuple[list[Any], Any]] = {
         "GRID": (["1x1", "1x2", "2x1", "2x2", "1x4", "4x1", "2x4", "4x2"], "1x1"),
         "MEM_POLICY": (["default", "interleave"], "default"),
-        "HPL_LARGEPAGE": ([0, 1], 0),
+        # Intel HPL environment knobs (defaults = Intel's defaults, i.e. what
+        # runs without them used). Semantics: hpl/README.md.
+        "HPL_HT": ([0, 1], 0),                   # 1: also use the 2nd hyperthread of each core
+        "HPL_NUMTHREADS": (["all", "-1", "-2", "-4", "3/4", "1/2"], "all"),  # threads per rank
+        "HPL_PAIR": ([1, 2, 4, 8], 1),           # update threads per group
+        "HPL_UMODE": ([1, 2], 2),                # update tiling (only matters with HPL_PAIR > 1)
+        "HPL_SWAPWIDTH": ([64, 128, 192], 192),  # row-swap piece width (192 = max on SPR/EMR)
+        "HPL_SWAPTHRESHOLD": ([0, 25, 50, 75, 100], 100),  # % of matrix left at which swap algorithm switches
+        "HPL_LARGEPAGE": ([-1, 0, 1], 0),        # -1 THP off, 0 THP (madvise), 1 hugetlbfs (job reserves pages)
         "HPL_LOG": ([0, 1, 2], 2),
-        # Kept for record compatibility; Intel's HPL already uses THP itself.
-        "HUGEPAGES": (["off", "thp"], "off"),
+        # 2500 = hardware default (uncapped); 800 = hardware minimum.
+        "UNCORE_MAX_MHZ": ([2500, 2000, 1600, 1400, 1200, 1000, 800], 2500),
     }
 
     def resolve_configuration(self, configuration: dict[str, Any]) -> dict[str, Any]:
@@ -336,110 +350,129 @@ class IntelHPLApplication(LocalHPLApplication):
         resolved.update({"P": p, "Q": q, "RANKS": p * q})
         return resolved
 
+    #: Set the uncore cap per job (False: leave it to the caller).
+    manage_uncore = True
+    #: System paths the job touches (overridable for tests).
+    UNCORE_SYSFS = autotune_local.UNCORE_SYSFS
+    HUGEPAGE_PATHS = {"nr_hugepages": autotune_local.NR_HUGEPAGES, "meminfo": autotune_local.MEMINFO,
+                      "drop_caches": autotune_local.DROP_CACHES, "compact_memory": autotune_local.COMPACT_MEMORY}
+
     def launch_lines(self, configuration: dict[str, Any]) -> list[str]:
-        c = {name: configuration.get(name, default) for name, (_, default) in self.LAUNCH_PARAMETERS.items()}
+        c = self._launch_values(configuration)
         p, q = (int(v) for v in str(c["GRID"]).split("x"))
         ranks = p * q
-        numa = _numa_cores()                        # NUMA nodes -> physical cores (SNC-aware)
-        n_numa = len(numa)
-
-        def mask(cpus: list[int]) -> str:
-            return hex(sum(1 << cpu for cpu in cpus))
-
+        rank_cpus, placement = self._placement(ranks, int(c["HPL_HT"]) != 0, str(c["GRID"]))
         lines = [
+            *autotune_local.cleanup_header(),
             "for v in $(compgen -e | grep '^I_MPI_PIN'); do unset \"$v\"; done",
             "export I_MPI_DEBUG=4",
             "export I_MPI_PIN=1",
             # The runner pins these to 1 for the MPI-only netlib build; Intel's
             # HPL must be free to thread across its cores.
             "unset OMP_NUM_THREADS MKL_NUM_THREADS",
-            f"export HPL_LOG={int(c['HPL_LOG'])} HPL_LARGEPAGE={int(c['HPL_LARGEPAGE'])}",
+            # Intel's HPL puts its memory on THP itself; no glibc hint.
+            "unset GLIBC_TUNABLES",
+            *placement,
+            *self._env_lines(c, per_rank=len(rank_cpus[0])),
         ]
-        if ranks <= n_numa:
-            if n_numa % ranks:
-                raise ValueError(f"GRID {c['GRID']}: {n_numa} NUMA nodes do not split evenly over {ranks} ranks")
-            numa_per_rank = n_numa // ranks
-            groups = [sum(numa[r * numa_per_rank:(r + 1) * numa_per_rank], []) for r in range(ranks)]
-            lines += [
-                # Each rank's pin domain = the cores of the NUMA node(s) it owns.
-                "export I_MPI_PIN_DOMAIN=[" + ",".join(mask(g) for g in groups) + "]",
-                f"export NUMA_PER_MPI={numa_per_rank}",
-            ]
-            pick = ('export HPL_HOST_NODE=$((r * NUMA_PER_MPI))-$(((r + 1) * NUMA_PER_MPI - 1))\n'
-                    'echo "intel_rank: rank $r HPL_HOST_NODE=$HPL_HOST_NODE"')
-        else:
-            if ranks % n_numa:
-                raise ValueError(f"GRID {c['GRID']}: {ranks} ranks do not split evenly over {n_numa} NUMA nodes")
-            per_numa = ranks // n_numa
-            blocks = []
-            for cores in numa:
-                size = len(cores) // per_numa
-                blocks += [cores[i * size:(i + 1) * size] for i in range(per_numa)]
-            lines.append("export I_MPI_PIN_DOMAIN=[" + ",".join(mask(b) for b in blocks) + "]")
-            table = " ".join(f"{b[0]}-{b[-1]}" for b in blocks)
-            pick = (f"cores=({table})\n"
-                    'export HPL_HOST_CORE=${cores[$r]}\n'
-                    'echo "intel_rank: rank $r HPL_HOST_CORE=$HPL_HOST_CORE"')
-        lines += [
-            "cat > \"$RUNDIR/intel_rank.sh\" <<'RANK'",
-            "#!/bin/bash",
-            "r=${MPI_LOCALRANKID:-${PMI_RANK:-0}}",
-            *pick.split("\n"),
-            'exec "$@"',
-            "RANK",
-            "chmod +x \"$RUNDIR/intel_rank.sh\"",
-        ]
-        if int(c["HPL_LARGEPAGE"]):
-            need_mb = int(configuration["N"]) ** 2 * 8 // 2**20 * 105 // 100
-            lines += [
-                "free_mb=$(( $(awk '/HugePages_Free/{print $2}' /proc/meminfo) * "
-                "$(awk '/Hugepagesize/{print $2}' /proc/meminfo) / 1024 ))",
-                f'if [ "$free_mb" -lt {need_mb} ]; then echo "HPL_LARGEPAGE=1 needs ~{need_mb} MB of reserved '
-                'huge pages, only ${free_mb} MB free (vm.nr_hugepages); skipping run"; exit 1; fi',
-            ]
-        if c["HUGEPAGES"] == "thp":
-            lines.append("export GLIBC_TUNABLES=glibc.malloc.hugetlb=1")
-        else:
-            lines.append("unset GLIBC_TUNABLES")
+        if int(c["HPL_LARGEPAGE"]) == 1:
+            # hugetlbfs pages for matrix + 5%, plus 8 GB: Intel's HPL also
+            # puts its work buffers on them first (N=30k failed with 5% + 64).
+            n = int(configuration["N"])
+            lines += autotune_local.hugepage_lines(n * n * 8 // 2**21 * 105 // 100 + 4096, **self.HUGEPAGE_PATHS)
+        if self.manage_uncore:
+            lines += autotune_local.uncore_lines(int(c["UNCORE_MAX_MHZ"]), self.UNCORE_SYSFS)
         prefix = self._MEM_POLICY_PREFIX[c["MEM_POLICY"]]
         lines.append(f"{self.mpirun} -np {ranks} -perhost {ranks} \"$RUNDIR/intel_rank.sh\" {prefix}{self.executable}")
         return lines
 
+    def _placement(self, ranks: int, ht: bool, grid: str) -> tuple[list[list[int]], list[str]]:
+        """Each rank's logical CPUs, and the shell lines that pin it there.
 
-def _build_local_hpl(config: ExperimentConfig) -> LocalHPLApplication:
-    return LocalHPLApplication.for_benchmark(
-        executable=os.path.expandvars(config.executable) if config.executable else None,
-        node_memory_bytes=config.node_memory_bytes,
-        memory_factor=config.memory_factor,
-        memory_fraction_bounds=config.memory_fraction_bounds,
-        ntasks=config.slurm.ntasks,
-        tunable=config.tunable,
-        fixed=config.fixed,
-    )
+        Up to one rank per NUMA node: Intel's ``HPL_HOST_NODE``. More ranks
+        split every node's cores into equal blocks given via ``HPL_HOST_CORE``.
+        With ``HPL_HT`` a rank also gets its cores' sibling hyperthreads.
+        """
+        numa = _numa_cores()                        # NUMA nodes -> physical cores (SNC-aware)
+        siblings = {threads[0]: threads for cores in _cpu_topology() for threads in cores}
+
+        def cpus_of(cores: list[int]) -> list[int]:
+            return sorted(cpu for core in cores for cpu in (siblings[core] if ht else [core]))
+
+        n_numa = len(numa)
+        if ranks <= n_numa:
+            if n_numa % ranks:
+                raise ValueError(f"GRID {grid}: {n_numa} NUMA nodes do not split evenly over {ranks} ranks")
+            per_rank = n_numa // ranks
+            rank_cpus = [cpus_of(sum(numa[r * per_rank:(r + 1) * per_rank], [])) for r in range(ranks)]
+            env = [f"export NUMA_PER_MPI={per_rank}"]
+            pick = ["export HPL_HOST_NODE=$((r * NUMA_PER_MPI))-$(((r + 1) * NUMA_PER_MPI - 1))",
+                    'echo "intel_rank: rank $r HPL_HOST_NODE=$HPL_HOST_NODE"']
+        else:
+            if ranks % n_numa:
+                raise ValueError(f"GRID {grid}: {ranks} ranks do not split evenly over {n_numa} NUMA nodes")
+            per_numa = ranks // n_numa
+            rank_cpus = []
+            for cores in numa:
+                size = len(cores) // per_numa
+                rank_cpus += [cpus_of(cores[i * size:(i + 1) * size]) for i in range(per_numa)]
+            env = []
+            pick = [f"cores=({' '.join(_cpulist(cpus) for cpus in rank_cpus)})",
+                    "export HPL_HOST_CORE=${cores[$r]}",
+                    'echo "intel_rank: rank $r HPL_HOST_CORE=$HPL_HOST_CORE"']
+        lines = [
+            # Each rank's MPI pin domain = the CPUs it owns.
+            "export I_MPI_PIN_DOMAIN=[" + ",".join(_mask(cpus) for cpus in rank_cpus) + "]",
+            *env,
+            # Intel's runme_intel64_prv equivalent: tell each rank what it owns.
+            "cat > \"$RUNDIR/intel_rank.sh\" <<'RANK'",
+            "#!/bin/bash",
+            "r=${MPI_LOCALRANKID:-${PMI_RANK:-0}}",
+            *pick,
+            'exec "$@"',
+            "RANK",
+            "chmod +x \"$RUNDIR/intel_rank.sh\"",
+        ]
+        return rank_cpus, lines
+
+    @staticmethod
+    def _env_lines(c: dict[str, Any], per_rank: int) -> list[str]:
+        """Intel HPL's environment knobs; HPL_NUMTHREADS is relative to the
+        ``per_rank`` logical CPUs each rank owns."""
+        threads = {"all": None, "-1": per_rank - 1, "-2": per_rank - 2, "-4": per_rank - 4,
+                   "3/4": per_rank * 3 // 4, "1/2": per_rank // 2}[str(c["HPL_NUMTHREADS"])]
+        names = ("HPL_LOG", "HPL_LARGEPAGE", "HPL_HT", "HPL_PAIR", "HPL_UMODE", "HPL_SWAPWIDTH", "HPL_SWAPTHRESHOLD")
+        return [
+            "export " + " ".join(f"{k}={int(c[k])}" for k in names),
+            f"export HPL_NUMTHREADS={max(threads, 1)}" if threads is not None else "unset HPL_NUMTHREADS",
+        ]
 
 
-common.register_application("hpl_local", _build_local_hpl)
+def _factory(cls: type[LocalHPLApplication]):
+    def build(config: ExperimentConfig) -> LocalHPLApplication:
+        return cls.for_benchmark(
+            executable=os.path.expandvars(config.executable) if config.executable else None,
+            node_memory_bytes=config.node_memory_bytes,
+            memory_factor=config.memory_factor,
+            memory_fraction_bounds=config.memory_fraction_bounds,
+            ntasks=config.slurm.ntasks,
+            tunable=config.tunable,
+            fixed=config.fixed,
+        )
+    return build
 
 
-def _build_intel_hpl(config: ExperimentConfig) -> IntelHPLApplication:
-    return IntelHPLApplication.for_benchmark(
-        executable=os.path.expandvars(config.executable) if config.executable else None,
-        node_memory_bytes=config.node_memory_bytes,
-        memory_factor=config.memory_factor,
-        memory_fraction_bounds=config.memory_fraction_bounds,
-        ntasks=config.slurm.ntasks,
-        tunable=config.tunable,
-        fixed=config.fixed,
-    )
+common.register_application("hpl_local", _factory(LocalHPLApplication))
+common.register_application("hpl_intel", _factory(IntelHPLApplication))
 
 
-common.register_application("hpl_intel", _build_intel_hpl)
-
-
-
+# HPC-Tools checks P*Q against the fixed slurm.ntasks, but these applications
+# tune the rank count. HPC-Tools has no hook for this, and a local change to
+# the HPC-Tools submodule would be reset by setup_env.sh's
+# `git submodule update --remote` on every runner start, so the check is
+# replaced here instead.
 def _validate_grid(config: dict[str, Any], slurm: Any) -> None:
-    """HPC-Tools checks P*Q against the fixed slurm.ntasks; with a tunable
-    rank count the grid has to match the evaluation's RANKS instead."""
+    """The grid must match the evaluation's RANKS (slurm.ntasks if absent)."""
     ranks = int(config.get("RANKS", slurm.ntasks))
     if int(config["P"]) * int(config["Q"]) != ranks:
         raise ValueError(f"HPL grid {config['P']} x {config['Q']} does not match {ranks} ranks")

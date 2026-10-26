@@ -21,7 +21,7 @@ Run as root (`sudo`). "Now" is the measured state.
 | `numad` (userspace NUMA balancer, ~26% of a CPU) | running | `systemctl stop numad` | `systemctl start numad` |
 | Uncore (mesh/LLC/memory controller) frequency | floats 0.8–2.5 GHz (~1.6 under HPL) | Try capping max at 2.0, then 1.6, then 1.2 GHz so more of the 250 W goes to the cores: `for d in /sys/devices/system/cpu/intel_uncore_frequency/package_0*_die_00; do echo 2000000 > $d/max_freq_khz; done` | `echo 2500000 > .../max_freq_khz` |
 | CPU frequency governor | `performance`, min=max=4.1 GHz | (already right) | — |
-| Kubernetes noise (cluster broken since 2026-09-29, crash-looping, ~0.75 CPU across all cores) | unconfined | Confine it to core 0 (CPUs 0,64): `for u in kubepods.slice kubelet.service containerd.service; do systemctl set-property --runtime $u AllowedCPUs=0,64; done` | `for u in kubepods.slice kubelet.service containerd.service; do systemctl revert $u; done` |
+| Kubernetes noise (cluster broken since 2026-09-29, crash-looping, ~0.75 CPU across all cores) | kubelet + containerd confined to 0,64 (since 2026-10-16); pods unconfined | Confine kubelet and containerd to core 0 (CPUs 0,64): `for u in kubelet.service containerd.service; do systemctl set-property --runtime $u AllowedCPUs=0,64; done`. `kubepods.slice` (the pods: apiserver, etcd, ...) is a kubelet-managed transient unit and the kubelet resets its `AllowedCPUs` to 0-127, so confining it does not stick | `for u in kubelet.service containerd.service; do systemctl set-property --runtime $u AllowedCPUs=; done`. **Never `systemctl revert kubepods.slice`**: it deletes the kubelet's own transient limits (CPUWeight, MemoryMax, TasksMax) |
 | Transparent huge pages | `madvise` | Leave it: Intel HPL already puts ~all its memory on THP | — |
 | Reserved huge pages (only for `HPL_LARGEPAGE=1`) | 0 | See below | `sysctl -w vm.nr_hugepages=0` |
 | Page cache before large-N runs | 600+ GB cached | `sync; echo 3 > /proc/sys/vm/drop_caches; echo 1 > /proc/sys/vm/compact_memory` | not needed |
@@ -54,6 +54,7 @@ Run as root (`sudo`). "Now" is the measured state.
 | C-states (C6, C1E) | Default, or disable for consistency | Little effect under full load; disabling can steady turbo between runs |
 | Fan profile | **Maximum / full speed** | A cooler die leaks less, so more MHz within the same 250 W (currently ~60–68 °C under HPL) |
 | Patrol scrub / memory power-down | Disable for benchmarking | Removes background memory activity |
+| SNC2 for STREAM | Test it | STREAM is at 72% of the 665.6 GB/s peak, and still gaining at the 2.5 GHz uncore maximum (mesh-bound). SNC2 keeps traffic on each half of the chip. The tuner's default first-touch policy and MPI `numa` pin domain then follow the 4 nodes on their own |
 
 ## 3. Checking whether a change helped
 

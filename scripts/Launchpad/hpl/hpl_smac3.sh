@@ -40,10 +40,26 @@ export INTEL_HPL_EXE
 export MKL_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
+# Each Intel HPL job sets the uncore frequency cap (UNCORE_MAX_MHZ) and puts
+# back what it found; as a safety net, also restore the cap this runner
+# started with when it exits (Ctrl-C, tmux kill-session, error).
+UNC_DIRS=(/sys/devices/system/cpu/intel_uncore_frequency/package_*_die_*)
+UNC_FOUND=(); for d in "${UNC_DIRS[@]}"; do UNC_FOUND+=("$(cat "$d/max_freq_khz")"); done
+restore_uncore() {
+    local i=0
+    for d in "${UNC_DIRS[@]}"; do echo "${UNC_FOUND[$i]}" | sudo -n tee "$d/max_freq_khz" >/dev/null; i=$((i + 1)); done
+    echo "uncore max restored to ${UNC_FOUND[*]} kHz"
+}
+trap restore_uncore EXIT
+trap 'exit 130' INT
+trap 'exit 129' HUP
+trap 'exit 143' TERM
+
 CONFIG="${1:-scripts/Launchpad/hpl/hpl_smac3.yaml}"
 
 echo "HPL: $INTEL_HPL_EXE (Intel) / $HPL_EXE (netlib)"
 echo "mpirun: $(command -v mpirun)"
+echo "uncore max at start: ${UNC_FOUND[*]} kHz"
 
 while true; do
     python scripts/Launchpad/hpl/hpl_autotune.py --config "$CONFIG"
