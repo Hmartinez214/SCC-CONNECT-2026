@@ -1,0 +1,43 @@
+# SMAC3 MFC autotuning on the Launchpad node, driven by
+# scripts/Launchpad/mfc/mfc_autotune.py (see its docstring for the space).
+#
+# Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+# On first start the run group is seeded with the matching runmfc.sh results
+# under experiment.priors (same case, GBPP and STEPS; e.g. from
+# `mfcvariants.sh --run --gbpp 16 --steps 50`), so SMAC starts from them.
+#
+# Use a new run_group after changing the case, GBPP/STEPS or the space.
+
+experiment:
+  name: mfc-launchpad-smac3
+  optimizer: smac3
+  run_group: mfc_smac3
+  budget: 1000000000
+  seed: 42
+  priors: outputs/mfc_runs
+
+objective:
+  metric: throughput        # 1 / grind time: G gp*eq*rhs per second
+  direction: maximize
+
+application:
+  type: mfc_local
+  executable: 5eq_rk3_weno3_hllc   # case: a cases.yaml slug or a case.py path
+  tunable:
+    - CASE_OPT
+    - FASTMATH
+    - RDMA_MPI
+    - BIND
+  fixed:
+    PRECISION: double   # tuner does not check answers; compare finalists with mfccheck.py
+    RANKS: 2
+    GBPP: 16
+    STEPS: 50
+
+# Reused by the local scheduler: time is the per-run wall limit (build of a
+# new variant + run); runs over it are killed and recorded as TIMEOUT.
+slurm:
+  nodes: 1
+  ntasks: 2
+  time: "01:00:00"
+  submit_retries: 3

@@ -1,0 +1,47 @@
+# SMAC3 tuning of the IGR solver settings and the HPC-X UCX transport on the
+# igr benchmark, on top of the best build from mfc_smac3_igr (case-opt on,
+# fastmath off). Driven by mfc_autotune.py; run between the cases of the
+# examples sweep (mfc_smac3_all.sh BETWEEN hook, see README) or alone:
+#
+#   venv/bin/python scripts/Launchpad/mfc/mfc_autotune.py --config scripts/Launchpad/mfc/mfc_igr_extra.yaml
+#
+# IGR_ITER_SOLVER and NUM_IGR_ITERS change the numerics, so the tuner's best
+# configuration must pass mfccheck.py compare against the case's own settings
+# before it is used. RDMA_MPI and BIND stay tunable: the UCX settings matter
+# most for GPU-direct transfers, and igr was the case where pinning helped.
+
+experiment:
+  name: mfc-igr-extra
+  optimizer: smac3
+  run_group: mfc_igr_extra
+  budget: 150
+  seed: 42
+
+objective:
+  metric: throughput        # 1 / grind time: G gp*eq*rhs per second
+  direction: maximize
+
+application:
+  type: mfc_local
+  executable: igr
+  tunable:
+    - IGR_ITER_SOLVER
+    - NUM_IGR_ITERS
+    - UCX_TLS
+    - UCX_RNDV_THRESH
+    - UCX_RNDV_SCHEME
+    - RDMA_MPI
+    - BIND
+  fixed:
+    CASE_OPT: "on"
+    FASTMATH: "off"
+    PRECISION: double
+    RANKS: 2
+    GBPP: 16
+    STEPS: 50
+
+slurm:
+  nodes: 1
+  ntasks: 2
+  time: "01:00:00"
+  submit_retries: 3

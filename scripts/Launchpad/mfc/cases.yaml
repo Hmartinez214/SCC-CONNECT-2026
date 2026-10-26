@@ -1,0 +1,56 @@
+# Named MFC cases for runmfc.sh / mfcvariants.sh / mfc_autotune.py.
+#
+#   slug: name to pass instead of a case.py path
+#   path: case file, relative to libs/clone/MFC (or absolute)
+#   args: arguments always passed to the case script (before any given on
+#         the command line)
+#
+# The benchmarks/ cases take --gbpp (GB of GPU memory per rank; sets the grid,
+# which grows with the rank count) and --steps (time steps). Add the
+# competition case(s) here when they are known.
+
+- slug: 5eq_rk3_weno3_hllc
+  path: benchmarks/5eq_rk3_weno3_hllc/case.py
+  args: []
+
+- slug: 5eq_rk3_weno3_hll
+  path: benchmarks/5eq_rk3_weno3_hll/case.py
+  args: []
+
+- slug: 5eq_rk3_weno3_lf
+  path: benchmarks/5eq_rk3_weno3_lf/case.py
+  args: []
+
+- slug: viscous_weno5_sgb_acoustic
+  path: benchmarks/viscous_weno5_sgb_acoustic/case.py
+  args: []
+
+- slug: ibm
+  path: benchmarks/ibm/case.py
+  args: []
+
+- slug: hypo_hll
+  path: benchmarks/hypo_hll/case.py
+  args: []
+
+- slug: igr
+  path: benchmarks/igr/case.py
+  args: []
+
+# MFC examples/ (fixed grids; no --gbpp/--steps arguments, so `steps: param`
+# makes runmfc.sh set t_step_start/stop/save instead).
+- slug: 3D_TaylorGreenVortex          # 256^3, viscous
+  path: examples/3D_TaylorGreenVortex/case.py
+  steps: param
+
+- slug: 3D_rayleigh_taylor            # 100 x 1200 x 100, viscous + gravity
+  path: examples/3D_rayleigh_taylor/case.py
+  steps: param
+
+- slug: 3D_shockdroplet               # 200 x 100 x 100, 2-fluid shock-droplet
+  path: examples/3D_shockdroplet/case.py
+  steps: param
+
+- slug: 3D_performance_test           # 200^3
+  path: examples/3D_performance_test/case.py
+  steps: param

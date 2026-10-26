@@ -1,0 +1,40 @@
+# Exhaustive sweep: every combination of the 4 build/launch variables
+# (2 x 2 x 2 x 3 = 24 runs) per case, in a seeded random order, driven by
+# mfc_autotune.py's grid mode. SMAC (mfc_smac3.yaml) stops after 21-23 of the
+# 24; this runs all of them. Run group per case: mfc_grid_<slug>.
+#
+#   scripts/Launchpad/mfc/mfc_smac3_all.sh --examples --shuffle 2 --prune-builds   (with CONFIG=this file)
+#   venv/bin/python scripts/Launchpad/mfc/mfc_autotune.py --config scripts/Launchpad/mfc/mfc_grid.yaml --case 2D_shockbubble
+#
+# A restart replays the log and continues with the next untried combination.
+
+experiment:
+  name: mfc-launchpad-grid
+  optimizer: grid
+  run_group: mfc_grid
+  budget: 24
+  seed: 42
+
+objective:
+  metric: throughput        # 1 / grind time: G gp*eq*rhs per second
+  direction: maximize
+
+application:
+  type: mfc_local
+  executable: 5eq_rk3_weno3_hllc   # replaced by --case
+  tunable:
+    - CASE_OPT
+    - FASTMATH
+    - RDMA_MPI
+    - BIND
+  fixed:
+    PRECISION: double
+    RANKS: 2
+    GBPP: 16
+    STEPS: 50
+
+slurm:
+  nodes: 1
+  ntasks: 2
+  time: "01:00:00"
+  submit_retries: 3

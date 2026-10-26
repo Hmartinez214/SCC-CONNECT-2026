@@ -37,6 +37,11 @@ _mfc_prepend LD_LIBRARY_PATH "$NVHPC/cuda/lib64"
 [ -n "$_mfc_mathlib" ] && _mfc_prepend LD_LIBRARY_PATH "$_mfc_mathlib"
  
 export CC=nvc CXX=nvc++ FC=nvfortran
- 
+
+# Generate GPU code for the H100s (sm_90) explicitly; MFC passes -gpu=cc$MFC_CUDA_CC.
+# Read when CMake configures a build directory, so an existing build only
+# picks it up after `buildmfc.sh --clean`.
+export MFC_CUDA_CC="${MFC_CUDA_CC:-90}"
+
 unset -f _mfc_prepend
 unset _mfc_mathlib
