@@ -12,6 +12,7 @@ spack.lock
 
 outputs/*
 !outputs/README.md
+!outputs/best/
 venv
 
 simulations/*/gfs/

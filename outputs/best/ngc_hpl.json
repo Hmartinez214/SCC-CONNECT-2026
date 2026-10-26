@@ -1,0 +1,29 @@
+{
+  "unit": "GFLOPS (2x H100 NVL)",
+  "top": [
+    {
+      "objective": 69150.0,
+      "per_gpu_gflops": 34580.0,
+      "configuration": {
+        "N": 136192,
+        "NB": 1024,
+        "P": 2,
+        "Q": 1
+      },
+      "seconds": 24.35,
+      "log": "outputs/ngc_hpl/20261026_065743.log"
+    },
+    {
+      "objective": 68800.0,
+      "per_gpu_gflops": 34400.0,
+      "configuration": {
+        "N": 144384,
+        "NB": 1024,
+        "P": 2,
+        "Q": 1
+      },
+      "seconds": 29.16,
+      "log": "outputs/ngc_hpl/20261026_065846.log"
+    }
+  ]
+}

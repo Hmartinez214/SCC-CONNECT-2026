@@ -1,0 +1,4718 @@
+{
+  "unit": "throughput (1/grind time; grind_ns in metrics)",
+  "run_groups": [
+    "mfc_grid_0D_bubblecollapse_adap",
+    "mfc_grid_1D_acoustic_dipole",
+    "mfc_grid_1D_acoustic_gauss_sigmadist",
+    "mfc_grid_1D_acoustic_gauss_sigmatime",
+    "mfc_grid_1D_acoustic_sine_frequency",
+    "mfc_grid_1D_acoustic_sine_wavelength",
+    "mfc_grid_1D_advection_convergence",
+    "mfc_grid_1D_brio_wu",
+    "mfc_grid_1D_brio_wu_hlld",
+    "mfc_grid_1D_brio_wu_rmhd",
+    "mfc_grid_1D_bubblescreen",
+    "mfc_grid_1D_conduction_convergence",
+    "mfc_grid_1D_convergence",
+    "mfc_grid_1D_dai_woodward",
+    "mfc_grid_1D_dai_woodward_hlld",
+    "mfc_grid_1D_euler_convergence",
+    "mfc_grid_1D_exp_bubscreen",
+    "mfc_grid_1D_exp_tube_phasechange",
+    "mfc_grid_1D_flamelet",
+    "mfc_grid_1D_hypo_2materials",
+    "mfc_grid_1D_impact",
+    "mfc_grid_1D_inert_shocktube",
+    "mfc_grid_1D_isentropic_release",
+    "mfc_grid_1D_kapilashocktube",
+    "mfc_grid_1D_laxshocktube",
+    "mfc_grid_1D_mg_acoustic",
+    "mfc_grid_1D_mg_impact",
+    "mfc_grid_1D_mhd_smooth_alfven_wave",
+    "mfc_grid_1D_poly_bubscreen",
+    "mfc_grid_1D_propellant_flame",
+    "mfc_grid_1D_qbmm",
+    "mfc_grid_1D_reactive_burn",
+    "mfc_grid_1D_reactive_shocktube",
+    "mfc_grid_1D_shuosher_analytical",
+    "mfc_grid_1D_shuosher_old",
+    "mfc_grid_1D_shuosher_teno5",
+    "mfc_grid_1D_shuosher_teno7",
+    "mfc_grid_1D_shuosher_wenojs5",
+    "mfc_grid_1D_shuosher_wenom5",
+    "mfc_grid_1D_shuosher_wenoz5",
+    "mfc_grid_1D_sodHypo",
+    "mfc_grid_1D_sod_convergence",
+    "mfc_grid_1D_sodshocktube",
+    "mfc_grid_1D_sodshocktube_muscl",
+    "mfc_grid_1D_titarevtorro",
+    "mfc_grid_1D_titarevtorro_analytical",
+    "mfc_grid_1D_vacuum",
+    "mfc_grid_1D_vacuum_restart",
+    "mfc_grid_2D_5wave_quasi1D",
+    "mfc_grid_2D_GreshoVortex",
+    "mfc_grid_2D_IGR_2fluid",
+    "mfc_grid_2D_IGR_triple_point",
+    "mfc_grid_2D_TaylorGreenVortex",
+    "mfc_grid_2D_Thermal_Flatplate",
+    "mfc_grid_2D_acoustic_broadband",
+    "mfc_grid_2D_acoustic_pulse",
+    "mfc_grid_2D_acoustic_pulse_analytical",
+    "mfc_grid_2D_acoustic_support10_axisym",
+    "mfc_grid_2D_acoustic_support2",
+    "mfc_grid_2D_acoustic_support5",
+    "mfc_grid_2D_acoustic_support6_axisym",
+    "mfc_grid_2D_acoustic_support9",
+    "mfc_grid_2D_advection",
+    "mfc_grid_2D_advection_convergence",
+    "mfc_grid_2D_advection_muscl",
+    "mfc_grid_2D_axisym_conduction_convergence",
+    "mfc_grid_2D_axisym_hypo_hlld",
+    "mfc_grid_2D_axisym_hypoelasticity",
+    "mfc_grid_2D_axisym_shockbubble",
+    "mfc_grid_2D_axisym_shockwatercavity",
+    "mfc_grid_2D_bc_patch_geometry",
+    "mfc_grid_2D_cont_damage",
+    "mfc_grid_2D_hardcoded_ic",
+    "mfc_grid_2D_herschel_bulkley_poiseuille_nn",
+    "mfc_grid_2D_hybrid_slab",
+    "mfc_grid_2D_hypo_hlld",
+    "mfc_grid_2D_hypo_shear_contact",
+    "mfc_grid_2D_ibm",
+    "mfc_grid_2D_ibm_airfoil",
+    "mfc_grid_2D_ibm_burning_grain",
+    "mfc_grid_2D_ibm_cfl_dt",
+    "mfc_grid_2D_ibm_ellipse",
+    "mfc_grid_2D_ibm_flameholder",
+    "mfc_grid_2D_ibm_multiphase",
+    "mfc_grid_2D_ibm_poiseuille_nn",
+    "mfc_grid_2D_ibm_steady_shock",
+    "mfc_grid_2D_ibm_thin_plate_force",
+    "mfc_grid_2D_isentropicvortex",
+    "mfc_grid_2D_jet",
+    "mfc_grid_2D_laplace_pressure_jump",
+    "mfc_grid_2D_lid_driven_cavity",
+    "mfc_grid_2D_lid_driven_cavity_nn",
+    "mfc_grid_2D_lungwave",
+    "mfc_grid_2D_lungwave_horizontal",
+    "mfc_grid_2D_mhd_magnetic_vortex",
+    "mfc_grid_2D_mhd_rotor",
+    "mfc_grid_2D_mibm_cylinder_in_cross_flow",
+    "mfc_grid_2D_mibm_particle_cloud",
+    "mfc_grid_2D_mibm_shock_cylinder",
+    "mfc_grid_2D_mixing_artificial_Ma",
+    "mfc_grid_2D_orszag_tang",
+    "mfc_grid_2D_orszag_tang_hyper_cleaning",
+    "mfc_grid_2D_patch_modal_shape",
+    "mfc_grid_2D_patch_modal_shape_exp",
+    "mfc_grid_2D_poiseuille_thickening_nn",
+    "mfc_grid_2D_premixed_flame_vortex",
+    "mfc_grid_2D_premixed_landau_insta",
+    "mfc_grid_2D_probe_rerun",
+    "mfc_grid_2D_rayleigh_taylor",
+    "mfc_grid_2D_reacting_mixing_layer",
+    "mfc_grid_2D_reactive_shock_bubble",
+    "mfc_grid_2D_riemann_test",
+    "mfc_grid_2D_riemann_test_muscl",
+    "mfc_grid_2D_shearlayer",
+    "mfc_grid_2D_shock_cloud_rmhd",
+    "mfc_grid_2D_shock_flame",
+    "mfc_grid_2D_shockbubble",
+    "mfc_grid_2D_shockdroplet",
+    "mfc_grid_2D_shockdroplet_muscl",
+    "mfc_grid_2D_shocktube_phasechange",
+    "mfc_grid_2D_spatial_reacting_mixing_layer",
+    "mfc_grid_2D_synthetic_turbulence",
+    "mfc_grid_2D_triple_point",
+    "mfc_grid_2D_tumbling_rectangle",
+    "mfc_grid_2D_viscous",
+    "mfc_grid_2D_whale_bubble_annulus",
+    "mfc_grid_2D_zero_circ_vortex_analytical",
+    "mfc_grid_3D_IGR_TaylorGreenVortex",
+    "mfc_grid_3D_IGR_jet",
+    "mfc_grid_3D_TaylorGreenVortex",
+    "mfc_grid_3D_TaylorGreenVortex_analytical",
+    "mfc_grid_3D_acoustic_support11",
+    "mfc_grid_3D_acoustic_support3",
+    "mfc_grid_3D_acoustic_support7",
+    "mfc_grid_3D_brio_wu",
+    "mfc_grid_3D_hypo_hlld",
+    "mfc_grid_3D_ibm_bowshock",
+    "mfc_grid_3D_ibm_flapping_plate",
+    "mfc_grid_3D_ibm_pitchup_plate",
+    "mfc_grid_3D_mibm_periodic_collision",
+    "mfc_grid_3D_mibm_sphere_head_on_collision",
+    "mfc_grid_3D_patch_spherical_harmonic",
+    "mfc_grid_3D_performance_test",
+    "mfc_grid_3D_rayleigh_taylor",
+    "mfc_grid_3D_rayleigh_taylor_muscl",
+    "mfc_grid_3D_reacting_mixing_layer",
+    "mfc_grid_3D_rotating_sphere",
+    "mfc_grid_3D_shockdroplet",
+    "mfc_grid_3D_shockdroplet_muscl",
+    "mfc_grid_3D_sphbubcollapse",
+    "mfc_grid_nD_perfect_reactor",
+    "mfc_igr_extra",
+    "mfc_smac3",
+    "mfc_smac3_2D_lungwave",
+    "mfc_smac3_3D_TaylorGreenVortex",
+    "mfc_smac3_3D_performance_test",
+    "mfc_smac3_3D_rayleigh_taylor",
+    "mfc_smac3_3D_shockdroplet",
+    "mfc_smac3_5eq_rk3_weno3_hll",
+    "mfc_smac3_5eq_rk3_weno3_lf",
+    "mfc_smac3_hypo_hll",
+    "mfc_smac3_ibm",
+    "mfc_smac3_igr",
+    "mfc_smac3_viscous_weno5_sgb_acoustic"
+  ],
+  "best_per_case": [
+    {
+      "objective": 6.407212984088968,
+      "metrics": {
+        "grind_ns": 0.1560741,
+        "pre_exec_s": 2.7024048,
+        "sim_exec_s": 3.346276,
+        "status": "ok",
+        "throughput": 6.407212984088968
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_mhd_magnetic_vortex"
+      },
+      "run_group": "mfc_grid_2D_mhd_magnetic_vortex",
+      "attempt": 4,
+      "measured_at": "2026-10-24T18:10:39.338241+00:00"
+    },
+    {
+      "objective": 5.649126430387057,
+      "metrics": {
+        "grind_ns": 0.17701852,
+        "pre_exec_s": 2.5598226,
+        "sim_exec_s": 3.602629,
+        "status": "ok",
+        "throughput": 5.649126430387057
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shock_cloud_rmhd"
+      },
+      "run_group": "mfc_grid_2D_shock_cloud_rmhd",
+      "attempt": 10,
+      "measured_at": "2026-10-25T13:54:46.388546+00:00"
+    },
+    {
+      "objective": 5.586626822099288,
+      "metrics": {
+        "grind_ns": 0.17899889,
+        "pre_exec_s": 4.4080558,
+        "sim_exec_s": 5.0874974,
+        "status": "ok",
+        "throughput": 5.586626822099288
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_axisym_shockwatercavity"
+      },
+      "run_group": "mfc_grid_2D_axisym_shockwatercavity",
+      "attempt": 4,
+      "measured_at": "2026-10-24T08:47:54.282858+00:00"
+    },
+    {
+      "objective": 5.533909974131184,
+      "metrics": {
+        "grind_ns": 0.18070406,
+        "pre_exec_s": 38.664738,
+        "sim_exec_s": 76.6758615,
+        "status": "ok",
+        "throughput": 5.533909974131184
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "5eq_rk3_weno3_lf"
+      },
+      "run_group": "mfc_smac3_5eq_rk3_weno3_lf",
+      "attempt": 21,
+      "measured_at": "2026-10-22T19:32:26.390121+00:00"
+    },
+    {
+      "objective": 5.424785966425891,
+      "metrics": {
+        "grind_ns": 0.18433907,
+        "pre_exec_s": 25.3464429,
+        "sim_exec_s": 28.1070941,
+        "status": "ok",
+        "throughput": 5.424785966425891
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "gauss_seidel",
+        "NUM_IGR_ITERS": "1",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "put_zcopy",
+        "UCX_RNDV_THRESH": "8192",
+        "UCX_TLS": "default",
+        "case": "igr"
+      },
+      "run_group": "mfc_igr_extra",
+      "attempt": 111,
+      "measured_at": "2026-10-24T06:50:07.870908+00:00"
+    },
+    {
+      "objective": 5.085262046095866,
+      "metrics": {
+        "grind_ns": 0.1966467,
+        "pre_exec_s": 38.5300054,
+        "sim_exec_s": 75.9460182,
+        "status": "ok",
+        "throughput": 5.085262046095866
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "5eq_rk3_weno3_hll"
+      },
+      "run_group": "mfc_smac3_5eq_rk3_weno3_hll",
+      "attempt": 20,
+      "measured_at": "2026-10-22T18:24:23.722494+00:00"
+    },
+    {
+      "objective": 5.062944295512312,
+      "metrics": {
+        "grind_ns": 0.19751353,
+        "pre_exec_s": 9.8122583,
+        "sim_exec_s": 13.3990325,
+        "status": "ok",
+        "throughput": 5.062944295512312
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_IGR_jet"
+      },
+      "run_group": "mfc_grid_3D_IGR_jet",
+      "attempt": 4,
+      "measured_at": "2026-10-26T00:52:36.484598+00:00"
+    },
+    {
+      "objective": 5.025091033292886,
+      "metrics": {
+        "grind_ns": 0.19900137,
+        "pre_exec_s": 61.1314909,
+        "sim_exec_s": 142.0682991,
+        "status": "ok",
+        "throughput": 5.025091033292886
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "hypo_hll"
+      },
+      "run_group": "mfc_smac3_hypo_hll",
+      "attempt": 17,
+      "measured_at": "2026-10-22T23:36:13.431275+00:00"
+    },
+    {
+      "objective": 4.84922639806349,
+      "metrics": {
+        "grind_ns": 0.20621846,
+        "pre_exec_s": 30.0757565,
+        "sim_exec_s": 58.3136617,
+        "status": "ok",
+        "throughput": 4.84922639806349
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "5eq_rk3_weno3_hllc"
+      },
+      "run_group": "mfc_smac3",
+      "attempt": 12,
+      "measured_at": "2026-10-22T06:03:14.497668+00:00"
+    },
+    {
+      "objective": 4.632080557809963,
+      "metrics": {
+        "grind_ns": 0.21588571,
+        "pre_exec_s": 3.4114301,
+        "sim_exec_s": 4.1882402,
+        "status": "ok",
+        "throughput": 4.632080557809963
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_lungwave_horizontal"
+      },
+      "run_group": "mfc_grid_2D_lungwave_horizontal",
+      "attempt": 4,
+      "measured_at": "2026-10-25T19:32:58.802186+00:00"
+    },
+    {
+      "objective": 4.266552891922882,
+      "metrics": {
+        "grind_ns": 0.23438125,
+        "pre_exec_s": 3.466916,
+        "sim_exec_s": 4.1206297,
+        "status": "ok",
+        "throughput": 4.266552891922882
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_shockdroplet_muscl"
+      },
+      "run_group": "mfc_grid_3D_shockdroplet_muscl",
+      "attempt": 1,
+      "measured_at": "2026-10-25T09:46:49.540280+00:00"
+    },
+    {
+      "objective": 4.164253828594149,
+      "metrics": {
+        "grind_ns": 0.24013906,
+        "pre_exec_s": 5.9833335,
+        "sim_exec_s": 7.609153,
+        "status": "ok",
+        "throughput": 4.164253828594149
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_performance_test"
+      },
+      "run_group": "mfc_grid_3D_performance_test",
+      "attempt": 10,
+      "measured_at": "2026-10-24T10:11:56.412870+00:00"
+    },
+    {
+      "objective": 3.814257702922038,
+      "metrics": {
+        "grind_ns": 0.26217421,
+        "pre_exec_s": 2.7136571,
+        "sim_exec_s": 3.621547,
+        "status": "ok",
+        "throughput": 3.814257702922038
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_reactive_shock_bubble"
+      },
+      "run_group": "mfc_grid_2D_reactive_shock_bubble",
+      "attempt": 10,
+      "measured_at": "2026-10-25T04:00:03.060623+00:00"
+    },
+    {
+      "objective": 3.7655032830481745,
+      "metrics": {
+        "grind_ns": 0.26556875,
+        "pre_exec_s": 3.4028616,
+        "sim_exec_s": 4.4133828,
+        "status": "ok",
+        "throughput": 3.7655032830481745
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_shockdroplet"
+      },
+      "run_group": "mfc_grid_3D_shockdroplet",
+      "attempt": 17,
+      "measured_at": "2026-10-25T16:04:34.028784+00:00"
+    },
+    {
+      "objective": 3.7514644310339595,
+      "metrics": {
+        "grind_ns": 0.26656257,
+        "pre_exec_s": 2.6222246,
+        "sim_exec_s": 3.355143,
+        "status": "ok",
+        "throughput": 3.7514644310339595
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_orszag_tang"
+      },
+      "run_group": "mfc_grid_2D_orszag_tang",
+      "attempt": 10,
+      "measured_at": "2026-10-26T03:38:30.305827+00:00"
+    },
+    {
+      "objective": 3.310083965575921,
+      "metrics": {
+        "grind_ns": 0.30210714,
+        "pre_exec_s": 2.8334136,
+        "sim_exec_s": 3.762762,
+        "status": "ok",
+        "throughput": 3.310083965575921
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_lungwave"
+      },
+      "run_group": "mfc_grid_2D_lungwave",
+      "attempt": 17,
+      "measured_at": "2026-10-24T04:38:29.307266+00:00"
+    },
+    {
+      "objective": 3.227976901630244,
+      "metrics": {
+        "grind_ns": 0.30979156,
+        "pre_exec_s": 2.4726849,
+        "sim_exec_s": 3.5202826,
+        "status": "ok",
+        "throughput": 3.227976901630244
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_orszag_tang_hyper_cleaning"
+      },
+      "run_group": "mfc_grid_2D_orszag_tang_hyper_cleaning",
+      "attempt": 10,
+      "measured_at": "2026-10-25T02:13:15.480825+00:00"
+    },
+    {
+      "objective": 3.117787291393919,
+      "metrics": {
+        "grind_ns": 0.32074029,
+        "pre_exec_s": 2.7844875,
+        "sim_exec_s": 3.6117301,
+        "status": "ok",
+        "throughput": 3.117787291393919
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shockdroplet_muscl"
+      },
+      "run_group": "mfc_grid_2D_shockdroplet_muscl",
+      "attempt": 4,
+      "measured_at": "2026-10-25T19:19:37.306599+00:00"
+    },
+    {
+      "objective": 3.009899197271924,
+      "metrics": {
+        "grind_ns": 0.33223704,
+        "pre_exec_s": 5.4815819,
+        "sim_exec_s": 9.9622867,
+        "status": "ok",
+        "throughput": 3.009899197271924
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_rayleigh_taylor_muscl"
+      },
+      "run_group": "mfc_grid_3D_rayleigh_taylor_muscl",
+      "attempt": 4,
+      "measured_at": "2026-10-25T17:12:52.150239+00:00"
+    },
+    {
+      "objective": 2.999935051406137,
+      "metrics": {
+        "grind_ns": 0.33334055,
+        "pre_exec_s": 2.7906697,
+        "sim_exec_s": 3.80058,
+        "status": "ok",
+        "throughput": 2.999935051406137
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_IGR_TaylorGreenVortex"
+      },
+      "run_group": "mfc_grid_3D_IGR_TaylorGreenVortex",
+      "attempt": 17,
+      "measured_at": "2026-10-25T18:32:59.862487+00:00"
+    },
+    {
+      "objective": 2.8356011195066646,
+      "metrics": {
+        "grind_ns": 0.35265891,
+        "pre_exec_s": 2.6373797,
+        "sim_exec_s": 3.5184443,
+        "status": "ok",
+        "throughput": 2.8356011195066646
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shockdroplet"
+      },
+      "run_group": "mfc_grid_2D_shockdroplet",
+      "attempt": 10,
+      "measured_at": "2026-10-25T12:53:29.452897+00:00"
+    },
+    {
+      "objective": 2.514815722477008,
+      "metrics": {
+        "grind_ns": 0.39764345,
+        "pre_exec_s": 6.1470384,
+        "sim_exec_s": 12.2352688,
+        "status": "ok",
+        "throughput": 2.514815722477008
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_TaylorGreenVortex_analytical"
+      },
+      "run_group": "mfc_grid_3D_TaylorGreenVortex_analytical",
+      "attempt": 1,
+      "measured_at": "2026-10-24T19:19:25.708506+00:00"
+    },
+    {
+      "objective": 2.5145770028857286,
+      "metrics": {
+        "grind_ns": 0.3976812,
+        "pre_exec_s": 6.6360943,
+        "sim_exec_s": 12.5354316,
+        "status": "ok",
+        "throughput": 2.5145770028857286
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "3D_TaylorGreenVortex"
+      },
+      "run_group": "mfc_smac3_3D_TaylorGreenVortex",
+      "attempt": 7,
+      "measured_at": "2026-10-23T20:46:30.992867+00:00"
+    },
+    {
+      "objective": 2.417485420628925,
+      "metrics": {
+        "grind_ns": 0.41365296,
+        "pre_exec_s": 2.6955382,
+        "sim_exec_s": 3.5431738,
+        "status": "ok",
+        "throughput": 2.417485420628925
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_riemann_test_muscl"
+      },
+      "run_group": "mfc_grid_2D_riemann_test_muscl",
+      "attempt": 7,
+      "measured_at": "2026-10-25T20:02:28.143309+00:00"
+    },
+    {
+      "objective": 2.4142029685136266,
+      "metrics": {
+        "grind_ns": 0.41421538,
+        "pre_exec_s": 2.6752106,
+        "sim_exec_s": 7.2339289,
+        "status": "ok",
+        "throughput": 2.4142029685136266
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_triple_point"
+      },
+      "run_group": "mfc_grid_2D_triple_point",
+      "attempt": 7,
+      "measured_at": "2026-10-26T05:47:54.850313+00:00"
+    },
+    {
+      "objective": 2.3704682513942266,
+      "metrics": {
+        "grind_ns": 0.42185758,
+        "pre_exec_s": 2.7684746,
+        "sim_exec_s": 3.9776704,
+        "status": "ok",
+        "throughput": 2.3704682513942266
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_lid_driven_cavity"
+      },
+      "run_group": "mfc_grid_2D_lid_driven_cavity",
+      "attempt": 7,
+      "measured_at": "2026-10-24T10:27:16.277255+00:00"
+    },
+    {
+      "objective": 2.357597292440966,
+      "metrics": {
+        "grind_ns": 0.42416065,
+        "pre_exec_s": 2.6212616,
+        "sim_exec_s": 6.6985242,
+        "status": "ok",
+        "throughput": 2.357597292440966
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_IGR_triple_point"
+      },
+      "run_group": "mfc_grid_2D_IGR_triple_point",
+      "attempt": 17,
+      "measured_at": "2026-10-26T02:20:19.268426+00:00"
+    },
+    {
+      "objective": 2.3557235908897765,
+      "metrics": {
+        "grind_ns": 0.42449802,
+        "pre_exec_s": 3.10815,
+        "sim_exec_s": 4.2982099,
+        "status": "ok",
+        "throughput": 2.3557235908897765
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_sphbubcollapse"
+      },
+      "run_group": "mfc_grid_3D_sphbubcollapse",
+      "attempt": 4,
+      "measured_at": "2026-10-25T00:08:26.663663+00:00"
+    },
+    {
+      "objective": 2.352260625961016,
+      "metrics": {
+        "grind_ns": 0.42512296,
+        "pre_exec_s": 2.4584696,
+        "sim_exec_s": 3.445051,
+        "status": "ok",
+        "throughput": 2.352260625961016
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_mhd_rotor"
+      },
+      "run_group": "mfc_grid_2D_mhd_rotor",
+      "attempt": 17,
+      "measured_at": "2026-10-26T00:27:09.370291+00:00"
+    },
+    {
+      "objective": 2.3227705189134378,
+      "metrics": {
+        "grind_ns": 0.43052036,
+        "pre_exec_s": 2.6837193,
+        "sim_exec_s": 3.5976613,
+        "status": "ok",
+        "throughput": 2.3227705189134378
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_riemann_test"
+      },
+      "run_group": "mfc_grid_2D_riemann_test",
+      "attempt": 7,
+      "measured_at": "2026-10-24T16:02:34.858285+00:00"
+    },
+    {
+      "objective": 2.253527271589856,
+      "metrics": {
+        "grind_ns": 0.44374879,
+        "pre_exec_s": 37.4449164,
+        "sim_exec_s": 79.8805973,
+        "status": "ok",
+        "throughput": 2.253527271589856
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "viscous_weno5_sgb_acoustic"
+      },
+      "run_group": "mfc_smac3_viscous_weno5_sgb_acoustic",
+      "attempt": 6,
+      "measured_at": "2026-10-22T20:15:48.963737+00:00"
+    },
+    {
+      "objective": 2.051008162807387,
+      "metrics": {
+        "grind_ns": 0.4875651,
+        "pre_exec_s": 2.4718764,
+        "sim_exec_s": 3.4225728,
+        "status": "ok",
+        "throughput": 2.051008162807387
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shock_flame"
+      },
+      "run_group": "mfc_grid_2D_shock_flame",
+      "attempt": 10,
+      "measured_at": "2026-10-25T21:52:03.100689+00:00"
+    },
+    {
+      "objective": 2.0270870315424676,
+      "metrics": {
+        "grind_ns": 0.49331873,
+        "pre_exec_s": 2.8827614,
+        "sim_exec_s": 4.1675387,
+        "status": "ok",
+        "throughput": 2.0270870315424676
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_acoustic_support11"
+      },
+      "run_group": "mfc_grid_3D_acoustic_support11",
+      "attempt": 7,
+      "measured_at": "2026-10-24T22:35:06.232707+00:00"
+    },
+    {
+      "objective": 1.9973322033226661,
+      "metrics": {
+        "grind_ns": 0.50066784,
+        "pre_exec_s": 37.2528984,
+        "sim_exec_s": 82.5329351,
+        "status": "ok",
+        "throughput": 1.9973322033226661
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "case": "ibm"
+      },
+      "run_group": "mfc_smac3_ibm",
+      "attempt": 19,
+      "measured_at": "2026-10-22T21:58:37.383708+00:00"
+    },
+    {
+      "objective": 1.810930063981608,
+      "metrics": {
+        "grind_ns": 0.55220244,
+        "pre_exec_s": 2.7746344,
+        "sim_exec_s": 4.2345138,
+        "status": "ok",
+        "throughput": 1.810930063981608
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_Thermal_Flatplate"
+      },
+      "run_group": "mfc_grid_2D_Thermal_Flatplate",
+      "attempt": 4,
+      "measured_at": "2026-10-25T20:38:46.209543+00:00"
+    },
+    {
+      "objective": 1.7964312492018233,
+      "metrics": {
+        "grind_ns": 0.55665921,
+        "pre_exec_s": 2.9511717,
+        "sim_exec_s": 4.6194157,
+        "status": "ok",
+        "throughput": 1.7964312492018233
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_premixed_landau_insta"
+      },
+      "run_group": "mfc_grid_2D_premixed_landau_insta",
+      "attempt": 7,
+      "measured_at": "2026-10-25T15:50:06.024792+00:00"
+    },
+    {
+      "objective": 1.6480988553426057,
+      "metrics": {
+        "grind_ns": 0.60675972,
+        "pre_exec_s": 9.1164103,
+        "sim_exec_s": 31.5257959,
+        "status": "ok",
+        "throughput": 1.6480988553426057
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_reacting_mixing_layer"
+      },
+      "run_group": "mfc_grid_3D_reacting_mixing_layer",
+      "attempt": 17,
+      "measured_at": "2026-10-25T03:20:25.616059+00:00"
+    },
+    {
+      "objective": 1.6390324162258572,
+      "metrics": {
+        "grind_ns": 0.61011606,
+        "pre_exec_s": 2.626854,
+        "sim_exec_s": 4.2632597,
+        "status": "ok",
+        "throughput": 1.6390324162258572
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_premixed_flame_vortex"
+      },
+      "run_group": "mfc_grid_2D_premixed_flame_vortex",
+      "attempt": 17,
+      "measured_at": "2026-10-25T14:25:57.346076+00:00"
+    },
+    {
+      "objective": 1.5999971328051381,
+      "metrics": {
+        "grind_ns": 0.62500112,
+        "pre_exec_s": 5.3882528,
+        "sim_exec_s": 14.139967,
+        "status": "ok",
+        "throughput": 1.5999971328051381
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_rayleigh_taylor"
+      },
+      "run_group": "mfc_grid_3D_rayleigh_taylor",
+      "attempt": 1,
+      "measured_at": "2026-10-25T20:49:32.252802+00:00"
+    },
+    {
+      "objective": 1.531470751458546,
+      "metrics": {
+        "grind_ns": 0.65296709,
+        "pre_exec_s": 8.511379,
+        "sim_exec_s": 34.496987,
+        "status": "ok",
+        "throughput": 1.531470751458546
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_ibm_pitchup_plate"
+      },
+      "run_group": "mfc_grid_3D_ibm_pitchup_plate",
+      "attempt": 17,
+      "measured_at": "2026-10-24T23:35:02.128773+00:00"
+    },
+    {
+      "objective": 1.4832391308384818,
+      "metrics": {
+        "grind_ns": 0.67420012,
+        "pre_exec_s": 2.7125671,
+        "sim_exec_s": 3.7086479,
+        "status": "ok",
+        "throughput": 1.4832391308384818
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_isentropicvortex"
+      },
+      "run_group": "mfc_grid_2D_isentropicvortex",
+      "attempt": 17,
+      "measured_at": "2026-10-24T20:12:01.789321+00:00"
+    },
+    {
+      "objective": 1.4799588997654027,
+      "metrics": {
+        "grind_ns": 0.67569444,
+        "pre_exec_s": 2.5487418,
+        "sim_exec_s": 3.3956985,
+        "status": "ok",
+        "throughput": 1.4799588997654027
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_multiphase"
+      },
+      "run_group": "mfc_grid_2D_ibm_multiphase",
+      "attempt": 4,
+      "measured_at": "2026-10-24T18:16:50.749471+00:00"
+    },
+    {
+      "objective": 1.4658586208970488,
+      "metrics": {
+        "grind_ns": 0.68219403,
+        "pre_exec_s": 8.2827291,
+        "sim_exec_s": 29.2559633,
+        "status": "ok",
+        "throughput": 1.4658586208970488
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_ibm_bowshock"
+      },
+      "run_group": "mfc_grid_3D_ibm_bowshock",
+      "attempt": 10,
+      "measured_at": "2026-10-26T02:47:33.571598+00:00"
+    },
+    {
+      "objective": 1.3939224979091163,
+      "metrics": {
+        "grind_ns": 0.7174,
+        "pre_exec_s": 2.8233072,
+        "sim_exec_s": 10.1655271,
+        "status": "ok",
+        "throughput": 1.3939224979091163
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_mibm_shock_cylinder"
+      },
+      "run_group": "mfc_grid_2D_mibm_shock_cylinder",
+      "attempt": 7,
+      "measured_at": "2026-10-25T17:53:02.105570+00:00"
+    },
+    {
+      "objective": 1.3128557248229193,
+      "metrics": {
+        "grind_ns": 0.76169832,
+        "pre_exec_s": 2.8089216,
+        "sim_exec_s": 10.0489882,
+        "status": "ok",
+        "throughput": 1.3128557248229193
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_thin_plate_force"
+      },
+      "run_group": "mfc_grid_2D_ibm_thin_plate_force",
+      "attempt": 7,
+      "measured_at": "2026-10-24T21:32:38.517623+00:00"
+    },
+    {
+      "objective": 1.1576952903161162,
+      "metrics": {
+        "grind_ns": 0.86378515,
+        "pre_exec_s": 2.7200084,
+        "sim_exec_s": 3.5819999,
+        "status": "ok",
+        "throughput": 1.1576952903161162
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_rayleigh_taylor"
+      },
+      "run_group": "mfc_grid_2D_rayleigh_taylor",
+      "attempt": 13,
+      "measured_at": "2026-10-24T13:52:46.400779+00:00"
+    },
+    {
+      "objective": 1.0345235295497215,
+      "metrics": {
+        "grind_ns": 0.96662857,
+        "pre_exec_s": 2.5348312,
+        "sim_exec_s": 5.4769195,
+        "status": "ok",
+        "throughput": 1.0345235295497215
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_jet"
+      },
+      "run_group": "mfc_grid_2D_jet",
+      "attempt": 10,
+      "measured_at": "2026-10-25T13:09:18.262288+00:00"
+    },
+    {
+      "objective": 0.783548539641037,
+      "metrics": {
+        "grind_ns": 1.27624512,
+        "pre_exec_s": 2.5238107,
+        "sim_exec_s": 3.4094767,
+        "status": "ok",
+        "throughput": 0.783548539641037
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_GreshoVortex"
+      },
+      "run_group": "mfc_grid_2D_GreshoVortex",
+      "attempt": 17,
+      "measured_at": "2026-10-25T02:27:43.976914+00:00"
+    },
+    {
+      "objective": 0.7710197188370195,
+      "metrics": {
+        "grind_ns": 1.29698369,
+        "pre_exec_s": 2.5509877,
+        "sim_exec_s": 3.2452629,
+        "status": "ok",
+        "throughput": 0.7710197188370195
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_whale_bubble_annulus"
+      },
+      "run_group": "mfc_grid_2D_whale_bubble_annulus",
+      "attempt": 10,
+      "measured_at": "2026-10-24T18:45:39.294917+00:00"
+    },
+    {
+      "objective": 0.5770340450086555,
+      "metrics": {
+        "grind_ns": 1.733,
+        "pre_exec_s": 2.5823319,
+        "sim_exec_s": 3.6357198,
+        "status": "ok",
+        "throughput": 0.5770340450086555
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_patch_spherical_harmonic"
+      },
+      "run_group": "mfc_grid_3D_patch_spherical_harmonic",
+      "attempt": 10,
+      "measured_at": "2026-10-24T20:29:09.589227+00:00"
+    },
+    {
+      "objective": 0.5650116533653506,
+      "metrics": {
+        "grind_ns": 1.769875,
+        "pre_exec_s": 2.5040002,
+        "sim_exec_s": 3.5612991,
+        "status": "ok",
+        "throughput": 0.5650116533653506
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm"
+      },
+      "run_group": "mfc_grid_2D_ibm",
+      "attempt": 10,
+      "measured_at": "2026-10-25T10:08:53.522727+00:00"
+    },
+    {
+      "objective": 0.5312790543232833,
+      "metrics": {
+        "grind_ns": 1.88225,
+        "pre_exec_s": 2.5623317,
+        "sim_exec_s": 3.3680683,
+        "status": "ok",
+        "throughput": 0.5312790543232833
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_steady_shock"
+      },
+      "run_group": "mfc_grid_2D_ibm_steady_shock",
+      "attempt": 17,
+      "measured_at": "2026-10-25T11:19:02.987407+00:00"
+    },
+    {
+      "objective": 0.5173333763478791,
+      "metrics": {
+        "grind_ns": 1.93298953,
+        "pre_exec_s": 2.810727,
+        "sim_exec_s": 3.8250139,
+        "status": "ok",
+        "throughput": 0.5173333763478791
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_hypo_hlld"
+      },
+      "run_group": "mfc_grid_3D_hypo_hlld",
+      "attempt": 13,
+      "measured_at": "2026-10-24T07:53:55.068284+00:00"
+    },
+    {
+      "objective": 0.48192771084337344,
+      "metrics": {
+        "grind_ns": 2.075,
+        "pre_exec_s": 2.7028171,
+        "sim_exec_s": 3.2976692,
+        "status": "ok",
+        "throughput": 0.48192771084337344
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_IGR_2fluid"
+      },
+      "run_group": "mfc_grid_2D_IGR_2fluid",
+      "attempt": 4,
+      "measured_at": "2026-10-24T21:07:03.511455+00:00"
+    },
+    {
+      "objective": 0.479189485869646,
+      "metrics": {
+        "grind_ns": 2.08685714,
+        "pre_exec_s": 2.7067654,
+        "sim_exec_s": 10.0836575,
+        "status": "ok",
+        "throughput": 0.479189485869646
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_synthetic_turbulence"
+      },
+      "run_group": "mfc_grid_2D_synthetic_turbulence",
+      "attempt": 7,
+      "measured_at": "2026-10-25T04:29:24.305788+00:00"
+    },
+    {
+      "objective": 0.47781570031101117,
+      "metrics": {
+        "grind_ns": 2.09285714,
+        "pre_exec_s": 2.6114967,
+        "sim_exec_s": 3.4521229,
+        "status": "ok",
+        "throughput": 0.47781570031101117
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_airfoil"
+      },
+      "run_group": "mfc_grid_2D_ibm_airfoil",
+      "attempt": 7,
+      "measured_at": "2026-10-25T15:56:14.128783+00:00"
+    },
+    {
+      "objective": 0.44666741885460004,
+      "metrics": {
+        "grind_ns": 2.2388022,
+        "pre_exec_s": 2.8206454,
+        "sim_exec_s": 11.0130717,
+        "status": "ok",
+        "throughput": 0.44666741885460004
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_ibm_flapping_plate"
+      },
+      "run_group": "mfc_grid_3D_ibm_flapping_plate",
+      "attempt": 7,
+      "measured_at": "2026-10-25T20:08:43.829753+00:00"
+    },
+    {
+      "objective": 0.4285938072909378,
+      "metrics": {
+        "grind_ns": 2.3332115,
+        "pre_exec_s": 2.6432238,
+        "sim_exec_s": 3.471555,
+        "status": "ok",
+        "throughput": 0.4285938072909378
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_acoustic_support3"
+      },
+      "run_group": "mfc_grid_3D_acoustic_support3",
+      "attempt": 10,
+      "measured_at": "2026-10-25T15:21:34.674651+00:00"
+    },
+    {
+      "objective": 0.42168100374348577,
+      "metrics": {
+        "grind_ns": 2.37146087,
+        "pre_exec_s": 2.7533772,
+        "sim_exec_s": 3.7929253,
+        "status": "ok",
+        "throughput": 0.42168100374348577
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_acoustic_support7"
+      },
+      "run_group": "mfc_grid_3D_acoustic_support7",
+      "attempt": 7,
+      "measured_at": "2026-10-24T10:04:50.059874+00:00"
+    },
+    {
+      "objective": 0.4154919566449433,
+      "metrics": {
+        "grind_ns": 2.40678546,
+        "pre_exec_s": 2.7527872,
+        "sim_exec_s": 3.4547736,
+        "status": "ok",
+        "throughput": 0.4154919566449433
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_hardcoded_ic"
+      },
+      "run_group": "mfc_grid_2D_hardcoded_ic",
+      "attempt": 4,
+      "measured_at": "2026-10-24T16:36:09.953670+00:00"
+    },
+    {
+      "objective": 0.40902441362014647,
+      "metrics": {
+        "grind_ns": 2.44484184,
+        "pre_exec_s": 2.7309334,
+        "sim_exec_s": 3.7231915,
+        "status": "ok",
+        "throughput": 0.40902441362014647
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_cont_damage"
+      },
+      "run_group": "mfc_grid_2D_cont_damage",
+      "attempt": 4,
+      "measured_at": "2026-10-24T20:14:40.062397+00:00"
+    },
+    {
+      "objective": 0.3689550669326183,
+      "metrics": {
+        "grind_ns": 2.71035714,
+        "pre_exec_s": 2.6296923,
+        "sim_exec_s": 3.2922472,
+        "status": "ok",
+        "throughput": 0.3689550669326183
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_axisym_shockbubble"
+      },
+      "run_group": "mfc_grid_2D_axisym_shockbubble",
+      "attempt": 17,
+      "measured_at": "2026-10-25T12:16:34.367326+00:00"
+    },
+    {
+      "objective": 0.2639558394912097,
+      "metrics": {
+        "grind_ns": 3.78851251,
+        "pre_exec_s": 2.6697239,
+        "sim_exec_s": 3.5965975,
+        "status": "ok",
+        "throughput": 0.2639558394912097
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shearlayer"
+      },
+      "run_group": "mfc_grid_2D_shearlayer",
+      "attempt": 7,
+      "measured_at": "2026-10-24T15:10:31.581698+00:00"
+    },
+    {
+      "objective": 0.25303643724696356,
+      "metrics": {
+        "grind_ns": 3.952,
+        "pre_exec_s": 2.6486448,
+        "sim_exec_s": 3.5982454,
+        "status": "ok",
+        "throughput": 0.25303643724696356
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_ellipse"
+      },
+      "run_group": "mfc_grid_2D_ibm_ellipse",
+      "attempt": 4,
+      "measured_at": "2026-10-25T11:56:56.209362+00:00"
+    },
+    {
+      "objective": 0.2523785676799024,
+      "metrics": {
+        "grind_ns": 3.96230159,
+        "pre_exec_s": 2.6631939,
+        "sim_exec_s": 3.6154283,
+        "status": "ok",
+        "throughput": 0.2523785676799024
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_flameholder"
+      },
+      "run_group": "mfc_grid_2D_ibm_flameholder",
+      "attempt": 10,
+      "measured_at": "2026-10-25T07:18:27.560962+00:00"
+    },
+    {
+      "objective": 0.23947998606964077,
+      "metrics": {
+        "grind_ns": 4.17571429,
+        "pre_exec_s": 2.6764204,
+        "sim_exec_s": 3.4918532,
+        "status": "ok",
+        "throughput": 0.23947998606964077
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shockbubble"
+      },
+      "run_group": "mfc_grid_2D_shockbubble",
+      "attempt": 4,
+      "measured_at": "2026-10-25T08:23:17.605165+00:00"
+    },
+    {
+      "objective": 0.23455785103876386,
+      "metrics": {
+        "grind_ns": 4.26334056,
+        "pre_exec_s": 2.8511937,
+        "sim_exec_s": 3.6114097,
+        "status": "ok",
+        "throughput": 0.23455785103876386
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_spatial_reacting_mixing_layer"
+      },
+      "run_group": "mfc_grid_2D_spatial_reacting_mixing_layer",
+      "attempt": 4,
+      "measured_at": "2026-10-25T10:58:04.845624+00:00"
+    },
+    {
+      "objective": 0.21763574429964214,
+      "metrics": {
+        "grind_ns": 4.59483346,
+        "pre_exec_s": 2.6521321,
+        "sim_exec_s": 3.5273482,
+        "status": "ok",
+        "throughput": 0.21763574429964214
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_support9"
+      },
+      "run_group": "mfc_grid_2D_acoustic_support9",
+      "attempt": 4,
+      "measured_at": "2026-10-24T20:41:08.850238+00:00"
+    },
+    {
+      "objective": 0.2115438036297257,
+      "metrics": {
+        "grind_ns": 4.72715335,
+        "pre_exec_s": 2.6504036,
+        "sim_exec_s": 3.5121743,
+        "status": "ok",
+        "throughput": 0.2115438036297257
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_TaylorGreenVortex"
+      },
+      "run_group": "mfc_grid_2D_TaylorGreenVortex",
+      "attempt": 4,
+      "measured_at": "2026-10-24T22:48:57.654005+00:00"
+    },
+    {
+      "objective": 0.19661816751867872,
+      "metrics": {
+        "grind_ns": 5.086,
+        "pre_exec_s": 2.4591786,
+        "sim_exec_s": 3.429797,
+        "status": "ok",
+        "throughput": 0.19661816751867872
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_shocktube_phasechange"
+      },
+      "run_group": "mfc_grid_2D_shocktube_phasechange",
+      "attempt": 17,
+      "measured_at": "2026-10-25T16:58:49.306496+00:00"
+    },
+    {
+      "objective": 0.1869230768770651,
+      "metrics": {
+        "grind_ns": 5.34979424,
+        "pre_exec_s": 2.5761736,
+        "sim_exec_s": 3.3231442,
+        "status": "ok",
+        "throughput": 0.1869230768770651
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_advection"
+      },
+      "run_group": "mfc_grid_2D_advection",
+      "attempt": 10,
+      "measured_at": "2026-10-25T05:02:07.279264+00:00"
+    },
+    {
+      "objective": 0.1803762953635718,
+      "metrics": {
+        "grind_ns": 5.54396573,
+        "pre_exec_s": 2.6404962,
+        "sim_exec_s": 3.4139625,
+        "status": "ok",
+        "throughput": 0.1803762953635718
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_brio_wu"
+      },
+      "run_group": "mfc_grid_3D_brio_wu",
+      "attempt": 10,
+      "measured_at": "2026-10-24T15:50:01.311267+00:00"
+    },
+    {
+      "objective": 0.18023993540200714,
+      "metrics": {
+        "grind_ns": 5.54816,
+        "pre_exec_s": 2.6627654,
+        "sim_exec_s": 3.4860057,
+        "status": "ok",
+        "throughput": 0.18023993540200714
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_zero_circ_vortex_analytical"
+      },
+      "run_group": "mfc_grid_2D_zero_circ_vortex_analytical",
+      "attempt": 4,
+      "measured_at": "2026-10-25T23:34:04.590982+00:00"
+    },
+    {
+      "objective": 0.18016692184248306,
+      "metrics": {
+        "grind_ns": 5.55040842,
+        "pre_exec_s": 2.5526404,
+        "sim_exec_s": 10.2615362,
+        "status": "ok",
+        "throughput": 0.18016692184248306
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_rotating_sphere"
+      },
+      "run_group": "mfc_grid_3D_rotating_sphere",
+      "attempt": 17,
+      "measured_at": "2026-10-25T19:29:08.318804+00:00"
+    },
+    {
+      "objective": 0.18007086613306905,
+      "metrics": {
+        "grind_ns": 5.55336919,
+        "pre_exec_s": 2.6598737,
+        "sim_exec_s": 3.4439397,
+        "status": "ok",
+        "throughput": 0.18007086613306905
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_advection_muscl"
+      },
+      "run_group": "mfc_grid_2D_advection_muscl",
+      "attempt": 4,
+      "measured_at": "2026-10-25T09:12:56.434726+00:00"
+    },
+    {
+      "objective": 0.16608996548987678,
+      "metrics": {
+        "grind_ns": 6.02083333,
+        "pre_exec_s": 2.4766042,
+        "sim_exec_s": 3.6643588,
+        "status": "ok",
+        "throughput": 0.16608996548987678
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_burning_grain"
+      },
+      "run_group": "mfc_grid_2D_ibm_burning_grain",
+      "attempt": 10,
+      "measured_at": "2026-10-24T22:04:32.963826+00:00"
+    },
+    {
+      "objective": 0.16267348855075847,
+      "metrics": {
+        "grind_ns": 6.14728318,
+        "pre_exec_s": 2.5091744,
+        "sim_exec_s": 16.1653722,
+        "status": "ok",
+        "throughput": 0.16267348855075847
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_cfl_dt"
+      },
+      "run_group": "mfc_grid_2D_ibm_cfl_dt",
+      "attempt": 10,
+      "measured_at": "2026-10-25T18:49:03.797099+00:00"
+    },
+    {
+      "objective": 0.16052603044600583,
+      "metrics": {
+        "grind_ns": 6.22951927,
+        "pre_exec_s": 2.6265218,
+        "sim_exec_s": 3.3977423,
+        "status": "ok",
+        "throughput": 0.16052603044600583
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_broadband"
+      },
+      "run_group": "mfc_grid_2D_acoustic_broadband",
+      "attempt": 4,
+      "measured_at": "2026-10-25T19:49:01.151462+00:00"
+    },
+    {
+      "objective": 0.14351298180761274,
+      "metrics": {
+        "grind_ns": 6.96801075,
+        "pre_exec_s": 2.5850788,
+        "sim_exec_s": 3.6039439,
+        "status": "ok",
+        "throughput": 0.14351298180761274
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_mixing_artificial_Ma"
+      },
+      "run_group": "mfc_grid_2D_mixing_artificial_Ma",
+      "attempt": 4,
+      "measured_at": "2026-10-24T18:31:39.769011+00:00"
+    },
+    {
+      "objective": 0.13876040696634578,
+      "metrics": {
+        "grind_ns": 7.20666667,
+        "pre_exec_s": 2.4188311,
+        "sim_exec_s": 3.505723,
+        "status": "ok",
+        "throughput": 0.13876040696634578
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_hybrid_slab"
+      },
+      "run_group": "mfc_grid_2D_hybrid_slab",
+      "attempt": 17,
+      "measured_at": "2026-10-25T23:01:54.134291+00:00"
+    },
+    {
+      "objective": 0.13332160920878167,
+      "metrics": {
+        "grind_ns": 7.50065954,
+        "pre_exec_s": 2.5245121,
+        "sim_exec_s": 3.2896817,
+        "status": "ok",
+        "throughput": 0.13332160920878167
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_5wave_quasi1D"
+      },
+      "run_group": "mfc_grid_2D_5wave_quasi1D",
+      "attempt": 10,
+      "measured_at": "2026-10-25T08:53:54.307950+00:00"
+    },
+    {
+      "objective": 0.1323539143670174,
+      "metrics": {
+        "grind_ns": 7.5555,
+        "pre_exec_s": 2.755372,
+        "sim_exec_s": 10.0668024,
+        "status": "ok",
+        "throughput": 0.1323539143670174
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_tumbling_rectangle"
+      },
+      "run_group": "mfc_grid_2D_tumbling_rectangle",
+      "attempt": 17,
+      "measured_at": "2026-10-25T06:25:05.718415+00:00"
+    },
+    {
+      "objective": 0.1310701880857199,
+      "metrics": {
+        "grind_ns": 7.6295,
+        "pre_exec_s": 2.5794036,
+        "sim_exec_s": 9.7642007,
+        "status": "ok",
+        "throughput": 0.1310701880857199
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_mibm_cylinder_in_cross_flow"
+      },
+      "run_group": "mfc_grid_2D_mibm_cylinder_in_cross_flow",
+      "attempt": 17,
+      "measured_at": "2026-10-26T03:55:00.959929+00:00"
+    },
+    {
+      "objective": 0.12944152427170252,
+      "metrics": {
+        "grind_ns": 7.72549617,
+        "pre_exec_s": 2.6471061,
+        "sim_exec_s": 3.6007769,
+        "status": "ok",
+        "throughput": 0.12944152427170252
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_support10_axisym"
+      },
+      "run_group": "mfc_grid_2D_acoustic_support10_axisym",
+      "attempt": 7,
+      "measured_at": "2026-10-25T19:07:23.066596+00:00"
+    },
+    {
+      "objective": 0.11015952486108303,
+      "metrics": {
+        "grind_ns": 9.07774431,
+        "pre_exec_s": 2.6800521,
+        "sim_exec_s": 3.4287558,
+        "status": "ok",
+        "throughput": 0.11015952486108303
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_bc_patch_geometry"
+      },
+      "run_group": "mfc_grid_2D_bc_patch_geometry",
+      "attempt": 7,
+      "measured_at": "2026-10-25T01:47:02.834752+00:00"
+    },
+    {
+      "objective": 0.08776919950098083,
+      "metrics": {
+        "grind_ns": 11.39351852,
+        "pre_exec_s": 2.7415829,
+        "sim_exec_s": 11.8751848,
+        "status": "ok",
+        "throughput": 0.08776919950098083
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_mibm_sphere_head_on_collision"
+      },
+      "run_group": "mfc_grid_3D_mibm_sphere_head_on_collision",
+      "attempt": 4,
+      "measured_at": "2026-10-25T11:40:29.630238+00:00"
+    },
+    {
+      "objective": 0.08564585316045539,
+      "metrics": {
+        "grind_ns": 11.67598854,
+        "pre_exec_s": 2.5917239,
+        "sim_exec_s": 3.4223427,
+        "status": "ok",
+        "throughput": 0.08564585316045539
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_axisym_hypo_hlld"
+      },
+      "run_group": "mfc_grid_2D_axisym_hypo_hlld",
+      "attempt": 10,
+      "measured_at": "2026-10-26T00:12:43.370341+00:00"
+    },
+    {
+      "objective": 0.07598142676876163,
+      "metrics": {
+        "grind_ns": 13.16111111,
+        "pre_exec_s": 2.7209556,
+        "sim_exec_s": 3.4401724,
+        "status": "ok",
+        "throughput": 0.07598142676876163
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_reactive_burn"
+      },
+      "run_group": "mfc_grid_1D_reactive_burn",
+      "attempt": 4,
+      "measured_at": "2026-10-24T05:19:27.137597+00:00"
+    },
+    {
+      "objective": 0.07115976900995319,
+      "metrics": {
+        "grind_ns": 14.05288429,
+        "pre_exec_s": 2.6023688,
+        "sim_exec_s": 3.5514579,
+        "status": "ok",
+        "throughput": 0.07115976900995319
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_reacting_mixing_layer"
+      },
+      "run_group": "mfc_grid_2D_reacting_mixing_layer",
+      "attempt": 7,
+      "measured_at": "2026-10-24T16:31:48.669754+00:00"
+    },
+    {
+      "objective": 0.06687493907902034,
+      "metrics": {
+        "grind_ns": 14.95328465,
+        "pre_exec_s": 2.5120451,
+        "sim_exec_s": 3.3906775,
+        "status": "ok",
+        "throughput": 0.06687493907902034
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_lid_driven_cavity_nn"
+      },
+      "run_group": "mfc_grid_2D_lid_driven_cavity_nn",
+      "attempt": 10,
+      "measured_at": "2026-10-26T01:14:14.061272+00:00"
+    },
+    {
+      "objective": 0.06631258456483334,
+      "metrics": {
+        "grind_ns": 15.08009387,
+        "pre_exec_s": 2.4898133,
+        "sim_exec_s": 3.3987372,
+        "status": "ok",
+        "throughput": 0.06631258456483334
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_hypo_hlld"
+      },
+      "run_group": "mfc_grid_2D_hypo_hlld",
+      "attempt": 17,
+      "measured_at": "2026-10-25T06:10:03.125351+00:00"
+    },
+    {
+      "objective": 0.06029379520382213,
+      "metrics": {
+        "grind_ns": 16.58545455,
+        "pre_exec_s": 2.7347115,
+        "sim_exec_s": 3.5801137,
+        "status": "ok",
+        "throughput": 0.06029379520382213
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_axisym_hypoelasticity"
+      },
+      "run_group": "mfc_grid_2D_axisym_hypoelasticity",
+      "attempt": 4,
+      "measured_at": "2026-10-25T04:04:11.694471+00:00"
+    },
+    {
+      "objective": 0.0575784279149362,
+      "metrics": {
+        "grind_ns": 17.36761555,
+        "pre_exec_s": 2.4772975,
+        "sim_exec_s": 3.4879687,
+        "status": "ok",
+        "throughput": 0.0575784279149362
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_pulse_analytical"
+      },
+      "run_group": "mfc_grid_2D_acoustic_pulse_analytical",
+      "attempt": 7,
+      "measured_at": "2026-10-26T00:07:24.740549+00:00"
+    },
+    {
+      "objective": 0.05645086970476369,
+      "metrics": {
+        "grind_ns": 17.71451893,
+        "pre_exec_s": 2.5567995,
+        "sim_exec_s": 3.463845,
+        "status": "ok",
+        "throughput": 0.05645086970476369
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_pulse"
+      },
+      "run_group": "mfc_grid_2D_acoustic_pulse",
+      "attempt": 10,
+      "measured_at": "2026-10-24T14:47:47.234353+00:00"
+    },
+    {
+      "objective": 0.055061797755252745,
+      "metrics": {
+        "grind_ns": 18.1614121,
+        "pre_exec_s": 2.6572952,
+        "sim_exec_s": 3.4260509,
+        "status": "ok",
+        "throughput": 0.055061797755252745
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_support2"
+      },
+      "run_group": "mfc_grid_2D_acoustic_support2",
+      "attempt": 17,
+      "measured_at": "2026-10-25T07:58:22.926527+00:00"
+    },
+    {
+      "objective": 0.054944500518817566,
+      "metrics": {
+        "grind_ns": 18.20018365,
+        "pre_exec_s": 2.5445224,
+        "sim_exec_s": 3.5769155,
+        "status": "ok",
+        "throughput": 0.054944500518817566
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_support5"
+      },
+      "run_group": "mfc_grid_2D_acoustic_support5",
+      "attempt": 7,
+      "measured_at": "2026-10-24T22:21:35.723448+00:00"
+    },
+    {
+      "objective": 0.05445000000274972,
+      "metrics": {
+        "grind_ns": 18.36547291,
+        "pre_exec_s": 2.6780905,
+        "sim_exec_s": 3.5941062,
+        "status": "ok",
+        "throughput": 0.05445000000274972
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_viscous"
+      },
+      "run_group": "mfc_grid_2D_viscous",
+      "attempt": 4,
+      "measured_at": "2026-10-25T07:43:04.233650+00:00"
+    },
+    {
+      "objective": 0.05423728813559322,
+      "metrics": {
+        "grind_ns": 18.4375,
+        "pre_exec_s": 2.6785978,
+        "sim_exec_s": 3.4746222,
+        "status": "ok",
+        "throughput": 0.05423728813559322
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_brio_wu_rmhd"
+      },
+      "run_group": "mfc_grid_1D_brio_wu_rmhd",
+      "attempt": 7,
+      "measured_at": "2026-10-24T11:35:22.958299+00:00"
+    },
+    {
+      "objective": 0.05422131147143213,
+      "metrics": {
+        "grind_ns": 18.44293273,
+        "pre_exec_s": 2.6217039,
+        "sim_exec_s": 3.3849657,
+        "status": "ok",
+        "throughput": 0.05422131147143213
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_advection_convergence"
+      },
+      "run_group": "mfc_grid_2D_advection_convergence",
+      "attempt": 4,
+      "measured_at": "2026-10-26T05:13:53.870248+00:00"
+    },
+    {
+      "objective": 0.03878672985065815,
+      "metrics": {
+        "grind_ns": 25.78201369,
+        "pre_exec_s": 2.7183258,
+        "sim_exec_s": 3.4918785,
+        "status": "ok",
+        "throughput": 0.03878672985065815
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_mhd_smooth_alfven_wave"
+      },
+      "run_group": "mfc_grid_1D_mhd_smooth_alfven_wave",
+      "attempt": 7,
+      "measured_at": "2026-10-24T06:02:42.952111+00:00"
+    },
+    {
+      "objective": 0.033862433862433865,
+      "metrics": {
+        "grind_ns": 29.53125,
+        "pre_exec_s": 2.3581061,
+        "sim_exec_s": 6.5078365,
+        "status": "ok",
+        "throughput": 0.033862433862433865
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_dai_woodward_hlld"
+      },
+      "run_group": "mfc_grid_1D_dai_woodward_hlld",
+      "attempt": 17,
+      "measured_at": "2026-10-24T17:46:51.892456+00:00"
+    },
+    {
+      "objective": 0.03234862630071995,
+      "metrics": {
+        "grind_ns": 30.91321377,
+        "pre_exec_s": 2.6659787,
+        "sim_exec_s": 3.4254877,
+        "status": "ok",
+        "throughput": 0.03234862630071995
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_acoustic_support6_axisym"
+      },
+      "run_group": "mfc_grid_2D_acoustic_support6_axisym",
+      "attempt": 4,
+      "measured_at": "2026-10-25T13:22:59.105315+00:00"
+    },
+    {
+      "objective": 0.03167826759724969,
+      "metrics": {
+        "grind_ns": 31.56738281,
+        "pre_exec_s": 2.538625,
+        "sim_exec_s": 3.4254129,
+        "status": "ok",
+        "throughput": 0.03167826759724969
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_patch_modal_shape"
+      },
+      "run_group": "mfc_grid_2D_patch_modal_shape",
+      "attempt": 10,
+      "measured_at": "2026-10-25T13:28:48.503505+00:00"
+    },
+    {
+      "objective": 0.03161539309772163,
+      "metrics": {
+        "grind_ns": 31.63016183,
+        "pre_exec_s": 2.5432738,
+        "sim_exec_s": 3.5648847,
+        "status": "ok",
+        "throughput": 0.03161539309772163
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_patch_modal_shape_exp"
+      },
+      "run_group": "mfc_grid_2D_patch_modal_shape_exp",
+      "attempt": 17,
+      "measured_at": "2026-10-24T22:10:37.141435+00:00"
+    },
+    {
+      "objective": 0.03135717785399314,
+      "metrics": {
+        "grind_ns": 31.890625,
+        "pre_exec_s": 2.542392,
+        "sim_exec_s": 3.3021693,
+        "status": "ok",
+        "throughput": 0.03135717785399314
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_brio_wu_hlld"
+      },
+      "run_group": "mfc_grid_1D_brio_wu_hlld",
+      "attempt": 7,
+      "measured_at": "2026-10-25T13:40:54.875365+00:00"
+    },
+    {
+      "objective": 0.030784030784030785,
+      "metrics": {
+        "grind_ns": 32.484375,
+        "pre_exec_s": 2.6792912,
+        "sim_exec_s": 3.4515103,
+        "status": "ok",
+        "throughput": 0.030784030784030785
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_dai_woodward"
+      },
+      "run_group": "mfc_grid_1D_dai_woodward",
+      "attempt": 4,
+      "measured_at": "2026-10-25T09:38:19.419495+00:00"
+    },
+    {
+      "objective": 0.030409420286169584,
+      "metrics": {
+        "grind_ns": 32.88454665,
+        "pre_exec_s": 2.7399403,
+        "sim_exec_s": 3.4415927,
+        "status": "ok",
+        "throughput": 0.030409420286169584
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_flamelet"
+      },
+      "run_group": "mfc_grid_1D_flamelet",
+      "attempt": 7,
+      "measured_at": "2026-10-24T09:51:31.183228+00:00"
+    },
+    {
+      "objective": 0.02942762593660666,
+      "metrics": {
+        "grind_ns": 33.9816743,
+        "pre_exec_s": 2.6448442,
+        "sim_exec_s": 3.4229088,
+        "status": "ok",
+        "throughput": 0.02942762593660666
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_laplace_pressure_jump"
+      },
+      "run_group": "mfc_grid_2D_laplace_pressure_jump",
+      "attempt": 10,
+      "measured_at": "2026-10-25T20:16:55.297292+00:00"
+    },
+    {
+      "objective": 0.028596961572832886,
+      "metrics": {
+        "grind_ns": 34.96875,
+        "pre_exec_s": 2.5760839,
+        "sim_exec_s": 3.3459748,
+        "status": "ok",
+        "throughput": 0.028596961572832886
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_brio_wu"
+      },
+      "run_group": "mfc_grid_1D_brio_wu",
+      "attempt": 17,
+      "measured_at": "2026-10-26T01:38:11.539244+00:00"
+    },
+    {
+      "objective": 0.02829875518813106,
+      "metrics": {
+        "grind_ns": 35.3372434,
+        "pre_exec_s": 2.5127685,
+        "sim_exec_s": 3.3646077,
+        "status": "ok",
+        "throughput": 0.02829875518813106
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_convergence"
+      },
+      "run_group": "mfc_grid_1D_convergence",
+      "attempt": 1,
+      "measured_at": "2026-10-24T09:10:37.834765+00:00"
+    },
+    {
+      "objective": 0.02596310363351052,
+      "metrics": {
+        "grind_ns": 38.51619645,
+        "pre_exec_s": 2.6277391,
+        "sim_exec_s": 3.3427014,
+        "status": "ok",
+        "throughput": 0.02596310363351052
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_axisym_conduction_convergence"
+      },
+      "run_group": "mfc_grid_2D_axisym_conduction_convergence",
+      "attempt": 17,
+      "measured_at": "2026-10-24T11:10:52.843619+00:00"
+    },
+    {
+      "objective": 0.02583620689568755,
+      "metrics": {
+        "grind_ns": 38.70537204,
+        "pre_exec_s": 2.622165,
+        "sim_exec_s": 3.4159663,
+        "status": "ok",
+        "throughput": 0.02583620689568755
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_kapilashocktube"
+      },
+      "run_group": "mfc_grid_1D_kapilashocktube",
+      "attempt": 17,
+      "measured_at": "2026-10-24T07:49:39.752909+00:00"
+    },
+    {
+      "objective": 0.02379382847683334,
+      "metrics": {
+        "grind_ns": 42.02770483,
+        "pre_exec_s": 2.5371649,
+        "sim_exec_s": 11.9903593,
+        "status": "ok",
+        "throughput": 0.02379382847683334
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "3D_mibm_periodic_collision"
+      },
+      "run_group": "mfc_grid_3D_mibm_periodic_collision",
+      "attempt": 4,
+      "measured_at": "2026-10-24T18:58:34.593340+00:00"
+    },
+    {
+      "objective": 0.023289102421597145,
+      "metrics": {
+        "grind_ns": 42.9385376,
+        "pre_exec_s": 2.5820459,
+        "sim_exec_s": 11.7034786,
+        "status": "ok",
+        "throughput": 0.023289102421597145
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_mibm_particle_cloud"
+      },
+      "run_group": "mfc_grid_2D_mibm_particle_cloud",
+      "attempt": 10,
+      "measured_at": "2026-10-25T08:39:04.234949+00:00"
+    },
+    {
+      "objective": 0.022375690610083633,
+      "metrics": {
+        "grind_ns": 44.69135802,
+        "pre_exec_s": 2.6989817,
+        "sim_exec_s": 3.6002989,
+        "status": "ok",
+        "throughput": 0.022375690610083633
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_probe_rerun"
+      },
+      "run_group": "mfc_grid_2D_probe_rerun",
+      "attempt": 7,
+      "measured_at": "2026-10-25T15:07:50.672224+00:00"
+    },
+    {
+      "objective": 0.02012072434607646,
+      "metrics": {
+        "grind_ns": 49.7,
+        "pre_exec_s": 2.6484177,
+        "sim_exec_s": 3.3289277,
+        "status": "ok",
+        "throughput": 0.02012072434607646
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_wenojs5"
+      },
+      "run_group": "mfc_grid_1D_shuosher_wenojs5",
+      "attempt": 7,
+      "measured_at": "2026-10-25T07:30:38.929617+00:00"
+    },
+    {
+      "objective": 0.019910403185664508,
+      "metrics": {
+        "grind_ns": 50.225,
+        "pre_exec_s": 2.5701861,
+        "sim_exec_s": 3.1788853,
+        "status": "ok",
+        "throughput": 0.019910403185664508
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_teno7"
+      },
+      "run_group": "mfc_grid_1D_shuosher_teno7",
+      "attempt": 7,
+      "measured_at": "2026-10-24T17:58:19.774451+00:00"
+    },
+    {
+      "objective": 0.019851116625310174,
+      "metrics": {
+        "grind_ns": 50.375,
+        "pre_exec_s": 2.4351752,
+        "sim_exec_s": 3.275398,
+        "status": "ok",
+        "throughput": 0.019851116625310174
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_inert_shocktube"
+      },
+      "run_group": "mfc_grid_1D_inert_shocktube",
+      "attempt": 10,
+      "measured_at": "2026-10-25T06:04:01.862023+00:00"
+    },
+    {
+      "objective": 0.01981178801386825,
+      "metrics": {
+        "grind_ns": 50.475,
+        "pre_exec_s": 2.5817739,
+        "sim_exec_s": 7.9332089,
+        "status": "ok",
+        "throughput": 0.01981178801386825
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_wenom5"
+      },
+      "run_group": "mfc_grid_1D_shuosher_wenom5",
+      "attempt": 17,
+      "measured_at": "2026-10-24T17:32:37.003691+00:00"
+    },
+    {
+      "objective": 0.01979197622410163,
+      "metrics": {
+        "grind_ns": 50.52552553,
+        "pre_exec_s": 2.55162,
+        "sim_exec_s": 3.4255228,
+        "status": "ok",
+        "throughput": 0.01979197622410163
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_titarevtorro"
+      },
+      "run_group": "mfc_grid_1D_titarevtorro",
+      "attempt": 10,
+      "measured_at": "2026-10-25T12:27:55.353188+00:00"
+    },
+    {
+      "objective": 0.01979197622410163,
+      "metrics": {
+        "grind_ns": 50.52552553,
+        "pre_exec_s": 2.4967697,
+        "sim_exec_s": 3.2839823,
+        "status": "ok",
+        "throughput": 0.01979197622410163
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_titarevtorro_analytical"
+      },
+      "run_group": "mfc_grid_1D_titarevtorro_analytical",
+      "attempt": 10,
+      "measured_at": "2026-10-25T16:31:52.049592+00:00"
+    },
+    {
+      "objective": 0.019694731659281144,
+      "metrics": {
+        "grind_ns": 50.775,
+        "pre_exec_s": 2.6685381,
+        "sim_exec_s": 3.4891217,
+        "status": "ok",
+        "throughput": 0.019694731659281144
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_wenoz5"
+      },
+      "run_group": "mfc_grid_1D_shuosher_wenoz5",
+      "attempt": 10,
+      "measured_at": "2026-10-24T15:23:59.921685+00:00"
+    },
+    {
+      "objective": 0.0196174595389897,
+      "metrics": {
+        "grind_ns": 50.975,
+        "pre_exec_s": 2.6344617,
+        "sim_exec_s": 3.4590244,
+        "status": "ok",
+        "throughput": 0.0196174595389897
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_teno5"
+      },
+      "run_group": "mfc_grid_1D_shuosher_teno5",
+      "attempt": 10,
+      "measured_at": "2026-10-24T16:50:25.646881+00:00"
+    },
+    {
+      "objective": 0.019594121761825546,
+      "metrics": {
+        "grind_ns": 51.03571429,
+        "pre_exec_s": 2.6242448,
+        "sim_exec_s": 3.5096698,
+        "status": "ok",
+        "throughput": 0.019594121761825546
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_reactive_shocktube"
+      },
+      "run_group": "mfc_grid_1D_reactive_shocktube",
+      "attempt": 7,
+      "measured_at": "2026-10-24T08:34:04.412314+00:00"
+    },
+    {
+      "objective": 0.01953125,
+      "metrics": {
+        "grind_ns": 51.2,
+        "pre_exec_s": 2.7015984,
+        "sim_exec_s": 3.5273972,
+        "status": "ok",
+        "throughput": 0.01953125
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_old"
+      },
+      "run_group": "mfc_grid_1D_shuosher_old",
+      "attempt": 17,
+      "measured_at": "2026-10-24T12:02:47.205292+00:00"
+    },
+    {
+      "objective": 0.019417475728155338,
+      "metrics": {
+        "grind_ns": 51.5,
+        "pre_exec_s": 2.3626103,
+        "sim_exec_s": 3.0699505,
+        "status": "ok",
+        "throughput": 0.019417475728155338
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_shuosher_analytical"
+      },
+      "run_group": "mfc_grid_1D_shuosher_analytical",
+      "attempt": 17,
+      "measured_at": "2026-10-24T17:19:02.455898+00:00"
+    },
+    {
+      "objective": 0.015979999999610087,
+      "metrics": {
+        "grind_ns": 62.57822278,
+        "pre_exec_s": 2.6196306,
+        "sim_exec_s": 3.2607743,
+        "status": "ok",
+        "throughput": 0.015979999999610087
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_mg_impact"
+      },
+      "run_group": "mfc_grid_1D_mg_impact",
+      "attempt": 4,
+      "measured_at": "2026-10-25T23:12:09.152016+00:00"
+    },
+    {
+      "objective": 0.01119005328535188,
+      "metrics": {
+        "grind_ns": 89.36507937,
+        "pre_exec_s": 2.4698157,
+        "sim_exec_s": 3.2955022,
+        "status": "ok",
+        "throughput": 0.01119005328535188
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_hypo_shear_contact"
+      },
+      "run_group": "mfc_grid_2D_hypo_shear_contact",
+      "attempt": 10,
+      "measured_at": "2026-10-24T10:42:01.511281+00:00"
+    },
+    {
+      "objective": 0.009653356735494984,
+      "metrics": {
+        "grind_ns": 103.59090909,
+        "pre_exec_s": 2.5233926,
+        "sim_exec_s": 3.17348,
+        "status": "ok",
+        "throughput": 0.009653356735494984
+      },
+      "configuration": {
+        "BIND": "none",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_exp_tube_phasechange"
+      },
+      "run_group": "mfc_grid_1D_exp_tube_phasechange",
+      "attempt": 1,
+      "measured_at": "2026-10-24T14:28:54.900477+00:00"
+    },
+    {
+      "objective": 0.009540547326471423,
+      "metrics": {
+        "grind_ns": 104.81578947,
+        "pre_exec_s": 2.4640126,
+        "sim_exec_s": 45.8302427,
+        "status": "ok",
+        "throughput": 0.009540547326471423
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_ibm_poiseuille_nn"
+      },
+      "run_group": "mfc_grid_2D_ibm_poiseuille_nn",
+      "attempt": 17,
+      "measured_at": "2026-10-25T05:31:19.927326+00:00"
+    },
+    {
+      "objective": 0.008076923076892012,
+      "metrics": {
+        "grind_ns": 123.80952381,
+        "pre_exec_s": 2.5218978,
+        "sim_exec_s": 3.3935914,
+        "status": "ok",
+        "throughput": 0.008076923076892012
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_impact"
+      },
+      "run_group": "mfc_grid_1D_impact",
+      "attempt": 7,
+      "measured_at": "2026-10-25T09:26:02.988485+00:00"
+    },
+    {
+      "objective": 0.008064679131156178,
+      "metrics": {
+        "grind_ns": 123.99749373,
+        "pre_exec_s": 2.5067093,
+        "sim_exec_s": 3.1051685,
+        "status": "ok",
+        "throughput": 0.008064679131156178
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_sodshocktube_muscl"
+      },
+      "run_group": "mfc_grid_1D_sodshocktube_muscl",
+      "attempt": 10,
+      "measured_at": "2026-10-25T01:34:48.140005+00:00"
+    },
+    {
+      "objective": 0.007940298507718673,
+      "metrics": {
+        "grind_ns": 125.93984962,
+        "pre_exec_s": 2.4799045,
+        "sim_exec_s": 3.3894444,
+        "status": "ok",
+        "throughput": 0.007940298507718673
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_isentropic_release"
+      },
+      "run_group": "mfc_grid_1D_isentropic_release",
+      "attempt": 17,
+      "measured_at": "2026-10-25T12:41:52.025232+00:00"
+    },
+    {
+      "objective": 0.007940298507718673,
+      "metrics": {
+        "grind_ns": 125.93984962,
+        "pre_exec_s": 2.5067978,
+        "sim_exec_s": 3.273951,
+        "status": "ok",
+        "throughput": 0.007940298507718673
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_sodshocktube"
+      },
+      "run_group": "mfc_grid_1D_sodshocktube",
+      "attempt": 10,
+      "measured_at": "2026-10-25T02:00:15.838264+00:00"
+    },
+    {
+      "objective": 0.007298001737822361,
+      "metrics": {
+        "grind_ns": 137.02380952,
+        "pre_exec_s": 2.636256,
+        "sim_exec_s": 39.4729975,
+        "status": "ok",
+        "throughput": 0.007298001737822361
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_poiseuille_thickening_nn"
+      },
+      "run_group": "mfc_grid_2D_poiseuille_thickening_nn",
+      "attempt": 10,
+      "measured_at": "2026-10-26T04:14:58.806400+00:00"
+    },
+    {
+      "objective": 0.007173356106137433,
+      "metrics": {
+        "grind_ns": 139.4047619,
+        "pre_exec_s": 2.658754,
+        "sim_exec_s": 143.456784,
+        "status": "ok",
+        "throughput": 0.007173356106137433
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "2D_herschel_bulkley_poiseuille_nn"
+      },
+      "run_group": "mfc_grid_2D_herschel_bulkley_poiseuille_nn",
+      "attempt": 10,
+      "measured_at": "2026-10-24T12:56:48.538878+00:00"
+    },
+    {
+      "objective": 0.005997600959736058,
+      "metrics": {
+        "grind_ns": 166.73333333,
+        "pre_exec_s": 2.5223873,
+        "sim_exec_s": 3.3011589,
+        "status": "ok",
+        "throughput": 0.005997600959736058
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_exp_bubscreen"
+      },
+      "run_group": "mfc_grid_1D_exp_bubscreen",
+      "attempt": 17,
+      "measured_at": "2026-10-26T05:34:10.835026+00:00"
+    },
+    {
+      "objective": 0.005693371289234541,
+      "metrics": {
+        "grind_ns": 175.64285714,
+        "pre_exec_s": 2.6435199,
+        "sim_exec_s": 3.30632,
+        "status": "ok",
+        "throughput": 0.005693371289234541
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_propellant_flame"
+      },
+      "run_group": "mfc_grid_1D_propellant_flame",
+      "attempt": 17,
+      "measured_at": "2026-10-26T04:54:35.673390+00:00"
+    },
+    {
+      "objective": 0.005584005612155254,
+      "metrics": {
+        "grind_ns": 179.08291457,
+        "pre_exec_s": 2.5261339,
+        "sim_exec_s": 3.2569759,
+        "status": "ok",
+        "throughput": 0.005584005612155254
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_vacuum"
+      },
+      "run_group": "mfc_grid_1D_vacuum",
+      "attempt": 10,
+      "measured_at": "2026-10-25T14:55:19.719822+00:00"
+    },
+    {
+      "objective": 0.005582047685934713,
+      "metrics": {
+        "grind_ns": 179.14572864,
+        "pre_exec_s": 2.545315,
+        "sim_exec_s": 3.4333296,
+        "status": "ok",
+        "throughput": 0.005582047685934713
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_vacuum_restart"
+      },
+      "run_group": "mfc_grid_1D_vacuum_restart",
+      "attempt": 7,
+      "measured_at": "2026-10-25T00:43:22.699688+00:00"
+    },
+    {
+      "objective": 0.004085365853708358,
+      "metrics": {
+        "grind_ns": 244.7761194,
+        "pre_exec_s": 2.6447289,
+        "sim_exec_s": 3.4060464,
+        "status": "ok",
+        "throughput": 0.004085365853708358
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_sodHypo"
+      },
+      "run_group": "mfc_grid_1D_sodHypo",
+      "attempt": 4,
+      "measured_at": "2026-10-24T11:47:36.590323+00:00"
+    },
+    {
+      "objective": 0.003983983983914593,
+      "metrics": {
+        "grind_ns": 251.00502513,
+        "pre_exec_s": 2.5388989,
+        "sim_exec_s": 3.3100515,
+        "status": "ok",
+        "throughput": 0.003983983983914593
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_mg_acoustic"
+      },
+      "run_group": "mfc_grid_1D_mg_acoustic",
+      "attempt": 10,
+      "measured_at": "2026-10-25T16:44:33.389970+00:00"
+    },
+    {
+      "objective": 0.00396235760277365,
+      "metrics": {
+        "grind_ns": 252.375,
+        "pre_exec_s": 2.6611903,
+        "sim_exec_s": 3.4051442,
+        "status": "ok",
+        "throughput": 0.00396235760277365
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_laxshocktube"
+      },
+      "run_group": "mfc_grid_1D_laxshocktube",
+      "attempt": 7,
+      "measured_at": "2026-10-26T01:58:54.747576+00:00"
+    },
+    {
+      "objective": 0.0032897196261387094,
+      "metrics": {
+        "grind_ns": 303.97727273,
+        "pre_exec_s": 2.5782326,
+        "sim_exec_s": 3.6371758,
+        "status": "ok",
+        "throughput": 0.0032897196261387094
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_qbmm"
+      },
+      "run_group": "mfc_grid_1D_qbmm",
+      "attempt": 17,
+      "measured_at": "2026-10-24T20:56:27.870406+00:00"
+    },
+    {
+      "objective": 0.0025799898425387102,
+      "metrics": {
+        "grind_ns": 387.5984252,
+        "pre_exec_s": 2.6637387,
+        "sim_exec_s": 3.4319186,
+        "status": "ok",
+        "throughput": 0.0025799898425387102
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_sod_convergence"
+      },
+      "run_group": "mfc_grid_1D_sod_convergence",
+      "attempt": 4,
+      "measured_at": "2026-10-24T08:05:18.134120+00:00"
+    },
+    {
+      "objective": 0.002000502638851168,
+      "metrics": {
+        "grind_ns": 499.87437186,
+        "pre_exec_s": 2.4762029,
+        "sim_exec_s": 3.3055506,
+        "status": "ok",
+        "throughput": 0.002000502638851168
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_acoustic_gauss_sigmatime"
+      },
+      "run_group": "mfc_grid_1D_acoustic_gauss_sigmatime",
+      "attempt": 10,
+      "measured_at": "2026-10-25T08:09:43.475332+00:00"
+    },
+    {
+      "objective": 0.002000502638851168,
+      "metrics": {
+        "grind_ns": 499.87437186,
+        "pre_exec_s": 2.5843895,
+        "sim_exec_s": 3.4251511,
+        "status": "ok",
+        "throughput": 0.002000502638851168
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_acoustic_sine_wavelength"
+      },
+      "run_group": "mfc_grid_1D_acoustic_sine_wavelength",
+      "attempt": 17,
+      "measured_at": "2026-10-25T22:33:19.454747+00:00"
+    },
+    {
+      "objective": 0.001990497624419441,
+      "metrics": {
+        "grind_ns": 502.38693467,
+        "pre_exec_s": 2.5035576,
+        "sim_exec_s": 3.4199798,
+        "status": "ok",
+        "throughput": 0.001990497624419441
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_acoustic_gauss_sigmadist"
+      },
+      "run_group": "mfc_grid_1D_acoustic_gauss_sigmadist",
+      "attempt": 17,
+      "measured_at": "2026-10-25T21:25:07.195935+00:00"
+    },
+    {
+      "objective": 0.001985037406488147,
+      "metrics": {
+        "grind_ns": 503.76884422,
+        "pre_exec_s": 2.4884691,
+        "sim_exec_s": 3.245404,
+        "status": "ok",
+        "throughput": 0.001985037406488147
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_acoustic_dipole"
+      },
+      "run_group": "mfc_grid_1D_acoustic_dipole",
+      "attempt": 17,
+      "measured_at": "2026-10-25T04:46:04.348251+00:00"
+    },
+    {
+      "objective": 0.0019514586908542621,
+      "metrics": {
+        "grind_ns": 512.43718593,
+        "pre_exec_s": 2.7848881,
+        "sim_exec_s": 3.5710043,
+        "status": "ok",
+        "throughput": 0.0019514586908542621
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_acoustic_sine_frequency"
+      },
+      "run_group": "mfc_grid_1D_acoustic_sine_frequency",
+      "attempt": 7,
+      "measured_at": "2026-10-24T15:36:14.391925+00:00"
+    },
+    {
+      "objective": 0.0018439024390177342,
+      "metrics": {
+        "grind_ns": 542.32804233,
+        "pre_exec_s": 2.6491222,
+        "sim_exec_s": 3.3343055,
+        "status": "ok",
+        "throughput": 0.0018439024390177342
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_advection_convergence"
+      },
+      "run_group": "mfc_grid_1D_advection_convergence",
+      "attempt": 4,
+      "measured_at": "2026-10-25T22:12:53.282341+00:00"
+    },
+    {
+      "objective": 0.0017487612940935515,
+      "metrics": {
+        "grind_ns": 571.83333333,
+        "pre_exec_s": 2.7226672,
+        "sim_exec_s": 3.5500298,
+        "status": "ok",
+        "throughput": 0.0017487612940935515
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_bubblescreen"
+      },
+      "run_group": "mfc_grid_1D_bubblescreen",
+      "attempt": 7,
+      "measured_at": "2026-10-24T07:25:32.874306+00:00"
+    },
+    {
+      "objective": 0.001379790940761743,
+      "metrics": {
+        "grind_ns": 724.74747475,
+        "pre_exec_s": 2.505898,
+        "sim_exec_s": 3.315017,
+        "status": "ok",
+        "throughput": 0.001379790940761743
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_conduction_convergence"
+      },
+      "run_group": "mfc_grid_1D_conduction_convergence",
+      "attempt": 7,
+      "measured_at": "2026-10-25T10:35:53.385318+00:00"
+    },
+    {
+      "objective": 0.0012121212121212121,
+      "metrics": {
+        "grind_ns": 825.0,
+        "pre_exec_s": 2.7307499,
+        "sim_exec_s": 3.4579628,
+        "status": "ok",
+        "throughput": 0.0012121212121212121
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_euler_convergence"
+      },
+      "run_group": "mfc_grid_1D_euler_convergence",
+      "attempt": 4,
+      "measured_at": "2026-10-24T14:15:13.425855+00:00"
+    },
+    {
+      "objective": 0.0011792452830188679,
+      "metrics": {
+        "grind_ns": 848.0,
+        "pre_exec_s": 2.5369272,
+        "sim_exec_s": 3.4594739,
+        "status": "ok",
+        "throughput": 0.0011792452830188679
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "nD_perfect_reactor"
+      },
+      "run_group": "mfc_grid_nD_perfect_reactor",
+      "attempt": 7,
+      "measured_at": "2026-10-25T01:21:24.864173+00:00"
+    },
+    {
+      "objective": 0.0008300395256930119,
+      "metrics": {
+        "grind_ns": 1204.76190476,
+        "pre_exec_s": 2.6721166,
+        "sim_exec_s": 3.4772997,
+        "status": "ok",
+        "throughput": 0.0008300395256930119
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "0D_bubblecollapse_adap"
+      },
+      "run_group": "mfc_grid_0D_bubblecollapse_adap",
+      "attempt": 4,
+      "measured_at": "2026-10-26T00:37:35.481725+00:00"
+    },
+    {
+      "objective": 0.0006887052341597796,
+      "metrics": {
+        "grind_ns": 1452.0,
+        "pre_exec_s": 2.5203477,
+        "sim_exec_s": 3.367238,
+        "status": "ok",
+        "throughput": 0.0006887052341597796
+      },
+      "configuration": {
+        "BIND": "numa",
+        "CASE_OPT": "on",
+        "FASTMATH": "on",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_hypo_2materials"
+      },
+      "run_group": "mfc_grid_1D_hypo_2materials",
+      "attempt": 17,
+      "measured_at": "2026-10-24T12:15:31.488626+00:00"
+    },
+    {
+      "objective": 0.00033707865168501453,
+      "metrics": {
+        "grind_ns": 2966.66666667,
+        "pre_exec_s": 2.5606814,
+        "sim_exec_s": 3.448407,
+        "status": "ok",
+        "throughput": 0.00033707865168501453
+      },
+      "configuration": {
+        "BIND": "cores",
+        "CASE_OPT": "on",
+        "FASTMATH": "off",
+        "GBPP": 16,
+        "IGR_ITER_SOLVER": "case",
+        "NUM_IGR_ITERS": "case",
+        "PRECISION": "double",
+        "RANKS": 2,
+        "RDMA_MPI": "on",
+        "STEPS": 50,
+        "UCX_RNDV_SCHEME": "default",
+        "UCX_RNDV_THRESH": "default",
+        "UCX_TLS": "default",
+        "case": "1D_poly_bubscreen"
+      },
+      "run_group": "mfc_grid_1D_poly_bubscreen",
+      "attempt": 7,
+      "measured_at": "2026-10-25T04:56:51.754889+00:00"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "unit": "Triad MB/s (one H100 NVL)",
+  "run_groups": [
+    "ngc_stream_smac3"
+  ],
+  "top": [
+    {
+      "objective": 3446487.9583,
+      "metrics": {
+        "add_mb_s": 3513093.236,
+        "copy_mb_s": 3495844.9694,
+        "scale_mb_s": 3505798.1902,
+        "triad_mb_s": 3446487.9583
+      },
+      "configuration": {
+        "ARRAY_SIZE": 1073741824,
+        "DEVICE": 0,
+        "DTYPE": "fp32",
+        "POWER_LIMIT_W": 310,
+        "SM_CLOCK_MHZ": 1785
+      },
+      "run_group": "ngc_stream_smac3",
+      "attempt": 4,
+      "measured_at": "2026-10-26T07:09:09.651828+00:00"
+    },
+    {
+      "objective": 2963474.1888,
+      "metrics": {
+        "add_mb_s": 2941994.7161,
+        "copy_mb_s": 2744963.3626,
+        "scale_mb_s": 2792944.291,
+        "triad_mb_s": 2963474.1888
+      },
+      "configuration": {
+        "ARRAY_SIZE": 67108864,
+        "DEVICE": 0,
+        "DTYPE": "fp32",
+        "POWER_LIMIT_W": 400,
+        "SM_CLOCK_MHZ": 990
+      },
+      "run_group": "ngc_stream_smac3",
+      "attempt": 5,
+      "measured_at": "2026-10-26T07:09:13.103869+00:00"
+    },
+    {
+      "objective": 2456757.1977,
+      "metrics": {
+        "add_mb_s": 2456265.391,
+        "copy_mb_s": 1997488.7635,
+        "scale_mb_s": 2019492.1435,
+        "triad_mb_s": 2456757.1977
+      },
+      "configuration": {
+        "ARRAY_SIZE": 0,
+        "DEVICE": 1,
+        "DTYPE": "fp64",
+        "POWER_LIMIT_W": 250,
+        "SM_CLOCK_MHZ": 1410
+      },
+      "run_group": "ngc_stream_smac3",
+      "attempt": 3,
+      "measured_at": "2026-10-26T07:08:52.833806+00:00"
+    }
+  ]
+}

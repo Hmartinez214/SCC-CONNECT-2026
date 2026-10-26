@@ -1,0 +1,53 @@
+{
+  "unit": "busbw GB/s (2x H100 NVL, NVLink)",
+  "best_per_collective": [
+    {
+      "collective": "all_reduce",
+      "objective": 247.63,
+      "default_busbw_gb_s": 233.89,
+      "configuration": {
+        "NCCL_MIN_NCHANNELS": "32",
+        "NCCL_MAX_NCHANNELS": "32",
+        "NCCL_PROTO": "Simple",
+        "NCCL_NTHREADS": "512"
+      },
+      "log": "outputs/nccl_launchpad/tune_20261026.log"
+    },
+    {
+      "collective": "all_gather",
+      "objective": 238.83,
+      "default_busbw_gb_s": 194.79,
+      "configuration": {
+        "NCCL_MIN_NCHANNELS": "32",
+        "NCCL_MAX_NCHANNELS": "32",
+        "NCCL_PROTO": "Simple",
+        "NCCL_NTHREADS": "512"
+      },
+      "log": "outputs/nccl_launchpad/tune_20261026.log"
+    },
+    {
+      "collective": "reduce_scatter",
+      "objective": 240.05,
+      "default_busbw_gb_s": 199.71,
+      "configuration": {
+        "NCCL_MIN_NCHANNELS": "32",
+        "NCCL_MAX_NCHANNELS": "32",
+        "NCCL_PROTO": "Simple"
+      },
+      "log": "outputs/nccl_launchpad/tune_20261026.log"
+    },
+    {
+      "collective": "broadcast",
+      "objective": 251.58,
+      "default_busbw_gb_s": 246.35,
+      "configuration": {
+        "NCCL_MIN_NCHANNELS": "32",
+        "NCCL_MAX_NCHANNELS": "32",
+        "NCCL_BUFFSIZE": "16777216",
+        "NCCL_NTHREADS": "256",
+        "NCCL_P2P_READ_ENABLE": "1"
+      },
+      "log": "outputs/nccl_launchpad/tune_20261026.log"
+    }
+  ]
+}
