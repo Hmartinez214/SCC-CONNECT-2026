@@ -53,7 +53,7 @@ def parse(text):
             )
         )
     peak = max(
-        (r["ip_busbw"] for r in rows if r["ip_busbw"] is not None),
+        (r["oop_busbw"] for r in rows if r["oop_busbw"] is not None),
         default=None,
     )
     return dict(rows=rows, avg_busbw=avg, peak_busbw=peak)
