@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # Environment for building and running STREAM on Launchpad; sourced (from
-# the repo root) by stream_smac3.sh and runstream.sh. Returns non-zero if
+# the repo root) by stream_smac3.sh. Returns non-zero if
 # something is missing.
 
 # shellcheck disable=SC1091

@@ -20,7 +20,8 @@ Results written by the Launchpad tuners and benchmark scripts. Everything here i
 | `system_ab/` | Fixed-config A/B tests of system settings (`scripts/Launchpad/hpl/system_ab.sh`): `results.tsv`, per-phase logs, per-run `runs/` |
 | `ngc_hpl/` | NGC GPU HPL runs (`scripts/Launchpad/hpl/ngc_hpl.sh`): `<timestamp>.log`, plus `<timestamp>.dat` when N/NB/DAT were overridden |
 | `hpl_bign/` | Endless large-N Intel HPL sweep (`scripts/Launchpad/hpl/hpl_bign.sh`): `results.tsv` (GFLOPS, clocks, power per run), `runs/` (HPL.dat, hpl.log, turbostat per run), `hpl_bign_tmux.log` |
-| `stream_best/` | `scripts/Launchpad/stream/runstream.sh` runs of the best STREAM config: generated job script `<timestamp>.sh` and its log |
+| `stream_best/` | Earlier best-STREAM runs (the old `runstream.sh`, now `stream/runbest.sh`) |
+| `runbest/` | One directory per `runbest*.sh` run (HPL, STREAM, NGC HPL/STREAM, MFC, NCCL): inputs, logs |
 | `best/` | **Tracked in git.** Best configurations with measured performance for every benchmark (`README.md` summary, one JSON per benchmark). Regenerate: `venv/bin/python scripts/Launchpad/export_best.py` |
 | `stream/` | The earlier random STREAM sweep (`scripts/Launchpad/stream/streamsweep.py`): `trials.jsonl`/`.csv`, build/run `logs/`. Its compatible trials seeded `stream_smac3`. |
 
