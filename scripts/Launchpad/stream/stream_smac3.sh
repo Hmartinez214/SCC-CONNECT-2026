@@ -5,20 +5,16 @@
 #   DURATION=300 scripts/Launchpad/stream/stream_smac3.sh   # stop after 5 min
 #
 # Ctrl-C stops it; running it again resumes from
-# outputs/autotuning/stream_smac3/evaluations.jsonl.
+# outputs/autotuning/<run_group>/evaluations.jsonl.
 
 SCC_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$SCC_DIR" || exit 1
 
-# shellcheck disable=SC1091
-source ./launchpad_env.sh
-cd "$SCC_DIR" || exit 1
-
-# Same icx as the earlier random sweep (its results are the priors).
-spack load intel-oneapi-compilers || exit 1
+# shellcheck source=SCRIPTDIR/stream_env.sh
+source scripts/Launchpad/stream/stream_env.sh || exit 1
 
 CONFIG="${1:-scripts/Launchpad/stream/stream_smac3.yaml}"
-echo "icx: $(command -v icx)"
+echo "icx: $(command -v icx)  mpiicx: $(command -v mpiicx)"
 
 if [[ -n "${DURATION:-}" ]]; then
     # SIGINT takes the controller's clean-stop path (kills the running job).

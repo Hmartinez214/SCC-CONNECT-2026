@@ -1,0 +1,36 @@
+# SMAC3 autotuning of NVIDIA-STREAM (GPU STREAM from the NGC
+# nvcr.io/nvidia/hpc-benchmarks container) on the Launchpad node's 2x H100
+# NVL, driven by scripts/Launchpad/stream/ngc_stream_autotune.py (see its
+# docstring for the space). The CPU STREAM setup is stream_smac3.yaml.
+#
+# Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+
+experiment:
+  name: stream-ngc-launchpad-smac3
+  optimizer: smac3
+  run_group: ngc_stream_smac3
+  budget: 1000000000
+  seed: 42
+
+objective:
+  metric: triad_mb_s
+  direction: maximize
+
+application:
+  type: stream_ngc
+  executable: nvcr.io/nvidia/hpc-benchmarks:26.02.01   # container image
+  tunable:
+    - ARRAY_SIZE       # elements; 0 = container default (fills the GPU)
+    - DTYPE            # fp64 | fp32
+    - DEVICE           # 0 | 1
+    - SM_CLOCK_MHZ     # 0 (unlocked) 1785 1650 1530 1410 1260 1110 990
+    - POWER_LIMIT_W    # 400 350 310 (default) 250 200
+  fixed: {}
+
+# Reused by the local scheduler: time is the per-run wall limit; runs over it
+# are killed and recorded as TIMEOUT.
+slurm:
+  nodes: 1
+  ntasks: 1
+  time: "00:05:00"
+  submit_retries: 3

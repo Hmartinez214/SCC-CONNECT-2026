@@ -2,16 +2,27 @@
 # scripts/Launchpad/stream/stream_autotune.py (see its docstring for the space).
 #
 # Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
-# On first start the run group is seeded with the compatible results of the
-# earlier random sweep (experiment.priors), so SMAC starts from them.
+# Lineage: stream_smac3 (seeded from the earlier random sweep) ->
+# stream_smac3_v2 (+ UNCORE_MAX_MHZ and THP, both machine-wide, set per job
+# and restored after) -> stream_smac3_v3 (+ finer OMP_THREADS steps,
+# KMP_BLOCKTIME, and MPI: MPI_RANKS / MPI_PIN_DOMAIN / MPI_PIN_ORDER with
+# stream_mpi.c built by Intel MPI's mpiicx; OMP_THREADS was the total over
+# ranks) -> stream_smac3_v4 (OMP_THREADS is threads per rank, adds 1-8;
+# MPI_RANKS x OMP_THREADS <= 128) -> stream_smac3_v5 (+ UNCORE_PIN, EPB,
+# CSTATES: OS-side power management, set per job and restored after). On
+# first start this run group is seeded
+# with every finished stream_smac3_v4 run (which holds all earlier ones),
+# filled in with what it ran under (uncore unpinned, EPB 6, all C-states;
+# v3's MPI runs at their per-rank thread count; older runs KMP_BLOCKTIME default, MPI_RANKS 1, THP=madvise and uncore
+# 2.5 GHz, or the 2.0 GHz cap for runs after 2026-10-17 21:46).
 
 experiment:
   name: stream-launchpad-smac3
   optimizer: smac3
-  run_group: stream_smac3
+  run_group: stream_smac3_v5
   budget: 1000000000
   seed: 42
-  priors: outputs/stream/trials.jsonl
+  priors: outputs/autotuning/stream_smac3_v4/evaluations.jsonl
 
 objective:
   metric: triad_mb_s
@@ -28,11 +39,20 @@ application:
     - ISA
     - STORES
     - EXTRA
-    - OMP_THREADS
+    - OMP_THREADS      # per rank: 1 2 4 8 16 24 32 40 48 56 64 72 80 96 112 128
     - KMP_AFFINITY
     - OMP_PROC_BIND
     - OMP_PLACES
+    - KMP_BLOCKTIME    # default (200 ms) | 0 | infinite
     - NUMA
+    - MPI_RANKS        # 1 (plain stream.c) 2 4 8 16 32 64
+    - MPI_PIN_DOMAIN   # omp | auto | numa  (I_MPI_PIN_DOMAIN)
+    - MPI_PIN_ORDER    # compact | scatter  (I_MPI_PIN_ORDER)
+    - UNCORE_MAX_MHZ   # 2500 (default) 2000 1600 1400 1200 1000 800
+    - THP              # madvise (default) | always | never
+    - UNCORE_PIN       # off (dynamic) | on (min = max)
+    - EPB              # 6 (default) 4 0
+    - CSTATES          # all | no_c6 | c1_only
   fixed: {}
 
 # Reused by the local scheduler: time is the per-run wall limit (compile +
