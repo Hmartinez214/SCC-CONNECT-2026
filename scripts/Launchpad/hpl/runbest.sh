@@ -1,19 +1,57 @@
 #!/usr/bin/env bash
-# Intel HPL (MKL mp_linpack, CPU) with the best configuration found on Launchpad:
-# 4403.6 GFLOPS at N=324520 (hpl_bign.sh, 2026-10-26), ~86 min.
-# Config: smac3_intel_hpl_fast attempt 355 (outputs/best/hpl_intel.json).
+# Intel HPL (MKL mp_linpack, CPU) with the best configuration found on
+# Launchpad: the top entry of outputs/best/hpl_intel.json, at the N of its
+# best large-N run (hpl_bign.sh runs that same configuration).
 #
-#   scripts/Launchpad/hpl/runbest.sh              # N=324520
-#   N=90482 scripts/Launchpad/hpl/runbest.sh      # the tuner's size (~2 min, 4287.9 GFLOPS)
+#   scripts/Launchpad/hpl/runbest.sh                 # large N (~1.5 h)
+#   N=90482 scripts/Launchpad/hpl/runbest.sh         # any other N
 #
-# One MPI rank over both sockets (HPL_HOST_NODE=0-1), one thread per physical
-# core (CPUs 0-63), uncore capped at 1.0 GHz for the run (restored after).
-# Waits for the node lock. Log and HPL.dat: outputs/runbest/hpl_intel_<time>/
+# Ranks: at most one per NUMA node (HPL_HOST_NODE), each pinned to its nodes'
+# cores (plus hyperthreads with HPL_HT=1). The uncore cap is set for the run
+# and restored after. Waits for the node lock.
+# Log and HPL.dat: outputs/runbest/hpl_intel_<time>/
 
 set -uo pipefail
 SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$SCC" || exit 1
-N="${N:-324520}"
+
+# ---- best configuration -> BEST_* variables ---------------------------------
+# Every key of the top entry's configuration, plus values derived from it for
+# this node: P, Q, RANKS, NUMA_PER_RANK, PIN_DOMAIN (one CPU mask per rank)
+# and NUMTHREADS (HPL_NUMTHREADS resolved per rank; empty = Intel's default).
+eval "$(python3 - "$SCC/outputs/best/hpl_intel.json" <<'EOF'
+import json, shlex, subprocess, sys
+best = json.load(open(sys.argv[1]))
+top, large = best["top"][0], best["large_n"][0]
+v = {**top["configuration"], "OBJECTIVE": top["objective"],
+     "SOURCE": f"{top['run_group']} attempt {top['attempt']}",
+     "N_LARGE": large["N"], "OBJECTIVE_LARGE": large["objective"]}
+p, q = map(int, str(v["GRID"]).split("x"))
+cpus = [tuple(map(int, l.split(","))) for l in subprocess.run(["lscpu", "-p=CPU,CORE,NODE"], capture_output=True,
+        text=True).stdout.splitlines() if l[:1].isdigit()]
+nodes = sorted({n for _, _, n in cpus})
+if len(nodes) % (p * q):
+    print(f"echo 'GRID {v['GRID']}: this script places at most one rank per NUMA node' >&2; exit 1"); sys.exit()
+per = len(nodes) // (p * q)
+first = {}
+for cpu, core, _ in cpus:
+    first.setdefault(core, cpu)                      # a core's first hardware thread
+masks, owned = [], 0
+for r in range(p * q):
+    mine = [c for c, core, n in cpus if n in nodes[r * per:(r + 1) * per] and (int(v["HPL_HT"]) or first[core] == c)]
+    masks.append(hex(sum(1 << c for c in mine)))
+    owned = len(mine)
+threads = {"all": "", "-1": owned - 1, "-2": owned - 2, "-4": owned - 4,
+           "3/4": owned * 3 // 4, "1/2": owned // 2}[str(v["HPL_NUMTHREADS"])]
+v.update(P=p, Q=q, RANKS=p * q, NUMA_PER_RANK=per, PIN_DOMAIN="[" + ",".join(masks) + "]", NUMTHREADS=threads)
+for key, value in v.items():
+    print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
+EOF
+)"
+[[ -n ${BEST_SOURCE:-} ]] || { echo "could not read outputs/best/hpl_intel.json" >&2; exit 1; }
+N="${N:-$BEST_N_LARGE}"
+echo "best: $BEST_SOURCE ($BEST_OBJECTIVE GFLOPS at N=$BEST_N; $BEST_OBJECTIVE_LARGE at N=$BEST_N_LARGE)"
+
 RUN="$SCC/outputs/runbest/hpl_intel_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$RUN"
 
@@ -34,38 +72,49 @@ HPL.out      output file name (if any)
 1            # of problems sizes (N)
 $N           Ns
 1            # of NBs
-760          NBs
-0            PMAP process mapping (0=Row-,1=Column-major)
+$BEST_NB          NBs
+$BEST_PMAP            PMAP process mapping (0=Row-,1=Column-major)
 1            # of process grids (P x Q)
-1            Ps
-1            Qs
+$BEST_P            Ps
+$BEST_Q            Qs
 16.0         threshold
 1            # of panel fact
-0            PFACTs (0=left, 1=Crout, 2=Right)
+$BEST_PFACT            PFACTs (0=left, 1=Crout, 2=Right)
 1            # of recursive stopping criterium
-1            NBMINs (>= 1)
+$BEST_NBMIN            NBMINs (>= 1)
 1            # of panels in recursion
-2            NDIVs
+$BEST_NDIV            NDIVs
 1            # of recursive panel fact.
-2            RFACTs (0=left, 1=Crout, 2=Right)
+$BEST_RFACT            RFACTs (0=left, 1=Crout, 2=Right)
 1            # of broadcast
-2            BCASTs (0=1rg,1=1rM,2=2rg,3=2rM,4=Lng,5=LnM)
+$BEST_BCAST            BCASTs (0=1rg,1=1rM,2=2rg,3=2rM,4=Lng,5=LnM)
 1            # of lookahead depth
-5            DEPTHs (>=0)
-2            SWAP (0=bin-exch,1=long,2=mix)
-64           swapping threshold
-1            L1 in (0=transposed,1=no-transposed) form
-0            U  in (0=transposed,1=no-transposed) form
-1            Equilibration (0=no,1=yes)
-8            memory alignment in double (> 0)
+$BEST_DEPTH            DEPTHs (>=0)
+$BEST_SWAP            SWAP (0=bin-exch,1=long,2=mix)
+$BEST_SWAP_THRESH           swapping threshold
+$BEST_L1            L1 in (0=transposed,1=no-transposed) form
+$BEST_U            U  in (0=transposed,1=no-transposed) form
+$BEST_EQUIL            Equilibration (0=no,1=yes)
+$BEST_ALIGN            memory alignment in double (> 0)
 EOF
 
 # Placement and Intel HPL knobs.
 for v in $(compgen -e | grep '^I_MPI_PIN'); do unset "$v"; done
 unset OMP_NUM_THREADS MKL_NUM_THREADS HPL_NUMTHREADS GLIBC_TUNABLES
-export I_MPI_PIN=1 I_MPI_PIN_DOMAIN='[0xffffffffffffffff]' I_MPI_DEBUG=4   # rank 0 -> CPUs 0-63
-export HPL_HOST_NODE=0-1
-export HPL_LOG=2 HPL_LARGEPAGE=0 HPL_HT=0 HPL_PAIR=4 HPL_UMODE=2 HPL_SWAPWIDTH=192 HPL_SWAPTHRESHOLD=100
+export I_MPI_PIN=1 I_MPI_PIN_DOMAIN="$BEST_PIN_DOMAIN" I_MPI_DEBUG=4
+export HPL_LOG=$BEST_HPL_LOG HPL_LARGEPAGE=$BEST_HPL_LARGEPAGE HPL_HT=$BEST_HPL_HT HPL_PAIR=$BEST_HPL_PAIR \
+       HPL_UMODE=$BEST_HPL_UMODE HPL_SWAPWIDTH=$BEST_HPL_SWAPWIDTH HPL_SWAPTHRESHOLD=$BEST_HPL_SWAPTHRESHOLD
+[[ -n $BEST_NUMTHREADS ]] && export HPL_NUMTHREADS=$BEST_NUMTHREADS
+# Rank r owns NUMA nodes r*NUMA_PER_RANK ... (r+1)*NUMA_PER_RANK-1.
+cat > "$RUN/intel_rank.sh" <<EOF
+#!/bin/bash
+r=\${MPI_LOCALRANKID:-0}
+export HPL_HOST_NODE=\$((r * $BEST_NUMA_PER_RANK))-\$(((r + 1) * $BEST_NUMA_PER_RANK - 1))
+exec "\$@"
+EOF
+chmod +x "$RUN/intel_rank.sh"
+NUMA=(); [[ $BEST_MEM_POLICY == interleave ]] && NUMA=(numactl --interleave=all)
+[[ $BEST_HPL_LARGEPAGE == 1 ]] && echo "note: HPL_LARGEPAGE=1 needs hugetlbfs pages reserved (vm.nr_hugepages); this script does not reserve them" >&2
 
 # Uncore cap for the run; restored on any exit.
 UNC=(/sys/devices/system/cpu/intel_uncore_frequency/package_*_die_*)
@@ -80,7 +129,9 @@ trap 'exit 130' INT TERM HUP
 
 exec 9>"$SCC/outputs/autotuning/.node.lock"
 flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
-for d in "${UNC[@]}"; do echo 1000000 | sudo -n tee "$d/max_freq_khz" >/dev/null || { echo "needs passwordless sudo" >&2; exit 1; }; done
-echo "Intel HPL N=$N, uncore max 1000 MHz -> $RUN"
-cd "$RUN" && mpirun -np 1 "$XHPL" 2>&1 | tee hpl.log
+for d in "${UNC[@]}"; do
+    echo $(( BEST_UNCORE_MAX_MHZ * 1000 )) | sudo -n tee "$d/max_freq_khz" >/dev/null || { echo "needs passwordless sudo" >&2; exit 1; }
+done
+echo "Intel HPL N=$N, grid ${BEST_P}x$BEST_Q, uncore max $BEST_UNCORE_MAX_MHZ MHz -> $RUN"
+cd "$RUN" && mpirun -np "$BEST_RANKS" -perhost "$BEST_RANKS" "$RUN/intel_rank.sh" "${NUMA[@]}" "$XHPL" 2>&1 | tee hpl.log
 grep -E "^W[RC]|PASSED|FAILED" "$RUN/hpl.log"

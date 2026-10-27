@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # NVIDIA HPL (NGC hpc-benchmarks 26.02.01) on both H100 NVLs with the best
-# configuration found on Launchpad: 69.15 TFLOPS at N=136192 (34.6 per GPU), ~30 s.
-# outputs/best/ngc_hpl.json. Larger N (144384) was no faster: both GPUs sit at 400 W.
+# configuration found on Launchpad: the top entry of outputs/best/ngc_hpl.json
+# (N, NB, P, Q; the other HPL.dat lines are the container's 2-GPU sample).
 #
 #   scripts/Launchpad/hpl/runbest_ngc.sh
 #
@@ -14,23 +14,35 @@
 set -uo pipefail
 SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
 IMAGE=nvcr.io/nvidia/hpc-benchmarks:26.02.01
+
+# ---- best configuration -> BEST_* variables (every key of the top entry) ----
+eval "$(python3 - "$SCC/outputs/best/ngc_hpl.json" <<'EOF'
+import json, shlex, sys
+top = json.load(open(sys.argv[1]))["top"][0]
+v = {**top["configuration"], "OBJECTIVE": top["objective"], "SOURCE": top["log"]}
+for key, value in v.items():
+    print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
+EOF
+)"
+[[ -n ${BEST_SOURCE:-} ]] || { echo "could not read outputs/best/ngc_hpl.json" >&2; exit 1; }
+(( BEST_P * BEST_Q == 2 )) || { echo "P x Q = ${BEST_P}x$BEST_Q: this script runs one rank on each of the 2 GPUs" >&2; exit 1; }
+echo "best: $BEST_SOURCE ($BEST_OBJECTIVE GFLOPS)"
+
 RUN="$SCC/outputs/runbest/ngc_hpl_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$RUN"
-
-# The container's HPL-2GPUs.dat sample (N=136608; HPL-NVIDIA runs it as 136192).
-cat > "$RUN/HPL.dat" <<'EOF'
+cat > "$RUN/HPL.dat" <<EOF
 HPLinpack benchmark input file
 Innovative Computing Laboratory, University of Tennessee
 HPL.out      output file name (if any)
 6            device out (6=stdout,7=stderr,file)
 1            # of problems sizes (N)
-136608       Ns
+$BEST_N       Ns
 1            # of NBs
-1024         NBs
+$BEST_NB         NBs
 1            PMAP process mapping (0=Row-,1=Column-major)
 1            # of process grids (P x Q)
-2            Ps
-1            Qs
+$BEST_P            Ps
+$BEST_Q            Qs
 16.0         threshold
 1            # of panel fact
 0 1 2        PFACTs (0=left, 1=Crout, 2=Right)
@@ -54,7 +66,7 @@ EOF
 
 exec 9>"$SCC/outputs/autotuning/.node.lock"
 flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
-echo "NGC HPL, 2x H100 NVL -> $RUN"
+echo "NGC HPL N=$BEST_N NB=$BEST_NB, 2x H100 NVL -> $RUN"
 docker run --rm --device management.nvidia.com/gpu=all --cap-add SYS_NICE --ipc=host \
     --ulimit memlock=-1 --ulimit stack=67108864 -v "$RUN/HPL.dat:/run/HPL.dat:ro" "$IMAGE" \
     mpirun --allow-run-as-root --bind-to none -np 2 \

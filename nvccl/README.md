@@ -10,6 +10,7 @@ GPU count.
     scripts/bench.sh all_reduce 8 8G       # NGPUS ranks, size sweep + parse
     scripts/sweep.sh all_reduce 1M 8G      # grid over NCCL_ALGO x PROTO x channels
     scripts/explore.sh                     # dump NCCL's topology/graph decisions
+    scripts/runbest.sh                     # Launchpad: each collective with its best NCCL settings
 
 `busbw` (bus bandwidth) is the headline number: link utilisation, comparable to
 the interconnect peak. Small messages are latency-bound (watch `time`); large
