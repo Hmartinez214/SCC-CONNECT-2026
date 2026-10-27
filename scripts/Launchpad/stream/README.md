@@ -13,6 +13,8 @@ python scripts/Launchpad/plot_tuning.py --run-group stream_smac3_v5 --metric tri
 
 - Config: `stream_smac3.yaml`. Run group `stream_smac3_v5`, seeded from `stream_smac3_v4` (which holds `stream_smac3_v3`, `stream_smac3_v2`, `stream_smac3` and, before them, the earlier random sweep in `outputs/stream/`).
 - `runbest.sh`: one STREAM run with the best configuration (479.2 GB/s), read from `outputs/best/stream.json` into `BEST_*` variables (build flags, threading, THP / uncore / EPB / C-states set and restored). `runbest_ngc.sh`: the same for NGC GPU STREAM (3446.5 GB/s on one H100). Logs in `outputs/runbest/`.
+  `runbest.sh KEY=VALUE ...` overrides keys of the configuration (e.g. `OMP_THREADS=60`).
+- `stream_cont.sh` / `stream_cont_tmux.sh`: endless loop (tmux session `stream-cont`) alternating the best configuration with a one-knob variation of it (threads, array size, offset, NTIMES, uncore pin, EPB, C-states, THP, KMP affinity). Results in `outputs/stream_cont/results.tsv`; `stream_cont.sh --summary` gives Triad mean/sd per variant against the baseline.
 - `stream_autotune.py --config stream_smac3.yaml --check-replay` audits the history (no runs).
 - HPL and STREAM tuners share a node lock, so their runs never overlap.
 - Other files: `streamsweep.py`/`streamsweep.sh` (earlier random sweep -> `outputs/stream/`), `streambest.py` (rank its results), `stream.sh` (spack STREAM build), `stream_env.sh` (compiler / Intel MPI environment shared by the runners).

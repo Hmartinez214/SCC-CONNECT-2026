@@ -3,6 +3,7 @@
 # Launchpad: the top entry of outputs/best/stream.json.
 #
 #   scripts/Launchpad/stream/runbest.sh
+#   scripts/Launchpad/stream/runbest.sh OMP_THREADS=60 OFFSET=0   # override keys of the configuration
 #
 # OpenMP-only (MPI_RANKS=1). For the run the machine-wide settings of the
 # configuration are applied -- THP mode, uncore max (and min with
@@ -14,10 +15,14 @@ SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$SCC" || exit 1
 
 # ---- best configuration -> BEST_* variables (every key of the top entry) ----
-eval "$(python3 - "$SCC/outputs/best/stream.json" <<'EOF'
+eval "$(python3 - "$SCC/outputs/best/stream.json" "$@" <<'EOF'
 import json, shlex, sys
 top = json.load(open(sys.argv[1]))["top"][0]
-v = {**top["configuration"], "OBJECTIVE": top["objective"], "SOURCE": f"{top['run_group']} attempt {top['attempt']}"}
+over = dict(arg.split("=", 1) for arg in sys.argv[2:])
+if set(over) - set(top["configuration"]):
+    print(f"echo 'not a configuration key: {sorted(set(over) - set(top['configuration']))}' >&2; exit 1"); sys.exit()
+v = {**top["configuration"], **over, "OBJECTIVE": top["objective"],
+     "SOURCE": f"{top['run_group']} attempt {top['attempt']}" + "".join(f" {k}={x}" for k, x in over.items())}
 for key, value in v.items():
     print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
 EOF
