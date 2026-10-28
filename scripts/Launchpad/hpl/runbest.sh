@@ -5,6 +5,8 @@
 #
 #   scripts/Launchpad/hpl/runbest.sh                 # large N (~1.5 h)
 #   N=90482 scripts/Launchpad/hpl/runbest.sh         # any other N
+#   EXCLUDE_CPUS=0,64 scripts/Launchpad/hpl/runbest.sh  # leave these CPUs out (one thread per CPU left)
+#   EXCLUDE_CPUS=none ...                               # same pinning path, nothing left out
 #
 # Ranks: at most one per NUMA node (HPL_HOST_NODE), each pinned to its nodes'
 # cores (plus hyperthreads with HPL_HT=1). The uncore cap is set for the run
@@ -18,8 +20,11 @@ cd "$SCC" || exit 1
 # ---- best configuration -> BEST_* variables ---------------------------------
 # Every key of the top entry's configuration, plus values derived from it for
 # this node: P, Q, RANKS, NUMA_PER_RANK, PIN_DOMAIN (one CPU mask per rank)
-# and NUMTHREADS (HPL_NUMTHREADS resolved per rank; empty = Intel's default).
-eval "$(python3 - "$SCC/outputs/best/hpl_intel.json" <<'EOF'
+# NUMTHREADS (HPL_NUMTHREADS resolved per rank; empty = Intel's default) and,
+# with EXCLUDE_CPUS, HOST_CORES (per rank, ';'-separated CPU ranges): Intel
+# HPL pins its threads itself, ignoring the MPI mask, and HPL_HOST_NODE takes
+# precedence over HPL_HOST_CORE, so those ranks get HPL_HOST_CORE only.
+eval "$(python3 - "$SCC/outputs/best/hpl_intel.json" "${EXCLUDE_CPUS:-}" <<'EOF'
 import json, shlex, subprocess, sys
 best = json.load(open(sys.argv[1]))
 top, large = best["top"][0], best["large_n"][0]
@@ -36,14 +41,24 @@ per = len(nodes) // (p * q)
 first = {}
 for cpu, core, _ in cpus:
     first.setdefault(core, cpu)                      # a core's first hardware thread
-masks, owned = [], 0
+skip = {int(c) for c in sys.argv[2].split(",") if c.isdigit()}
+def ranges(cs):
+    out, cs = [], sorted(cs)
+    for c in cs:
+        if out and c == out[-1][1] + 1: out[-1][1] = c
+        else: out.append([c, c])
+    return ",".join(f"{a}-{b}" if a != b else f"{a}" for a, b in out)
+masks, owned, host = [], 0, []
 for r in range(p * q):
-    mine = [c for c, core, n in cpus if n in nodes[r * per:(r + 1) * per] and (int(v["HPL_HT"]) or first[core] == c)]
+    mine = [c for c, core, n in cpus if n in nodes[r * per:(r + 1) * per] and (int(v["HPL_HT"]) or first[core] == c) and c not in skip]
     masks.append(hex(sum(1 << c for c in mine)))
+    host.append(ranges(mine) if sys.argv[2] else "")
     owned = len(mine)
 threads = {"all": "", "-1": owned - 1, "-2": owned - 2, "-4": owned - 4,
            "3/4": owned * 3 // 4, "1/2": owned // 2}[str(v["HPL_NUMTHREADS"])]
-v.update(P=p, Q=q, RANKS=p * q, NUMA_PER_RANK=per, PIN_DOMAIN="[" + ",".join(masks) + "]", NUMTHREADS=threads)
+if sys.argv[2] and threads == "":
+    threads = owned                                  # Intel's default would use every core of the node
+v.update(P=p, Q=q, RANKS=p * q, NUMA_PER_RANK=per, PIN_DOMAIN="[" + ",".join(masks) + "]", NUMTHREADS=threads, HOST_CORES=";".join(host))
 for key, value in v.items():
     print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
 EOF
@@ -109,7 +124,9 @@ export HPL_LOG=$BEST_HPL_LOG HPL_LARGEPAGE=$BEST_HPL_LARGEPAGE HPL_HT=$BEST_HPL_
 cat > "$RUN/intel_rank.sh" <<EOF
 #!/bin/bash
 r=\${MPI_LOCALRANKID:-0}
-export HPL_HOST_NODE=\$((r * $BEST_NUMA_PER_RANK))-\$(((r + 1) * $BEST_NUMA_PER_RANK - 1))
+IFS=';' read -ra cores <<< "$BEST_HOST_CORES"
+if [[ -n \${cores[r]:-} ]]; then export HPL_HOST_CORE=\${cores[r]}
+else export HPL_HOST_NODE=\$((r * $BEST_NUMA_PER_RANK))-\$(((r + 1) * $BEST_NUMA_PER_RANK - 1)); fi
 exec "\$@"
 EOF
 chmod +x "$RUN/intel_rank.sh"
@@ -132,6 +149,6 @@ flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
 for d in "${UNC[@]}"; do
     echo $(( BEST_UNCORE_MAX_MHZ * 1000 )) | sudo -n tee "$d/max_freq_khz" >/dev/null || { echo "needs passwordless sudo" >&2; exit 1; }
 done
-echo "Intel HPL N=$N, grid ${BEST_P}x$BEST_Q, uncore max $BEST_UNCORE_MAX_MHZ MHz -> $RUN"
+echo "Intel HPL N=$N, grid ${BEST_P}x$BEST_Q, pin $BEST_PIN_DOMAIN${BEST_HOST_CORES:+ (HPL_HOST_CORE $BEST_HOST_CORES)}, threads ${BEST_NUMTHREADS:-all}, uncore max $BEST_UNCORE_MAX_MHZ MHz -> $RUN"
 cd "$RUN" && mpirun -np "$BEST_RANKS" -perhost "$BEST_RANKS" "$RUN/intel_rank.sh" "${NUMA[@]}" "$XHPL" 2>&1 | tee hpl.log
 grep -E "^W[RC]|PASSED|FAILED" "$RUN/hpl.log"
