@@ -7,6 +7,9 @@
 #   N=90482 scripts/Launchpad/hpl/runbest.sh         # any other N
 #   EXCLUDE_CPUS=0,64 scripts/Launchpad/hpl/runbest.sh  # leave these CPUs out (one thread per CPU left)
 #   EXCLUDE_CPUS=none ...                               # same pinning path, nothing left out
+#   HUGEPAGES=2m|1g scripts/Launchpad/hpl/runbest.sh     # HPL_LARGEPAGE=1 on reserved hugetlbfs pages:
+#       2m: the default 2 MB pool; 1g: 1 GB pages for allocations >= 256 MB
+#       via the hugetlb1g.c LD_PRELOAD shim. Pools are released after the run.
 #
 # Ranks: at most one per NUMA node (HPL_HOST_NODE), each pinned to its nodes'
 # cores (plus hyperthreads with HPL_HT=1). The uncore cap is set for the run
@@ -125,6 +128,7 @@ cat > "$RUN/intel_rank.sh" <<EOF
 #!/bin/bash
 r=\${MPI_LOCALRANKID:-0}
 IFS=';' read -ra cores <<< "$BEST_HOST_CORES"
+[[ -f "$RUN/hugetlb1g.so" ]] && export LD_PRELOAD="$RUN/hugetlb1g.so"
 if [[ -n \${cores[r]:-} ]]; then export HPL_HOST_CORE=\${cores[r]}
 else export HPL_HOST_NODE=\$((r * $BEST_NUMA_PER_RANK))-\$(((r + 1) * $BEST_NUMA_PER_RANK - 1)); fi
 exec "\$@"
@@ -133,13 +137,32 @@ chmod +x "$RUN/intel_rank.sh"
 NUMA=(); [[ $BEST_MEM_POLICY == interleave ]] && NUMA=(numactl --interleave=all)
 [[ $BEST_HPL_LARGEPAGE == 1 ]] && echo "note: HPL_LARGEPAGE=1 needs hugetlbfs pages reserved (vm.nr_hugepages); this script does not reserve them" >&2
 
-# Uncore cap for the run; restored on any exit.
+# Huge-page pools (HUGEPAGES=2m|1g): matrix + 5%, plus 8 GB of 2 MB pages
+# for Intel HPL's smaller buffers (as the tuner reserves them).
+HP2=/sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+HP1G=/sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+HP2_FOUND=$(cat $HP2); HP1G_FOUND=$(cat $HP1G)
+MATRIX_MB=$(( N * N * 8 / 2**20 * 105 / 100 ))
+case ${HUGEPAGES:-} in
+    "") ;;
+    2m) HP2_WANT=$(( MATRIX_MB / 2 + 4096 )); HP1G_WANT=0 ;;
+    1g) HP2_WANT=4096; HP1G_WANT=$(( MATRIX_MB / 1024 + 8 ))
+        gcc -O2 -shared -fPIC "$SCC/scripts/Launchpad/hpl/hugetlb1g.c" -o "$RUN/hugetlb1g.so" -ldl || exit 1 ;;
+    *) echo "HUGEPAGES=$HUGEPAGES: use 2m or 1g" >&2; exit 1 ;;
+esac
+[[ -n ${HUGEPAGES:-} ]] && export HPL_LARGEPAGE=1
+
+# Uncore cap for the run; restored on any exit (as are the huge-page pools).
 UNC=(/sys/devices/system/cpu/intel_uncore_frequency/package_*_die_*)
 UNC_FOUND=(); for d in "${UNC[@]}"; do UNC_FOUND+=("$(cat "$d/max_freq_khz")"); done
 restore() {
     local i=0
     for d in "${UNC[@]}"; do echo "${UNC_FOUND[$i]}" | sudo -n tee "$d/max_freq_khz" >/dev/null; i=$((i + 1)); done
     echo "uncore max restored to ${UNC_FOUND[*]} kHz"
+    if [[ -n ${HUGEPAGES:-} ]]; then
+        echo "$HP1G_FOUND" | sudo -n tee $HP1G >/dev/null; echo "$HP2_FOUND" | sudo -n tee $HP2 >/dev/null
+        echo "huge pages released: 1G pool $(cat $HP1G), 2M pool $(cat $HP2)"
+    fi
 }
 trap restore EXIT
 trap 'exit 130' INT TERM HUP
@@ -149,6 +172,18 @@ flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
 for d in "${UNC[@]}"; do
     echo $(( BEST_UNCORE_MAX_MHZ * 1000 )) | sudo -n tee "$d/max_freq_khz" >/dev/null || { echo "needs passwordless sudo" >&2; exit 1; }
 done
+if [[ -n ${HUGEPAGES:-} ]]; then
+    # 1 GB pages need contiguous free memory: compact and retry if the pool comes up short.
+    for try in 1 2 3; do
+        echo "$HP1G_WANT" | sudo -n tee $HP1G >/dev/null; echo "$HP2_WANT" | sudo -n tee $HP2 >/dev/null
+        (( $(cat $HP1G) >= HP1G_WANT )) && break
+        echo "1G pool $(cat $HP1G)/$HP1G_WANT: compacting memory (try $try)"
+        echo 1 | sudo -n tee /proc/sys/vm/compact_memory >/dev/null
+    done
+    (( $(cat $HP1G) >= HP1G_WANT && $(cat $HP2) >= HP2_WANT )) ||
+        { echo "could not reserve huge pages: 1G $(cat $HP1G)/$HP1G_WANT, 2M $(cat $HP2)/$HP2_WANT" >&2; exit 1; }
+    echo "huge pages ($HUGEPAGES): 1G pool $HP1G_WANT, 2M pool $HP2_WANT, HPL_LARGEPAGE=1"
+fi
 echo "Intel HPL N=$N, grid ${BEST_P}x$BEST_Q, pin $BEST_PIN_DOMAIN${BEST_HOST_CORES:+ (HPL_HOST_CORE $BEST_HOST_CORES)}, threads ${BEST_NUMTHREADS:-all}, uncore max $BEST_UNCORE_MAX_MHZ MHz -> $RUN"
 cd "$RUN" && mpirun -np "$BEST_RANKS" -perhost "$BEST_RANKS" "$RUN/intel_rank.sh" "${NUMA[@]}" "$XHPL" 2>&1 | tee hpl.log
 grep -E "^W[RC]|PASSED|FAILED" "$RUN/hpl.log"
