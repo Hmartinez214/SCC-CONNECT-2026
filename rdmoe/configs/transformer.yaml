@@ -1,0 +1,3 @@
+# Baseline A: fixed-depth Transformer, 8 distinct layers (FLOP-matched to D at max depth).
+base: base.yaml
+model: {arch: transformer, shared: false, ffn: dense, n_steps: 8, halting: none, step_embed: false}

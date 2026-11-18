@@ -30,7 +30,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import mfclib  # noqa: E402
-from plot_style import AUTOTUNING, GRID, MARKERS, REPO, SERIES, SURFACE, TEXT, TEXT_2, load_runs  # noqa: E402
+from paths import run_groups  # noqa: E402
+from plot_style import GRID, MARKERS, REPO, SERIES, SURFACE, TEXT, TEXT_2, load_runs  # noqa: E402
 
 #: name -> (values, default first; title)
 VARIABLES = {
@@ -54,12 +55,10 @@ def load(min_runs: int, keep_unstable: bool = False) -> dict[str, list[dict]]:
     out: dict[str, list[dict]] = {}
     # SMAC groups (mfc_smac3*) and exhaustive-grid groups (mfc_grid_*); a case
     # in both gets the runs of both.
-    for d in sorted(list(AUTOTUNING.glob("mfc_smac3*")) + list(AUTOTUNING.glob("mfc_grid_*"))):
-        if not (d / "evaluations.jsonl").exists():
-            continue
-        runs = [r for r in load_runs(d.name) if r.get("success")]
+    for group in run_groups("mfc_smac3", "mfc_grid_"):
+        runs = [r for r in load_runs(group) if r.get("success")]
         if len(runs) >= min_runs:
-            case = runs[0]["configuration"].get("case", d.name)
+            case = runs[0]["configuration"].get("case", group)
             out.setdefault(case, []).extend({"cfg": r["configuration"], "grind": r["metrics"]["grind_ns"]} for r in runs)
     if not keep_unstable:
         unstable = sorted(c for c, runs in out.items()

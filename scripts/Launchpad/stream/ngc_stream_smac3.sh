@@ -5,7 +5,7 @@
 #   DURATION=300 scripts/Launchpad/stream/ngc_stream_smac3.sh   # stop after 5 min
 #
 # Ctrl-C stops it; running it again resumes from
-# outputs/autotuning/<run_group>/evaluations.jsonl. GPUs go to the container
+# outputs/ngc/autotuning/<run_group>/evaluations.jsonl. GPUs go to the container
 # via CDI (GPUS, default management.nvidia.com/gpu=all; see hpl/ngc_hpl.sh).
 
 SCC_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"

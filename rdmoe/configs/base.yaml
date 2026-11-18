@@ -1,0 +1,30 @@
+# Shared settings. Model files below override `model:` and inherit the rest.
+seed: 0
+tensorboard: true
+model:
+  d_model: 512
+  n_heads: 8
+  d_ff: 2048
+  max_len: 256
+  pos: rope                   # rope | sinusoidal (additive sinusoidal plateaus on in-context recall; see REPORT.md)
+data:
+  curriculum: staged          # staged | shuffled | none
+  stages:                     # `until` = fraction of total steps
+    - {until: 0.15, tasks: [assoc, attr]}                                    # 1: simple relations
+    - {until: 0.35, tasks: [assoc, attr, chain, compose], max_depth: 2}      # 2: compositional
+    - {until: 0.55, tasks: [assoc, attr, chain, compose, modarith, dfa], max_depth: 3}  # 3: multi-step
+    - {until: 1.01, tasks: [assoc, attr, chain, compose, modarith, dfa]}     # full training range
+loss:
+  ponder: 0.005               # lambda * E[T]  (ACT models only)
+  balance: 0.01               # alpha * load-balance (MoE models only)
+train:
+  steps: 10000
+  batch_size: 256             # global; divided across ranks
+  lr: 3.0e-4
+  min_lr_frac: 0.1
+  warmup: 400
+  wd: 0.1
+  clip: 1.0
+  log_every: 100
+  eval_every: 1000
+  ckpt_every: 1000

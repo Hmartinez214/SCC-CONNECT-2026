@@ -2,7 +2,7 @@
 # 1 TB RAM), driven by scripts/Launchpad/hpl/hpl_autotune.py.
 #
 # Runs "indefinitely": the budget is effectively unbounded, and the experiment
-# resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+# resumes from outputs/hpl/autotuning/<run_group>/evaluations.jsonl on restart.
 #
 # The "slurm" block is reused by the local scheduler: ntasks is the base rank
 # count whose divisors are the choices for P (the tuned RANKS value, 64 or

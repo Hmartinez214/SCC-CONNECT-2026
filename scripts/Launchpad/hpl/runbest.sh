@@ -3,43 +3,50 @@
 # Launchpad: the top entry of outputs/best/hpl_intel.json, at the N of its
 # best large-N run (hpl_bign.sh runs that same configuration).
 #
-#   scripts/Launchpad/hpl/runbest.sh                 # large N (~1.5 h)
-#   N=90482 scripts/Launchpad/hpl/runbest.sh         # any other N
-#   EXCLUDE_CPUS=0,64 scripts/Launchpad/hpl/runbest.sh  # leave these CPUs out (one thread per CPU left)
-#   EXCLUDE_CPUS=none ...                               # same pinning path, nothing left out
-#   HUGEPAGES=2m|1g scripts/Launchpad/hpl/runbest.sh     # HPL_LARGEPAGE=1 on reserved hugetlbfs pages:
+#   scripts/Launchpad/hpl/runbest.sh                    # large N (~1.5 h)
+#   scripts/Launchpad/hpl/runbest.sh N=90482            # any other N (~3 min)
+#   scripts/Launchpad/hpl/runbest.sh EXCLUDE_CPUS=0,64  # leave these CPUs out (one thread per CPU left)
+#   scripts/Launchpad/hpl/runbest.sh EXCLUDE_CPUS=none  # same pinning path, nothing left out
+#   scripts/Launchpad/hpl/runbest.sh HUGEPAGES=2m|1g    # HPL_LARGEPAGE=1 on reserved hugetlbfs pages:
 #       2m: the default 2 MB pool; 1g: 1 GB pages for allocations >= 256 MB
 #       via the hugetlb1g.c LD_PRELOAD shim. Pools are released after the run.
+#   scripts/Launchpad/hpl/runbest.sh NB=384 UNCORE_MAX_MHZ=2000   # override configuration keys
+#   scripts/Launchpad/hpl/runbest.sh --dry-run N=90482  # show HPL.dat, placement and env, run nothing
+#
+# N, EXCLUDE_CPUS and HUGEPAGES may also be given as environment variables.
 #
 # Ranks: at most one per NUMA node (HPL_HOST_NODE), each pinned to its nodes'
 # cores (plus hyperthreads with HPL_HT=1). The uncore cap is set for the run
 # and restored after. Waits for the node lock.
-# Log and HPL.dat: outputs/runbest/hpl_intel_<time>/
+# Run directory: outputs/hpl/runbest/hpl_intel_<time>/ (HPL.dat, hpl.log,
+# result.json); one line per run in outputs/hpl/runbest/results.tsv.
 
 set -uo pipefail
-SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
+source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/node.sh"
+parse_args "N EXCLUDE_CPUS HUGEPAGES" "$@"
 cd "$SCC" || exit 1
 
 # ---- best configuration -> BEST_* variables ---------------------------------
-# Every key of the top entry's configuration, plus values derived from it for
-# this node: P, Q, RANKS, NUMA_PER_RANK, PIN_DOMAIN (one CPU mask per rank)
-# NUMTHREADS (HPL_NUMTHREADS resolved per rank; empty = Intel's default) and,
-# with EXCLUDE_CPUS, HOST_CORES (per rank, ';'-separated CPU ranges): Intel
-# HPL pins its threads itself, ignoring the MPI mask, and HPL_HOST_NODE takes
-# precedence over HPL_HOST_CORE, so those ranks get HPL_HOST_CORE only.
-eval "$(python3 - "$SCC/outputs/best/hpl_intel.json" "${EXCLUDE_CPUS:-}" <<'EOF'
-import json, shlex, subprocess, sys
-best = json.load(open(sys.argv[1]))
-top, large = best["top"][0], best["large_n"][0]
-v = {**top["configuration"], "OBJECTIVE": top["objective"],
-     "SOURCE": f"{top['run_group']} attempt {top['attempt']}",
-     "N_LARGE": large["N"], "OBJECTIVE_LARGE": large["objective"]}
+# Every key of the top entry's configuration (with overrides), plus values
+# derived from it for this node: P, Q, RANKS, NUMA_PER_RANK, PIN_DOMAIN (one
+# CPU mask per rank), NUMTHREADS (HPL_NUMTHREADS resolved per rank; empty =
+# Intel's default) and, with EXCLUDE_CPUS, HOST_CORES (per rank, ';'-separated
+# CPU ranges): Intel HPL pins its threads itself, ignoring the MPI mask, and
+# HPL_HOST_NODE takes precedence over HPL_HOST_CORE, so those ranks get
+# HPL_HOST_CORE only.
+eval "$(python3 - "$SCC/outputs/best/hpl_intel.json" "${EXCLUDE_CPUS:-}" "${OVERRIDES[@]}" <<'PY'
+import json, subprocess, sys
+sys.path.insert(0, "scripts/Launchpad/lib")
+from best import emit, fail, load
+v = load(sys.argv[1], sys.argv[3:])
+large = json.load(open(sys.argv[1]))["large_n"][0]
+v.update(N_LARGE=large["N"], OBJECTIVE_LARGE=large["objective"])
 p, q = map(int, str(v["GRID"]).split("x"))
 cpus = [tuple(map(int, l.split(","))) for l in subprocess.run(["lscpu", "-p=CPU,CORE,NODE"], capture_output=True,
         text=True).stdout.splitlines() if l[:1].isdigit()]
 nodes = sorted({n for _, _, n in cpus})
 if len(nodes) % (p * q):
-    print(f"echo 'GRID {v['GRID']}: this script places at most one rank per NUMA node' >&2; exit 1"); sys.exit()
+    fail(f"GRID {v['GRID']}: this script places at most one rank per NUMA node")
 per = len(nodes) // (p * q)
 first = {}
 for cpu, core, _ in cpus:
@@ -62,16 +69,14 @@ threads = {"all": "", "-1": owned - 1, "-2": owned - 2, "-4": owned - 4,
 if sys.argv[2] and threads == "":
     threads = owned                                  # Intel's default would use every core of the node
 v.update(P=p, Q=q, RANKS=p * q, NUMA_PER_RANK=per, PIN_DOMAIN="[" + ",".join(masks) + "]", NUMTHREADS=threads, HOST_CORES=";".join(host))
-for key, value in v.items():
-    print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
-EOF
+emit(v)
+PY
 )"
-[[ -n ${BEST_SOURCE:-} ]] || { echo "could not read outputs/best/hpl_intel.json" >&2; exit 1; }
+[[ -n ${BEST_SOURCE:-} ]] || exit 1
 N="${N:-$BEST_N_LARGE}"
 echo "best: $BEST_SOURCE ($BEST_OBJECTIVE GFLOPS at N=$BEST_N; $BEST_OBJECTIVE_LARGE at N=$BEST_N_LARGE)"
 
-RUN="$SCC/outputs/runbest/hpl_intel_$(date +%Y%m%d_%H%M%S)"
-mkdir -p "$RUN"
+run_dir hpl hpl_intel
 
 # Intel MPI + MKL's Intel HPL binary (spack).
 source libs/spack/share/spack/setup-env.sh >/dev/null
@@ -135,13 +140,12 @@ exec "\$@"
 EOF
 chmod +x "$RUN/intel_rank.sh"
 NUMA=(); [[ $BEST_MEM_POLICY == interleave ]] && NUMA=(numactl --interleave=all)
-[[ $BEST_HPL_LARGEPAGE == 1 ]] && echo "note: HPL_LARGEPAGE=1 needs hugetlbfs pages reserved (vm.nr_hugepages); this script does not reserve them" >&2
+[[ $BEST_HPL_LARGEPAGE == 1 && -z ${HUGEPAGES:-} ]] && echo "note: HPL_LARGEPAGE=1 needs hugetlbfs pages reserved; add HUGEPAGES=2m to reserve them" >&2
 
 # Huge-page pools (HUGEPAGES=2m|1g): matrix + 5%, plus 8 GB of 2 MB pages
 # for Intel HPL's smaller buffers (as the tuner reserves them).
 HP2=/sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 HP1G=/sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
-HP2_FOUND=$(cat $HP2); HP1G_FOUND=$(cat $HP1G)
 MATRIX_MB=$(( N * N * 8 / 2**20 * 105 / 100 ))
 case ${HUGEPAGES:-} in
     "") ;;
@@ -152,38 +156,34 @@ case ${HUGEPAGES:-} in
 esac
 [[ -n ${HUGEPAGES:-} ]] && export HPL_LARGEPAGE=1
 
-# Uncore cap for the run; restored on any exit (as are the huge-page pools).
+echo "Intel HPL N=$N, grid ${BEST_P}x$BEST_Q, pin $BEST_PIN_DOMAIN${BEST_HOST_CORES:+ (HPL_HOST_CORE $BEST_HOST_CORES)}," \
+     "threads ${BEST_NUMTHREADS:-all}, uncore max $BEST_UNCORE_MAX_MHZ MHz${HUGEPAGES:+, huge pages $HUGEPAGES} -> ${RUN#"$SCC"/}"
+env | grep -E '^(I_MPI_PIN|HPL_)' | sort
+dry_run_exit
+
+# Uncore cap and huge-page pools for the run; restored on any exit.
 UNC=(/sys/devices/system/cpu/intel_uncore_frequency/package_*_die_*)
-UNC_FOUND=(); for d in "${UNC[@]}"; do UNC_FOUND+=("$(cat "$d/max_freq_khz")"); done
-restore() {
-    local i=0
-    for d in "${UNC[@]}"; do echo "${UNC_FOUND[$i]}" | sudo -n tee "$d/max_freq_khz" >/dev/null; i=$((i + 1)); done
-    echo "uncore max restored to ${UNC_FOUND[*]} kHz"
-    if [[ -n ${HUGEPAGES:-} ]]; then
-        echo "$HP1G_FOUND" | sudo -n tee $HP1G >/dev/null; echo "$HP2_FOUND" | sudo -n tee $HP2 >/dev/null
-        echo "huge pages released: 1G pool $(cat $HP1G), 2M pool $(cat $HP2)"
-    fi
-}
+restore() { sys_restore; echo "restored: uncore max${HUGEPAGES:+, huge pages (1G pool $(cat $HP1G), 2M pool $(cat $HP2))}"; }
 trap restore EXIT
 trap 'exit 130' INT TERM HUP
-
-exec 9>"$SCC/outputs/autotuning/.node.lock"
-flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
-for d in "${UNC[@]}"; do
-    echo $(( BEST_UNCORE_MAX_MHZ * 1000 )) | sudo -n tee "$d/max_freq_khz" >/dev/null || { echo "needs passwordless sudo" >&2; exit 1; }
-done
+node_lock
+sys_set $(( BEST_UNCORE_MAX_MHZ * 1000 )) "${UNC[@]/%//max_freq_khz}" || { echo "needs passwordless sudo" >&2; exit 1; }
 if [[ -n ${HUGEPAGES:-} ]]; then
     # 1 GB pages need contiguous free memory: compact and retry if the pool comes up short.
+    sys_set "$HP1G_WANT" $HP1G; sys_set "$HP2_WANT" $HP2
     for try in 1 2 3; do
-        echo "$HP1G_WANT" | sudo -n tee $HP1G >/dev/null; echo "$HP2_WANT" | sudo -n tee $HP2 >/dev/null
         (( $(cat $HP1G) >= HP1G_WANT )) && break
         echo "1G pool $(cat $HP1G)/$HP1G_WANT: compacting memory (try $try)"
         echo 1 | sudo -n tee /proc/sys/vm/compact_memory >/dev/null
+        echo "$HP1G_WANT" | sudo -n tee $HP1G >/dev/null
     done
     (( $(cat $HP1G) >= HP1G_WANT && $(cat $HP2) >= HP2_WANT )) ||
         { echo "could not reserve huge pages: 1G $(cat $HP1G)/$HP1G_WANT, 2M $(cat $HP2)/$HP2_WANT" >&2; exit 1; }
-    echo "huge pages ($HUGEPAGES): 1G pool $HP1G_WANT, 2M pool $HP2_WANT, HPL_LARGEPAGE=1"
 fi
-echo "Intel HPL N=$N, grid ${BEST_P}x$BEST_Q, pin $BEST_PIN_DOMAIN${BEST_HOST_CORES:+ (HPL_HOST_CORE $BEST_HOST_CORES)}, threads ${BEST_NUMTHREADS:-all}, uncore max $BEST_UNCORE_MAX_MHZ MHz -> $RUN"
 cd "$RUN" && mpirun -np "$BEST_RANKS" -perhost "$BEST_RANKS" "$RUN/intel_rank.sh" "${NUMA[@]}" "$XHPL" 2>&1 | tee hpl.log
 grep -E "^W[RC]|PASSED|FAILED" "$RUN/hpl.log"
+
+read -r secs gflops < <(awk '/^W[RC]/ {printf "%s %.2f\n", $6, $7; exit}' "$RUN/hpl.log")
+valid=no; grep -q PASSED "$RUN/hpl.log" && valid=yes
+record_result gflops "${gflops:-}" "$valid" "N=$N" "seconds=${secs:-}" "exclude_cpus=${EXCLUDE_CPUS:-}" "hugepages=${HUGEPAGES:-}"
+echo "result: ${gflops:-?} GFLOPS at N=$N, residual check: $valid  (run: ${RUN#"$SCC"/})"

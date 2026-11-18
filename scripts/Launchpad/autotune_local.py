@@ -32,7 +32,6 @@ import fcntl
 import json
 import math
 import os
-import shutil
 import signal
 import subprocess
 import sys
@@ -49,6 +48,8 @@ from hpc_autotuner.optimizers.smac3 import SMAC3Optimizer
 from hpc_autotuner.schedulers.base import Scheduler
 from hpc_autotuner.core.space import ParameterSpace
 from hpc_autotuner.storage.filesystem import FilesystemStorage
+
+import paths
 
 # ---------------------------------------------------------------------------
 # scheduler: run child job scripts locally
@@ -109,16 +110,21 @@ class LocalScheduler(Scheduler):
 
     ``node_lock`` is held from submit until the job is gone; every tuner on
     the node uses the same file, so their benchmark runs never overlap.
+
+    Job scripts and their stdout/stderr go to ``out_dir`` and the application
+    log to ``out_dir.parent/<run_group>/`` (where HPC-Tools reads it): the
+    template writes under ``$SLURM_SUBMIT_DIR/outputs``, so the private copy
+    of each script is pointed at ``out_dir.parent`` instead.
     """
 
-    def __init__(self, project_root: Path, slurm: Any, pidfile: Path, node_lock: Path) -> None:
+    def __init__(self, project_root: Path, slurm: Any, pidfile: Path, node_lock: Path, out_dir: Path) -> None:
         self.project_root = project_root
         self.ntasks = int(slurm.ntasks)
         self.nodes = int(slurm.nodes)
         self.timeout = _parse_walltime(slurm.time)
         self.pidfile = pidfile
         self.node_lock = node_lock
-        self.out_dir = project_root / "outputs" / "slurm"
+        self.out_dir = out_dir
         self._lock_fh: Any = None
         self._procs: dict[str, subprocess.Popen] = {}
         self._states: dict[str, str] = {}
@@ -151,6 +157,7 @@ class LocalScheduler(Scheduler):
         except BlockingIOError:
             print("[local] node busy with another tuner's job; waiting for it", flush=True)
             fcntl.flock(self._lock_fh, fcntl.LOCK_EX)
+        paths.note_lock_holder(f"tuner {self.out_dir.parent.name} ({' '.join(sys.argv[1:])})")
 
     def _release_node(self) -> None:
         if self._lock_fh is not None:
@@ -177,7 +184,11 @@ class LocalScheduler(Scheduler):
         # by every tuner; run a private copy so another tuner's attempt N can
         # never rewrite a script bash is still reading.
         private = self.out_dir / f"job_{job_id}.sh"
-        shutil.copyfile(script, private)
+        text = Path(script).read_text()
+        template_output = 'OUTPUT="${RUN_ROOT}/outputs"'
+        if template_output not in text:
+            raise RuntimeError(f"{script}: no {template_output} line to redirect (HPC-Tools template changed?)")
+        private.write_text(text.replace(template_output, f'OUTPUT="{self.out_dir.parent}"'))
         stdout = open(self.out_dir / f"job_{job_id}.out", "w")
         stderr = open(self.out_dir / f"job_{job_id}.err", "w")
         proc = subprocess.Popen(
@@ -732,8 +743,9 @@ def main(argv: list[str] | None = None, *, description: str = "") -> int:
     args = _parse_args(argv, description)
     config, priors = _load_config(args)
     root = config.resolved_project_root()
-    output = config.resolved_output_root()
     run_group = config.run_group
+    # outputs/<bench>/autotuning unless the YAML sets outputs.root
+    output = config.resolved_output_root() if config.output_root else paths.tuning_root(paths.bench_of(run_group))
     storage = FilesystemStorage(root=output / run_group, run_group=run_group)
     application = common.build_application(config)
 
@@ -757,7 +769,7 @@ def main(argv: list[str] | None = None, *, description: str = "") -> int:
     os.chdir(storage.root)
 
     scheduler = LocalScheduler(root, config.slurm, pidfile=storage.root / ".child_pgid",
-                               node_lock=output / ".node.lock")
+                               node_lock=paths.NODE_LOCK, out_dir=output.parent / "slurm")
     scheduler.kill_stale()
     _stop_on_signals(scheduler)
 

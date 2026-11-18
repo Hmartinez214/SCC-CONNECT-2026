@@ -1,0 +1,12 @@
+  _warn_once(
+## FFN layer fwd+bwd, 9000 tokens
+  dense FFN             0.69 ms  (1.00x dense)
+  MoE top-1 x16         4.60 ms  (6.67x dense)
+  MoE top-2 x16         4.78 ms  (6.94x dense)
+  MoE random x16       12.43 ms  (18.03x dense)
+
+## full train step (fwd+bwd, batch 256, 3844 tokens)
+  A_transformer    14.47 ms/step  loop iters 8  fwd host-syncs/memcpys 27  fwd CUDA kernels 552
+  B_looped         15.28 ms/step  loop iters 8  fwd host-syncs/memcpys 27  fwd CUDA kernels 518
+  C_moe            25.89 ms/step  loop iters 8  fwd host-syncs/memcpys 107  fwd CUDA kernels 1002
+  D_rdmoe          38.22 ms/step  loop iters 6  fwd host-syncs/memcpys 93  fwd CUDA kernels 1265

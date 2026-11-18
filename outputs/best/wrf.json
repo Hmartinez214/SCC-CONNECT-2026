@@ -1,0 +1,268 @@
+{
+  "unit": "simulated s / wall s (Santa Cruz 9+3 km, 3 h forecast)",
+  "run_groups": [
+    "wrf_smac3"
+  ],
+  "top": [
+    {
+      "objective": 298.46728271874434,
+      "metrics": {
+        "counted_wall_s": 35.88333,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15077029411764706,
+        "returncode": 0,
+        "speed": 298.46728271874434,
+        "total_wall_s": 45.569087982177734
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 4,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 51,
+      "measured_at": "2026-11-06T23:12:19.066771+00:00"
+    },
+    {
+      "objective": 298.3727402652759,
+      "metrics": {
+        "counted_wall_s": 35.8947,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15081806722689076,
+        "returncode": 0,
+        "speed": 298.3727402652759,
+        "total_wall_s": 45.57097148895264
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 40,
+      "measured_at": "2026-11-06T22:57:26.287244+00:00"
+    },
+    {
+      "objective": 298.37057904508043,
+      "metrics": {
+        "counted_wall_s": 35.89496,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15081915966386553,
+        "returncode": 0,
+        "speed": 298.37057904508043,
+        "total_wall_s": 45.67291569709778
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 2,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 53,
+      "measured_at": "2026-11-06T23:13:51.074019+00:00"
+    },
+    {
+      "objective": 298.3042614337433,
+      "metrics": {
+        "counted_wall_s": 35.90294,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15085268907563026,
+        "returncode": 0,
+        "speed": 298.3042614337433,
+        "total_wall_s": 45.422847747802734
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2500
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 45,
+      "measured_at": "2026-11-06T23:06:53.107410+00:00"
+    },
+    {
+      "objective": 298.2607305633424,
+      "metrics": {
+        "counted_wall_s": 35.90818,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15087470588235294,
+        "returncode": 0,
+        "speed": 298.2607305633424,
+        "total_wall_s": 45.72126865386963
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 4,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "madvise",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 13,
+      "measured_at": "2026-11-06T22:20:40.436598+00:00"
+    },
+    {
+      "objective": 297.652133312582,
+      "metrics": {
+        "counted_wall_s": 35.9816,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15118319327731092,
+        "returncode": 0,
+        "speed": 297.652133312582,
+        "total_wall_s": 45.82835841178894
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 1600
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 69,
+      "measured_at": "2026-11-06T23:48:21.648145+00:00"
+    },
+    {
+      "objective": 296.1804338946566,
+      "metrics": {
+        "counted_wall_s": 36.16039,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15193441176470587,
+        "returncode": 0,
+        "speed": 296.1804338946566,
+        "total_wall_s": 45.71455931663513
+      },
+      "configuration": {
+        "BIND": "core",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 72,
+      "measured_at": "2026-11-06T23:56:00.537300+00:00"
+    },
+    {
+      "objective": 296.1017417749516,
+      "metrics": {
+        "counted_wall_s": 36.17,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15197478991596639,
+        "returncode": 0,
+        "speed": 296.1017417749516,
+        "total_wall_s": 45.66388940811157
+      },
+      "configuration": {
+        "BIND": "core",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 6,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "madvise",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 28,
+      "measured_at": "2026-11-06T22:37:01.877469+00:00"
+    },
+    {
+      "objective": 294.67026507392484,
+      "metrics": {
+        "counted_wall_s": 36.34571,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15271306722689074,
+        "returncode": 0,
+        "speed": 294.67026507392484,
+        "total_wall_s": 45.97290539741516
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "auto",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 4,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 55,
+      "measured_at": "2026-11-06T23:15:23.384480+00:00"
+    },
+    {
+      "objective": 292.62782795013794,
+      "metrics": {
+        "counted_wall_s": 36.59939,
+        "decomp": "6x10",
+        "mean_d01_step_s": 0.15377894957983193,
+        "returncode": 0,
+        "speed": 292.62782795013794,
+        "total_wall_s": 46.275736570358276
+      },
+      "configuration": {
+        "BIND": "socket",
+        "BUILD": "gnu_dmsm",
+        "DECOMP": "tall",
+        "EPB": 0,
+        "HOURS": 3,
+        "RANKS": 60,
+        "THP": "never",
+        "THREADS": 2,
+        "TILES": 1,
+        "UNCORE_MAX_MHZ": 2000
+      },
+      "run_group": "wrf_smac3",
+      "attempt": 65,
+      "measured_at": "2026-11-06T23:39:31.192611+00:00"
+    }
+  ]
+}

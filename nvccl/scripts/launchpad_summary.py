@@ -4,7 +4,7 @@ small-message latency floor and the large-message peak busbw (out-of-place
 only, as the SCC Connect 26 rules ask) with the spread over repeats, the
 transport NCCL chose, and busbw / latency vs. message size plots.
 
-    python scripts/launchpad_summary.py outputs/nccl_launchpad/sweep_<stamp>
+    python scripts/launchpad_summary.py outputs/nccl/sweep_<stamp>
 
 Writes summary.md, busbw_vs_size.png and latency_vs_size.png into the dir.
 """

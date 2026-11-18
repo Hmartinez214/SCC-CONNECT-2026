@@ -8,7 +8,7 @@
 Figures go to plots/<benchmark>/: plots/stream/ for stream* run groups,
 plots/hpl/ for the rest.
 
-Reads outputs/autotuning/<run-group>/evaluations.jsonl (final record per
+Reads outputs/<bench>/autotuning/<run-group>/evaluations.jsonl (final record per
 attempt). Failed / timed-out runs sit on the baseline as hollow rings;
 imported prior results (if any) are shaded.
 """

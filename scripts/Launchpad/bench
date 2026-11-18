@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# One entry point for the Launchpad benchmarks.
+#
+#   bench run BENCH [KEY=VALUE...] [--dry-run]   run a benchmark's best configuration
+#        hpl  hpl-netlib  hpl-ngc  stream  stream-ngc  mfc  nccl
+#        e.g. bench run hpl N=90482 EXCLUDE_CPUS=0,64     bench run stream OMP_THREADS=60
+#        bench run BENCH -h                               that script's options
+#   bench start LOOP [ARG...]   start a long run in tmux (log under outputs/)
+#        stream-cont  hpl-bign  hpl-tune  stream-tune  ngc-stream-tune  mfc-tune
+#   bench stop LOOP             stop it (the scripts restore what they changed)
+#   bench status                node lock, tmux sessions, machine settings, latest results
+#   bench best                  best result per benchmark (outputs/best/README.md)
+#   bench export                regenerate outputs/best/ from the raw results
+#   bench index                 write outputs/index.csv (every run, one row each)
+#   bench find GROUP ID         files of one tuner run (ID: attempt or job id)
+#   bench exp NAME [ARG...]     experiments (scripts/Launchpad/experiments/): pl1 hugepages fwq bw
+#
+# Put it on PATH with: ln -s "$PWD/scripts/Launchpad/bench" ~/.local/bin/bench
+
+source "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/lib/node.sh"
+L="$SCC/scripts/Launchpad"
+PY="$SCC/venv/bin/python"; [[ -x $PY ]] || PY=python3
+
+declare -A RUNBEST=(
+    [hpl]=$L/hpl/runbest.sh [hpl-netlib]=$L/hpl/runbest_netlib.sh [hpl-ngc]=$L/hpl/runbest_ngc.sh
+    [stream]=$L/stream/runbest.sh [stream-ngc]=$L/stream/runbest_ngc.sh [mfc]=$L/mfc/runbest.sh
+    [nccl]=$SCC/nvccl/scripts/runbest.sh
+)
+# loop -> "session|log under outputs/|command"
+declare -A LOOPS=(
+    [stream-cont]="stream-cont|stream/cont/stream_cont_tmux.log|bash scripts/Launchpad/stream/stream_cont.sh"
+    [hpl-bign]="hpl-bign|hpl/bign/hpl_bign_tmux.log|bash scripts/Launchpad/hpl/hpl_bign.sh"
+    [hpl-tune]="hpl-smac3|hpl/autotuning/hpl_smac3_tmux.log|bash scripts/Launchpad/hpl/hpl_smac3.sh"
+    [stream-tune]="stream-smac3|stream/autotuning/stream_smac3_tmux.log|bash scripts/Launchpad/stream/stream_smac3.sh"
+    [ngc-stream-tune]="ngc-stream-smac3|ngc/autotuning/ngc_stream_smac3_tmux.log|bash scripts/Launchpad/stream/ngc_stream_smac3.sh"
+    [mfc-tune]="mfc-smac3|mfc/autotuning/mfc_smac3_tmux.log|bash scripts/Launchpad/mfc/mfc_smac3.sh"
+)
+
+pick() {    # pick <kind> <name> <keys...>: the name, or a list of valid ones
+    local kind=$1 name=$2; shift 2
+    [[ -n $name && " $* " == *" $name "* ]] && return 0
+    echo "${name:+unknown $kind '$name'. }choose one of: $(printf '%s\n' "$@" | sort | tr '\n' ' ')" >&2; exit 2
+}
+
+status() {
+    echo "node lock:   $(lock_holder)"
+    local s
+    s=$(tmux ls -F '#{session_name}' 2>/dev/null | tr '\n' ' ')
+    echo "tmux:        ${s:-none}"
+    local ours=() l; for l in "${!LOOPS[@]}"; do tmux has-session -t "${LOOPS[$l]%%|*}" 2>/dev/null && ours+=("$l"); done
+    echo "loops:       ${ours[*]:-none running}  (bench start/stop LOOP)"
+    local unc thp hp
+    unc=$(for d in /sys/devices/system/cpu/intel_uncore_frequency/package_*_die_*; do
+        echo "$(( $(<"$d/min_freq_khz") / 1000 ))-$(( $(<"$d/max_freq_khz") / 1000 ))"; done | sort -u | tr '\n' ' ')
+    thp=$(sed -E 's/.*\[([a-z]+)\].*/\1/' /sys/kernel/mm/transparent_hugepage/enabled)
+    hp="2M $(</sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages), 1G $(</sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages)"
+    echo "machine:     uncore ${unc}MHz, THP $thp, huge pages $hp, kubelet $(systemctl is-active kubelet 2>/dev/null)"
+    echo "latest runbest results (outputs/<bench>/runbest/results.tsv):"
+    local b found=0
+    for b in hpl stream ngc mfc nccl; do
+        [[ -f $OUTPUTS/$b/runbest/results.tsv ]] || continue
+        found=1
+        tail -n +2 "$OUTPUTS/$b/runbest/results.tsv" | tail -2 |
+            awk -F'\t' -v b="$b" '{printf "  %-7s %s  %-10s %12s  valid=%-5s %s %s\n", b, $1, $6, $7, $8, $5, $2}'
+    done
+    (( found )) || echo "  none yet"
+    if [[ -f $OUTPUTS/stream/cont/results.tsv ]]; then
+        echo "stream-cont: $(( $(wc -l < "$OUTPUTS/stream/cont/results.tsv") - 1 )) runs; last: $(tail -1 "$OUTPUTS/stream/cont/results.tsv" | cut -f1,3,4 | tr '\t' ' ')"
+    fi
+}
+
+cmd=${1:-}; shift || true
+case $cmd in
+    run)    pick benchmark "${1:-}" "${!RUNBEST[@]}"; b=$1; shift; exec "${RUNBEST[$b]}" "$@" ;;
+    start)  pick loop "${1:-}" "${!LOOPS[@]}"; IFS='|' read -r session log command <<<"${LOOPS[$1]}"; shift
+            read -ra command <<<"$command"
+            exec "$L/lib/tmuxrun.sh" "$session" "$OUTPUTS/$log" "${command[@]}" "$@" ;;
+    stop)   pick loop "${1:-}" "${!LOOPS[@]}"; session=${LOOPS[$1]%%|*}
+            tmux kill-session -t "$session" 2>/dev/null && echo "stopped tmux session $session" || echo "$session is not running" ;;
+    status) status ;;
+    best)   sed -n '/^| Benchmark/,$p' "$OUTPUTS/best/README.md" | awk -F'|' 'NR != 2 {printf "%-32s %-48s %s\n", $2, $3, $4}' ;;
+    export) cd "$L" && exec "$PY" export_best.py "$@" ;;
+    index)  cd "$L" && exec "$PY" index_outputs.py "$@" ;;
+    find)   [[ $# -eq 2 ]] || { echo "usage: bench find RUN_GROUP ATTEMPT_OR_JOB_ID" >&2; exit 2; }
+            cd "$L" && exec "$PY" index_outputs.py --find "$@" ;;
+    exp)    exps=$(cd "$L/experiments" && ls -- *.sh 2>/dev/null | sed 's/\.sh$//' | tr '\n' ' ')
+            pick experiment "${1:-}" $exps; e=$1; shift; exec "$L/experiments/$e.sh" "$@" ;;
+    ""|-h|--help|help) usage ;;
+    *)      echo "unknown command '$cmd'" >&2; usage >&2; exit 2 ;;
+esac

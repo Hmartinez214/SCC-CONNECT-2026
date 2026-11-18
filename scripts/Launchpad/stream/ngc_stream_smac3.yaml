@@ -3,7 +3,7 @@
 # NVL, driven by scripts/Launchpad/stream/ngc_stream_autotune.py (see its
 # docstring for the space). The CPU STREAM setup is stream_smac3.yaml.
 #
-# Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+# Resumes from outputs/ngc/autotuning/<run_group>/evaluations.jsonl on restart.
 
 experiment:
   name: stream-ngc-launchpad-smac3

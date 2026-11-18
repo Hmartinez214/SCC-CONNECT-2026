@@ -13,7 +13,7 @@
 # seeded with the finished smac3_intel_hpl_v3 runs whose N fits this band
 # (larger-N runs are skipped); older runs carry Intel's env defaults and
 # UNCORE_MAX_MHZ=2500 (2.5 GHz default or a 2.0 GHz cap, which measured
-# identical). Resumes from outputs/autotuning/<run_group>/ on restart.
+# identical). Resumes from outputs/hpl/autotuning/<run_group>/ on restart.
 # Confirm winners at large N separately (scripts/Launchpad/hpl/system_ab.sh -n).
 
 experiment:
@@ -22,7 +22,7 @@ experiment:
   run_group: smac3_intel_hpl_fast
   budget: 1000000000
   seed: 42
-  priors: outputs/autotuning/smac3_intel_hpl_v3/evaluations.jsonl
+  priors: outputs/hpl/autotuning/smac3_intel_hpl_v3/evaluations.jsonl
 
 objective:
   metric: gflops

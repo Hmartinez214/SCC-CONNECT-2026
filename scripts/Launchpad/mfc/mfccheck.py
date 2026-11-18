@@ -3,12 +3,12 @@
 
     # Is a faster variant still giving the right answer? Run both with --keep
     # (same case, ranks, --gbpp and --steps), then compare their D/ output:
-    python3 scripts/Launchpad/mfc/mfccheck.py compare outputs/mfc_runs/ref outputs/mfc_runs/fast
+    python3 scripts/Launchpad/mfc/mfccheck.py compare outputs/mfc/runs/ref outputs/mfc/runs/fast
     python3 scripts/Launchpad/mfc/mfccheck.py compare REF RUN --reltol 1e-4 --abstol 1e-10
 
     # Table of timed runs (grind time, speedup over the double/no-case-opt run):
-    python3 scripts/Launchpad/mfc/mfccheck.py summary                       # all of outputs/mfc_runs
-    python3 scripts/Launchpad/mfc/mfccheck.py summary outputs/mfc_runs/variants_20261017-120000
+    python3 scripts/Launchpad/mfc/mfccheck.py summary                       # all of outputs/mfc/runs
+    python3 scripts/Launchpad/mfc/mfccheck.py summary outputs/mfc/runs/variants_20261017-120000
 
 ``compare`` reads the text fields simulation writes to D/ (benchmark cases
 set parallel_io = F and prim_vars_wrt = T) with MFC's own test-suite packer,
@@ -158,7 +158,7 @@ def main() -> int:
     c.add_argument("--top", type=int, default=10, help="files to list (worst first)")
     c.add_argument("--verbose", action="store_true", help="list every file")
     s = sub.add_parser("summary", help="table of runs, fastest first")
-    s.add_argument("dir", nargs="?", default=None, help="default: outputs/mfc_runs")
+    s.add_argument("dir", nargs="?", default=None, help="default: outputs/mfc/runs")
     s.add_argument("--case", default=None, help="only this case slug")
     args = p.parse_args()
     return compare(args) if args.cmd == "compare" else summary(args)

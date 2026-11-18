@@ -9,12 +9,13 @@
 # Both GPUs sit on socket 0 (NUMA node 0, CPUs 0-31; nvidia-smi topo -m), so
 # each rank gets half of socket 0's cores and node-0 memory. Holds the node
 # lock shared with the HPL/STREAM tuners. SYS_NICE lets numactl bind memory
-# (Docker's seccomp blocks set_mempolicy without it). Log: outputs/ngc_hpl/<timestamp>.log
+# (Docker's seccomp blocks set_mempolicy without it). Log: outputs/ngc/hpl/<timestamp>.log
 
 set -euo pipefail
-SCC_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
+source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/node.sh"     # SCC, node_lock
+SCC_DIR=$SCC
 IMAGE="${IMAGE:-nvcr.io/nvidia/hpc-benchmarks:26.02.01}"
-OUT="$SCC_DIR/outputs/ngc_hpl"
+OUT="$SCC_DIR/outputs/ngc/hpl"
 mkdir -p "$OUT"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 LOG="$OUT/$STAMP.log"
@@ -41,8 +42,8 @@ else
 fi
 
 echo "image: $IMAGE  dat: ${DAT:-$DATFILE}  log: $LOG"
-flock "$SCC_DIR/outputs/autotuning/.node.lock" \
-    docker run --rm --device "$GPUS" --cap-add SYS_NICE --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 "${MOUNT[@]}" "$IMAGE" \
+node_lock
+docker run --rm --device "$GPUS" --cap-add SYS_NICE --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 "${MOUNT[@]}" "$IMAGE" \
     mpirun --allow-run-as-root --bind-to none -np 2 \
     /workspace/hpl-linux-x86_64/hpl.sh --dat "$DATFILE" --no-multinode \
     --gpu-affinity 0:1 --cpu-affinity 0-15:16-31 --mem-affinity 0:0 \

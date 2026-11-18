@@ -223,7 +223,7 @@ class StreamApplication(Application):
                    f"export I_MPI_PIN_DOMAIN={c['MPI_PIN_DOMAIN']}", f"export I_MPI_PIN_ORDER={c['MPI_PIN_ORDER']}"]
         return "\n".join([
             *autotune_local.cleanup_header(),
-            'RUNDIR="${SLURM_SUBMIT_DIR:-$PWD}/outputs/stream_runs/${SLURM_JOB_ID:-local}"',
+            'RUNDIR="${SLURM_SUBMIT_DIR:-$PWD}/outputs/stream/runs/${SLURM_JOB_ID:-local}"',
             'mkdir -p "$RUNDIR"',
             f"echo {shlex.quote('compile: ' + cc)}",
             cc,

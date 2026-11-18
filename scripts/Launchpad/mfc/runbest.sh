@@ -2,31 +2,33 @@
 # MFC on both H100 NVLs with the best configuration found on Launchpad, from
 # outputs/best/mfc.json (best configuration per case).
 #
-#   scripts/Launchpad/mfc/runbest.sh                       # the top example (highest throughput)
-#   CASE=5eq_rk3_weno3_hllc scripts/Launchpad/mfc/runbest.sh  # that case's best configuration
+#   scripts/Launchpad/mfc/runbest.sh                            # the top example (highest throughput)
+#   scripts/Launchpad/mfc/runbest.sh CASE=5eq_rk3_weno3_hllc    # that case's best configuration
+#   scripts/Launchpad/mfc/runbest.sh CASE=... PRECISION=single  # override configuration keys
+#   scripts/Launchpad/mfc/runbest.sh --dry-run CASE=...         # show the runmfc.sh command, run nothing
 #
-# runmfc.sh builds MFC for the configuration if needed (first run: several
-# minutes). Waits for the node lock. Run directory: outputs/runbest/mfc_<time>/
+# CASE may also be given as an environment variable. runmfc.sh builds MFC for
+# the configuration if needed (first run: several minutes). Waits for the node
+# lock. Run directory: outputs/mfc/runbest/mfc_<time>/ (runmfc.sh's files and
+# result.json, plus runbest.json); one line per run in outputs/mfc/runbest/results.tsv.
 
 set -uo pipefail
-SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
+source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/node.sh"
+parse_args "CASE" "$@"
 cd "$SCC" || exit 1
 
 # ---- best configuration -> BEST_* variables (every key of the chosen entry) --
-eval "$(python3 - "$SCC/outputs/best/mfc.json" "${CASE:-}" <<'EOF'
-import json, shlex, sys
-entries = json.load(open(sys.argv[1]))["best_per_case"]
-mine = [e for e in entries if e["configuration"]["case"] == sys.argv[2]] if sys.argv[2] else entries[:1]
-if not mine:
-    print(f"echo 'no case {sys.argv[2]!r} in outputs/best/mfc.json' >&2; exit 1"); sys.exit()
-top = mine[0]
-v = {**top["configuration"], "OBJECTIVE": top["objective"], "GRIND_NS": top["metrics"].get("grind_ns"),
-     "SOURCE": f"{top['run_group']} attempt {top['attempt']}"}
-for key, value in v.items():
-    print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
-EOF
+eval "$(python3 - "$SCC/outputs/best/mfc.json" "${CASE:-}" "${OVERRIDES[@]}" <<'PY'
+import json, sys
+sys.path.insert(0, "scripts/Launchpad/lib")
+from best import emit, load
+v = load(sys.argv[1], sys.argv[3:], entries="best_per_case", where={"case": sys.argv[2]} if sys.argv[2] else None)
+case = v["case"]
+top = next(e for e in json.load(open(sys.argv[1]))["best_per_case"] if e["configuration"]["case"] == case)
+emit({**v, "GRIND_NS": top["metrics"].get("grind_ns")})
+PY
 )"
-[[ -n ${BEST_SOURCE:-} ]] || { echo "could not read outputs/best/mfc.json" >&2; exit 1; }
+[[ -n ${BEST_SOURCE:-} ]] || exit 1
 echo "best: $BEST_CASE, $BEST_SOURCE (grind $BEST_GRIND_NS ns)"
 
 # Tuner labels -> runmfc.sh options.
@@ -44,7 +46,14 @@ esac
 [[ ${BEST_UCX_RNDV_THRESH:-default} != default ]] && ARGS+=(--env "UCX_RNDV_THRESH=$BEST_UCX_RNDV_THRESH")
 [[ ${BEST_UCX_RNDV_SCHEME:-default} != default ]] && ARGS+=(--env "UCX_RNDV_SCHEME=$BEST_UCX_RNDV_SCHEME")
 
-exec 9>"$SCC/outputs/autotuning/.node.lock"
-flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
-echo "runmfc.sh ${ARGS[*]} $BEST_CASE"
-scripts/Launchpad/mfc/runmfc.sh --out "$SCC/outputs/runbest" --label "mfc_$(date +%Y%m%d_%H%M%S)" "${ARGS[@]}" "$BEST_CASE"
+LABEL="mfc_$(date +%Y%m%d_%H%M%S)"
+echo "runmfc.sh ${ARGS[*]} $BEST_CASE -> outputs/mfc/runbest/$LABEL"
+(( DRY_RUN )) && { echo "dry run: nothing was run"; exit 0; }
+node_lock
+scripts/Launchpad/mfc/runmfc.sh --out "$OUTPUTS/mfc/runbest" --label "$LABEL" "${ARGS[@]}" "$BEST_CASE"
+
+RUN="$OUTPUTS/mfc/runbest/$LABEL" RUN_BENCH=mfc RESULT_JSON=runbest.json
+read -r grind status < <(python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); print(r.get("grind_ns", ""), r.get("status", "failed"))' \
+                         "$RUN/result.json" 2>/dev/null)
+record_result grind_ns "${grind:-}" "$([[ ${status:-} == ok ]] && echo yes || echo no)" "case=$BEST_CASE"
+echo "result: grind ${grind:-?} ns (best $BEST_GRIND_NS), status ${status:-failed}  (run: ${RUN#"$SCC"/})"

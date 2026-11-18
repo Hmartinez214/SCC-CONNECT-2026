@@ -25,8 +25,8 @@
 #   scripts/Launchpad/mfc/mfcvariants.sh --run --steps 50     # ... and time each one
 #   scripts/Launchpad/mfc/mfcvariants.sh --variants "base single" --case-opt on igr
 #
-# Runs land in outputs/mfc_runs/variants_<time>/<variant>/ (result.json each);
-# compare them with `mfccheck.py summary outputs/mfc_runs/variants_<time>`.
+# Runs land in outputs/mfc/runs/variants_<time>/<variant>/ (result.json each);
+# compare them with `mfccheck.py summary outputs/mfc/runs/variants_<time>`.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -97,7 +97,7 @@ if [ "$CLEAN" -eq 1 ]; then
 fi
 
 STAMP="$(date +%Y%m%d-%H%M%S)"
-OUT="$REPO_ROOT/outputs/mfc_runs/variants_$STAMP"
+OUT="$REPO_ROOT/outputs/mfc/runs/variants_$STAMP"
 failed=()
 
 for opt in "${OPT_MODES[@]}"; do

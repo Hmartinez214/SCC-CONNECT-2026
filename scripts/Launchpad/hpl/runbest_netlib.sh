@@ -3,32 +3,28 @@
 # configuration found on Launchpad: the top entry of outputs/best/hpl_netlib.json.
 #
 #   scripts/Launchpad/hpl/runbest_netlib.sh
+#   scripts/Launchpad/hpl/runbest_netlib.sh N=60000 NB=256   # override configuration keys
+#   scripts/Launchpad/hpl/runbest_netlib.sh --dry-run        # show HPL.dat and binding, run nothing
 #
 # Single-threaded ranks bound to physical cores in order (block mapping);
 # with more ranks than cores, consecutive ranks share a core and its
 # hyperthread sibling. HUGEPAGES=thp gives malloc transparent huge pages.
-# Waits for the node lock. Log and HPL.dat: outputs/runbest/hpl_netlib_<time>/
+# Waits for the node lock. Run directory: outputs/hpl/runbest/hpl_netlib_<time>/
+# (HPL.dat, hpl.log, result.json); one line per run in outputs/hpl/runbest/results.tsv.
 
 set -uo pipefail
-SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
+source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/node.sh"
+parse_args "" "$@"
 cd "$SCC" || exit 1
 
 # ---- best configuration -> BEST_* variables (every key of the top entry) ----
-eval "$(python3 - "$SCC/outputs/best/hpl_netlib.json" <<'EOF'
-import json, shlex, sys
-top = json.load(open(sys.argv[1]))["top"][0]
-v = {**top["configuration"], "OBJECTIVE": top["objective"], "SOURCE": f"{top['run_group']} attempt {top['attempt']}"}
-for key, value in v.items():
-    print(f"BEST_{key.upper()}={shlex.quote(str(value))}")
-EOF
-)"
-[[ -n ${BEST_SOURCE:-} ]] || { echo "could not read outputs/best/hpl_netlib.json" >&2; exit 1; }
+eval "$(python3 "$SCC/scripts/Launchpad/lib/best.py" "$SCC/outputs/best/hpl_netlib.json" "${OVERRIDES[@]}")"
+[[ -n ${BEST_SOURCE:-} ]] || exit 1
 [[ $BEST_MPI_BIND == core && $BEST_MPI_MAP == block ]] || {
     echo "MPI_BIND=$BEST_MPI_BIND MPI_MAP=$BEST_MPI_MAP: this script implements core binding with block mapping" >&2; exit 1; }
 echo "best: $BEST_SOURCE ($BEST_OBJECTIVE GFLOPS)"
 
-RUN="$SCC/outputs/runbest/hpl_netlib_$(date +%Y%m%d_%H%M%S)"
-mkdir -p "$RUN"
+run_dir hpl hpl_netlib
 
 source libs/spack/share/spack/setup-env.sh >/dev/null
 spack load hpl/zqzkvyu intel-oneapi-mpi || exit 1
@@ -89,8 +85,13 @@ unset GLIBC_TUNABLES
 [[ $BEST_HUGEPAGES == thp ]] && export GLIBC_TUNABLES=glibc.malloc.hugetlb=1
 NUMA=(); [[ $BEST_MEM_POLICY == interleave ]] && NUMA=(numactl --interleave=all)
 
-exec 9>"$SCC/outputs/autotuning/.node.lock"
-flock -n 9 || { echo "waiting for the node lock..."; flock 9; }
-echo "netlib HPL N=$BEST_N, ${BEST_RANKS} ranks (${BEST_P}x$BEST_Q) -> $RUN"
+echo "netlib HPL N=$BEST_N, ${BEST_RANKS} ranks (${BEST_P}x$BEST_Q), $PER_CORE rank(s) per core${GLIBC_TUNABLES:+, THP malloc} -> ${RUN#"$SCC"/}"
+dry_run_exit
+node_lock
 cd "$RUN" && mpirun -np "$BEST_RANKS" "$RUN/bind_rank.sh" "${NUMA[@]}" "$XHPL" 2>&1 | tee hpl.log
 grep -E "^W[RC]|PASSED|FAILED" "$RUN/hpl.log"
+
+read -r secs gflops < <(awk '/^W[RC]/ {printf "%s %.2f\n", $6, $7; exit}' "$RUN/hpl.log")
+valid=no; grep -q PASSED "$RUN/hpl.log" && valid=yes
+record_result gflops "${gflops:-}" "$valid" "N=$BEST_N" "seconds=${secs:-}"
+echo "result: ${gflops:-?} GFLOPS, residual check: $valid  (run: ${RUN#"$SCC"/})"

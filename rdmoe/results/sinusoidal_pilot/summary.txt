@@ -1,0 +1,3 @@
+A_transformer 0.575 0.13 {'assoc/iid': 0.06, 'attr/iid': 1.0, 'chain/iid': 0.44, 'compose/iid': 0.58, 'modarith/iid': 0.38, 'dfa/iid': 0.99}
+A_transformer_param 0.565 0.124 {'assoc/iid': 0.02, 'attr/iid': 0.96, 'chain/iid': 0.38, 'compose/iid': 0.63, 'modarith/iid': 0.41, 'dfa/iid': 0.99}
+B_looped 0.39 0.134 {'assoc/iid': 0.01, 'attr/iid': 0.1, 'chain/iid': 0.36, 'compose/iid': 0.57, 'modarith/iid': 0.32, 'dfa/iid': 0.98}

@@ -1,0 +1,3 @@
+# Baseline B: looped Transformer, one shared block applied 8 times (FLOP-matched; far fewer params).
+base: base.yaml
+model: {arch: looped, shared: true, ffn: dense, n_steps: 8, halting: none, step_embed: true}

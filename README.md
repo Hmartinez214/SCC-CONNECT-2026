@@ -27,8 +27,8 @@ Each folder has a README describing its contents.
 
 | Folder | Contents |
 |---|---|
-| `scripts/` | Per-machine scripts; `scripts/Launchpad/` holds the HPL/STREAM autotuners |
-| `outputs/` | Generated results (gitignored; see `outputs/README.md`) |
+| `scripts/` | Per-machine scripts; `scripts/Launchpad/` holds the benchmark autotuners and `bench`, the one entry point for running and finding results there (`scripts/Launchpad/bench -h`) |
+| `outputs/` | Generated results, one directory per benchmark (gitignored except `outputs/best/`; see `outputs/README.md`) |
 | `plots/` | Figures (WRF renders, tuning progress) |
 | `libs/` | External code and installs (spack, clones, builds) |
 | `HPC-Tools/` | Build helpers and the autotuner framework (submodule) |

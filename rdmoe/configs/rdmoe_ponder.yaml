@@ -1,0 +1,13 @@
+# Model D with PonderNet halting instead of ACT (Banino et al. 2021).
+# Halting is decided at the answer slots; each sample runs until all its answer
+# slots halt (median of the halting distribution at inference). Training uses the
+# exact expected loss sum_t p_t * CE_t over all steps (no sampling), plus
+# loss.ponder * E[T] and loss.kl * KL(p || truncated geometric(ponder_prior)).
+base: rdmoe.yaml
+model:
+  halting: ponder
+  ponder_prior: 0.2
+  halt_bias_init: -1.5
+loss:
+  ponder: 0.01
+  kl: 0.01

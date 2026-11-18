@@ -6,8 +6,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
-AUTOTUNING = REPO / "outputs" / "autotuning"
+from paths import REPO, tuning_dir
 
 # Reference palette (dataviz skill). SERIES is categorical, used in this fixed
 # order; MARKERS give each series a second cue besides color.
@@ -27,7 +26,7 @@ def plot_dir(*run_groups: str) -> Path:
 def load_runs(run_group: str) -> list[dict]:
     """Finished runs of a run group, in attempt order (the final record per
     attempt; interrupted attempts that only have a SUBMITTED record are left out)."""
-    path = AUTOTUNING / run_group / "evaluations.jsonl"
+    path = tuning_dir(run_group) / "evaluations.jsonl"
     final: dict[int, dict] = {}
     for line in path.read_text().splitlines():
         if line.strip():

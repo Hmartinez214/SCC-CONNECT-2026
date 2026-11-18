@@ -1,7 +1,7 @@
 # SMAC3 MFC autotuning on the Launchpad node, driven by
 # scripts/Launchpad/mfc/mfc_autotune.py (see its docstring for the space).
 #
-# Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+# Resumes from outputs/mfc/autotuning/<run_group>/evaluations.jsonl on restart.
 # On first start the run group is seeded with the matching runmfc.sh results
 # under experiment.priors (same case, GBPP and STEPS; e.g. from
 # `mfcvariants.sh --run --gbpp 16 --steps 50`), so SMAC starts from them.
@@ -14,7 +14,7 @@ experiment:
   run_group: mfc_smac3
   budget: 1000000000
   seed: 42
-  priors: outputs/mfc_runs
+  priors: outputs/mfc/runs
 
 objective:
   metric: throughput        # 1 / grind time: G gp*eq*rhs per second

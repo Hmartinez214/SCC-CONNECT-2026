@@ -1,0 +1,15 @@
+# Model D: Recurrent Dynamic MoE. Shared attention core + 16 reusable experts,
+# top-1 learned router, ACT halting, up to 8 recurrent steps.
+base: base.yaml
+model:
+  arch: rdmoe
+  shared: true
+  ffn: moe
+  n_experts: 16
+  top_k: 1
+  router: learned             # learned | random | fixed
+  n_steps: 8
+  halting: act                # act | none
+  halt_bias_init: -1.5
+  act_eps: 0.01
+  step_embed: true

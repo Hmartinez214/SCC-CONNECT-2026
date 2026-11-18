@@ -8,11 +8,15 @@
 #   scripts/Launchpad/stream/stream_cont.sh --summary     # mean/sd per variant so far
 #
 # Each run is runbest.sh (node lock, machine settings applied and restored).
-# Results: outputs/stream_cont/results.tsv (MB/s)
+# Results: outputs/stream/cont/results.tsv (MB/s). The full log of every run
+# that validates is appended to outputs/stream/cont/runs.log.gz (zcat / zless)
+# and its run directory removed; runs that fail keep theirs under
+# outputs/stream/runbest/.
 
 set -uo pipefail
-SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
-OUT="$SCC/outputs/stream_cont"
+source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/node.sh"
+[[ ${1:-} == -h || ${1:-} == --help ]] && { usage; exit 0; }
+OUT="$OUTPUTS/stream/cont"
 TSV="$OUT/results.tsv"
 mkdir -p "$OUT"
 
@@ -37,10 +41,14 @@ VARIANTS=(
 [[ -f $TSV ]] || printf "time\tcycle\tvariant\ttriad\tcopy\tscale\tadd\tvalid\trun\n" > "$TSV"
 run() {    # run <label> [KEY=VALUE]...
     local label=$1 log; shift
-    log=$("$SCC/scripts/Launchpad/stream/runbest.sh" "$@" 2>&1)
-    local dir; dir=$(grep -oE 'outputs/runbest/stream_[0-9_]+' <<<"$log" | head -1)
+    log=$(RESULTS_TSV=none "$SCC/scripts/Launchpad/stream/runbest.sh" "$@" 2>&1)
+    local dir; dir=$(grep -oE 'outputs/stream/runbest/stream_[0-9_]+' <<<"$log" | head -1)
     rate() { awk -v k="$1:" '$1 == k {print $2; exit}' <<<"$log"; }
     local ok=no; grep -q "Solution Validates" <<<"$log" && ok=yes
+    if [[ $ok == yes && -n $dir && -d $SCC/$dir ]]; then    # keep the log, drop the directory
+        printf '==== %s cycle %s %s (%s)\n%s\n' "$(date +%FT%T)" "$cycle" "$label" "$dir" "$log" | gzip >> "$OUT/runs.log.gz"
+        rm -f "$SCC/$dir/stream.log" "$SCC/$dir/result.json" && rmdir "$SCC/$dir" && dir="runs.log.gz"
+    fi
     printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" "$(date +%FT%T)" "$cycle" "$label" \
         "$(rate Triad)" "$(rate Copy)" "$(rate Scale)" "$(rate Add)" "$ok" "${dir:-?}" | tee -a "$TSV"
     [[ $ok == yes ]] || tail -5 <<<"$log"

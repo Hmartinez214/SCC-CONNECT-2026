@@ -26,6 +26,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from plot_style import GRID, MARKERS, REPO, SERIES, SURFACE, TEXT, TEXT_2, is_imported, load_runs, style_axes  # noqa: E402
+from paths import tuning_dir  # noqa: E402
 
 sys.path.insert(0, str(REPO / "scripts" / "Launchpad" / "hpl"))
 from hpl_autotune import IntelHPLApplication  # noqa: E402
@@ -48,7 +49,7 @@ def load(groups: dict[str, str]) -> list[dict]:
     defaults = {k: d for k, (_, d) in IntelHPLApplication.LAUNCH_PARAMETERS.items()}
     runs = []
     for g in groups:
-        if not (REPO / "outputs" / "autotuning" / g / "evaluations.jsonl").exists():
+        if not (tuning_dir(g) / "evaluations.jsonl").exists():
             continue
         for r in load_runs(g):
             if not is_imported(r) and r.get("success"):

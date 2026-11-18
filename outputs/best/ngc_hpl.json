@@ -11,7 +11,7 @@
         "Q": 1
       },
       "seconds": 24.35,
-      "log": "outputs/ngc_hpl/20261026_065743.log"
+      "log": "outputs/ngc/hpl/20261026_065743.log"
     },
     {
       "objective": 68800.0,
@@ -23,7 +23,7 @@
         "Q": 1
       },
       "seconds": 29.16,
-      "log": "outputs/ngc_hpl/20261026_065846.log"
+      "log": "outputs/ngc/hpl/20261026_065846.log"
     }
   ]
 }

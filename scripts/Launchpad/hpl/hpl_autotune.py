@@ -261,7 +261,7 @@ class LocalHPLApplication(HPLApplication):
         # The upstream template symlinks HPL.dat into the shared /tmp, which
         # can collide with other users' files; HPL reads it from $RUNDIR anyway.
         text = "\n".join(line for line in text.split("\n") if "/tmp/HPL.dat" not in line)
-        return text
+        return text.replace("/outputs/hpl/runs/", "/outputs/hpl/runs/")   # per-benchmark outputs/ layout
 
     def prior_records(self, path: Path) -> list[dict[str, Any]]:
         """Finished runs of another run group (``experiment.priors``); a launch

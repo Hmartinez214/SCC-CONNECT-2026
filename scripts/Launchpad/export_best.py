@@ -8,13 +8,14 @@ performance, to outputs/best/ (tracked in git; the raw logs are not).
 One JSON file per benchmark plus README.md (a summary table):
 
 * hpl_intel.json   Intel HPL tuner (smac3_intel_hpl*) top configs, and the
-                   fixed-N large-N runs (hpl_bign/, system_ab/)
+                   fixed-N large-N runs (hpl/bign/, hpl/system_ab/)
 * hpl_netlib.json  netlib HPL tuner (smac3_launchpad_ranks)
 * stream.json      CPU STREAM tuner (stream_smac3*)
-* ngc_hpl.json     NGC GPU HPL runs (ngc_hpl/)
+* ngc_hpl.json     NGC GPU HPL runs (ngc/hpl/)
 * ngc_stream.json  NGC GPU STREAM tuner (ngc_stream_smac3)
 * mfc.json         best MFC config per case (mfc_smac3*, mfc_grid_*, mfc_igr_extra)
-* nccl.json        best NCCL settings per collective (nccl_launchpad/tune_*.log)
+* nccl.json        best NCCL settings per collective (nccl/tune_*.log)
+* wrf.json         WRF tuner (wrf_smac3*) top configs, speed = x real time
 
 Tuner entries are unique configurations (a run group's imported priors repeat
 older runs; each configuration keeps its best result).
@@ -28,17 +29,16 @@ import json
 import re
 from typing import Any
 
-from plot_style import AUTOTUNING, REPO, load_runs
+from paths import OUTPUTS, REPO, run_groups
+from plot_style import load_runs
 
-OUTPUTS = REPO / "outputs"
 BEST = OUTPUTS / "best"
 #: Derived or host-local fields left out of the exported configurations / metrics.
 DROP = {"array_memory_gib", "total_threads", "target_memory_bytes", "run_dir"}
 
 
 def _groups(*prefixes: str) -> list[str]:
-    return sorted(p.parent.name for p in AUTOTUNING.glob("*/evaluations.jsonl")
-                  if p.parent.name.startswith(prefixes))
+    return run_groups(*prefixes)
 
 
 def _entry(rec: dict[str, Any]) -> dict[str, Any]:
@@ -71,8 +71,8 @@ def top_configs(groups: list[str], top: int, key=None) -> list[dict[str, Any]]:
 def large_n_runs() -> list[dict[str, Any]]:
     """Fixed-config Intel HPL runs from hpl_bign.sh / system_ab.sh, best first."""
     rows = []
-    for path, source in ((OUTPUTS / "hpl_bign/results.tsv", "hpl_bign"),
-                         (OUTPUTS / "system_ab/results.tsv", "system_ab")):
+    for path, source in ((OUTPUTS / "hpl/bign/results.tsv", "hpl_bign"),
+                         (OUTPUTS / "hpl/system_ab/results.tsv", "system_ab")):
         if not path.exists():
             continue
         for r in csv.DictReader(path.open(), delimiter="\t"):
@@ -88,7 +88,7 @@ def large_n_runs() -> list[dict[str, Any]]:
 
 def ngc_hpl_runs() -> list[dict[str, Any]]:
     rows = []
-    for log in sorted((OUTPUTS / "ngc_hpl").glob("*.log")):
+    for log in sorted((OUTPUTS / "ngc/hpl").glob("*.log")):
         text = log.read_text(errors="replace")
         m = re.search(r"^W[RC]\S*\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([\d.]+)\s+([\d.eE+]+)\s+\(\s*([\d.eE+]+)\)",
                       text, re.M)
@@ -102,7 +102,7 @@ def ngc_hpl_runs() -> list[dict[str, Any]]:
 
 
 def nccl_best() -> list[dict[str, Any]]:
-    logs = sorted((OUTPUTS / "nccl_launchpad").glob("tune_*.log"))
+    logs = sorted((OUTPUTS / "nccl").glob("tune_*.log"))
     if not logs:
         return []
     rows = []
@@ -135,6 +135,8 @@ def main() -> None:
         "mfc": {"unit": "throughput (1/grind time; grind_ns in metrics)", "run_groups": mfc_groups,
                 "best_per_case": top_configs(mfc_groups, top, key=lambda c: c.get("case"))},
         "nccl": {"unit": "busbw GB/s (2x H100 NVL, NVLink)", "best_per_collective": nccl_best()},
+        "wrf": {"unit": "simulated s / wall s (Santa Cruz 9+3 km, 3 h forecast)", "run_groups": _groups("wrf_smac3"),
+                "top": top_configs(_groups("wrf_smac3"), top)},
     }
     for name, data in files.items():
         (BEST / f"{name}.json").write_text(json.dumps(data, indent=2) + "\n")
@@ -168,6 +170,10 @@ def main() -> None:
     if files["mfc"]["best_per_case"]:
         lines.append(f"| MFC, 2 GPUs | best config for each of {len(files['mfc']['best_per_case'])} cases | "
                      f"{len(mfc_groups)} run groups | `mfc.json` |")
+    h = head("wrf")
+    if h:
+        lines.append(f"| WRF, CPU (Santa Cruz 9+3 km) | {h['objective']:,.1f}x real time | {h['run_group']} attempt "
+                     f"{h['attempt']} | `wrf.json` |")
     for r in files["nccl"]["best_per_collective"]:
         lines.append(f"| NCCL {r['collective']} | {r['objective']:.2f} GB/s (default {r['default_busbw_gb_s']:.2f}) | "
                      f"`{r['log']}` | `nccl.json` |")

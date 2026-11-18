@@ -1,0 +1,41 @@
+# SMAC3 WRF autotuning on the Launchpad node, driven by
+# scripts/Launchpad/wrf/wrf_autotune.py (see its docstring for the space).
+#
+# Case: outputs/wrf/case/santacruz (9 km + 3 km nest, 100x100x45), 3-hour
+# forecast, no history output. Objective: simulated s / wall s.
+# Resumes from outputs/wrf/autotuning/<run_group>/evaluations.jsonl on restart.
+# Use a new run_group after changing the case, HOURS or a build.
+
+experiment:
+  name: wrf-launchpad-smac3
+  optimizer: smac3
+  run_group: wrf_smac3
+  budget: 150
+  seed: 42
+
+objective:
+  metric: speed
+  direction: maximize
+
+application:
+  type: wrf_local
+  tunable:
+    - BUILD
+    - RANKS
+    - THREADS
+    - TILES
+    - DECOMP
+    - BIND
+    - UNCORE_MAX_MHZ
+    - EPB
+    - THP
+  fixed:
+    HOURS: 3
+
+# Per-run wall limit for the local scheduler (a 3-hour forecast takes about
+# a minute at 64 ranks; slow configurations get killed and score 0).
+slurm:
+  nodes: 1
+  ntasks: 64
+  time: "00:06:00"
+  submit_retries: 3

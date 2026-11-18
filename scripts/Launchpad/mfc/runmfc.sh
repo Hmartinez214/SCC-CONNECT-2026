@@ -19,8 +19,9 @@
 #   --param K=V       override case parameter K (repeatable; V parsed as JSON if it can be)
 #   --env K=V         set environment variable K for the ranks (repeatable; e.g. UCX_TLS=...)
 #   --label NAME      run directory name (default: <time>_<case>_<config>)
-#   --out DIR         parent of the run directory (default: outputs/mfc_runs)
+#   --out DIR         parent of the run directory (default: outputs/mfc/runs)
 #   --keep            keep the field output (D/, p_all/, restart_data/); mfccheck.py needs D/
+#   --post            also run post_process and keep its output (silo_hdf5/ or binary/, for render3d.sh)
 #   --build-only      build pre_process + simulation for this configuration and exit
 #   -j N              build jobs (default: nproc)
 #
@@ -28,6 +29,7 @@
 #   scripts/Launchpad/mfc/runmfc.sh 5eq_rk3_weno3_hllc
 #   scripts/Launchpad/mfc/runmfc.sh --case-opt --rdma --bind numa 5eq_rk3_weno3_hllc --steps 50
 #   scripts/Launchpad/mfc/runmfc.sh --keep --gbpp 1 --label ref igr
+#   scripts/Launchpad/mfc/runmfc.sh --post --steps 8000 --param t_step_save=400 3D_TaylorGreenVortex
 #
 # The run directory gets case.py (a stand-in that runs the real case and
 # applies the overrides), mfc.log, summary.yaml and result.json. The last line
@@ -43,7 +45,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 MFC_DIR="$REPO_ROOT/libs/clone/MFC"
 
 die()   { printf '\033[1;31merror:\033[0m %s\n' "$*" >&2; exit 2; }
-usage() { sed -n '2,38p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0; }
+usage() { sed -n '2,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0; }
 
 RANKS=""
 CASE_OPT=0
@@ -52,8 +54,10 @@ PRECISION=double
 RDMA=0
 BIND=none
 LABEL=""
-OUT="$REPO_ROOT/outputs/mfc_runs"
+OUT="$REPO_ROOT/outputs/mfc/runs"
 KEEP=0
+POST=0
+TARGETS=(pre_process simulation)
 BUILD_ONLY=0
 JOBS="$(nproc)"
 CASE=""
@@ -77,6 +81,7 @@ while [ $# -gt 0 ]; do
         --label)      shift; LABEL="${1:?}" ;;
         --out)        shift; OUT="${1:?}" ;;
         --keep)       KEEP=1 ;;
+        --post)       POST=1; TARGETS=(pre_process simulation post_process) ;;
         --build-only) BUILD_ONLY=1 ;;
         -j)           shift; JOBS="${1:?}" ;;
         -j*)          JOBS="${1#-j}" ;;
@@ -179,7 +184,7 @@ echo "compiler:  $(nvfortran --version | grep -m1 -oE 'nvfortran [0-9.]+'), MFC_
 
 cd "$MFC_DIR"
 if [ "$BUILD_ONLY" -eq 1 ]; then
-    ./mfc.sh build -i "$RUN_DIR/case.py" -t pre_process simulation "${CFG[@]}" -j "$JOBS" \
+    ./mfc.sh build -i "$RUN_DIR/case.py" -t "${TARGETS[@]}" "${CFG[@]}" -j "$JOBS" \
         -- "${PASS_ARGS[@]}" 2>&1 | tee "$RUN_DIR/build.log"
     exit "${PIPESTATUS[0]}"
 fi
@@ -195,14 +200,15 @@ ENV_JSON="$($PY -c 'import json,sys; print(json.dumps(dict(a.split("=",1) for a 
 
 started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 set +e
-./mfc.sh run "$RUN_DIR/case.py" -n "$RANKS" -t pre_process simulation "${CFG[@]}" \
+./mfc.sh run "$RUN_DIR/case.py" -n "$RANKS" -t "${TARGETS[@]}" "${CFG[@]}" \
     -c "$SCRIPT_DIR/launchpad.mako" -j "$JOBS" -o "$RUN_DIR/summary.yaml" \
     -- "${PASS_ARGS[@]}" 2>&1 | tee "$RUN_DIR/mfc.log"
 rc="${PIPESTATUS[0]}"
 set -e
 
 if [ "$KEEP" -eq 0 ]; then
-    rm -rf "$RUN_DIR/D" "$RUN_DIR/p_all" "$RUN_DIR/restart_data" "$RUN_DIR/silo_hdf5"
+    rm -rf "$RUN_DIR/D" "$RUN_DIR/p_all" "$RUN_DIR/restart_data"
+    [ "$POST" -eq 1 ] || rm -rf "$RUN_DIR/silo_hdf5" "$RUN_DIR/binary"
 fi
 
 status=ok

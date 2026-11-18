@@ -25,7 +25,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 MFC_DIR = REPO / "libs" / "clone" / "MFC"
 CASES_FILE = HERE / "cases.yaml"
-RUNS_DIR = REPO / "outputs" / "mfc_runs"
+RUNS_DIR = REPO / "outputs" / "mfc" / "runs"
 
 #: Prefix of the one-line JSON summary runmfc.sh prints at the end of a run.
 RESULT_TAG = "MFC_RESULT "

@@ -1,0 +1,3 @@
+# Baseline C: conventional MoE, 8 distinct layers x 2 experts, top-1 per layer (FLOP-matched to D at max depth).
+base: base.yaml
+model: {arch: moe, shared: false, ffn: moe, n_experts: 2, top_k: 1, router: learned, n_steps: 8, halting: none, step_embed: false}

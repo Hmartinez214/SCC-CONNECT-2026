@@ -1,7 +1,7 @@
 # SMAC3 STREAM autotuning on the Launchpad node, driven by
 # scripts/Launchpad/stream/stream_autotune.py (see its docstring for the space).
 #
-# Resumes from outputs/autotuning/<run_group>/evaluations.jsonl on restart.
+# Resumes from outputs/stream/autotuning/<run_group>/evaluations.jsonl on restart.
 # Lineage: stream_smac3 (seeded from the earlier random sweep) ->
 # stream_smac3_v2 (+ UNCORE_MAX_MHZ and THP, both machine-wide, set per job
 # and restored after) -> stream_smac3_v3 (+ finer OMP_THREADS steps,
@@ -22,7 +22,7 @@ experiment:
   run_group: stream_smac3_v5
   budget: 1000000000
   seed: 42
-  priors: outputs/autotuning/stream_smac3_v4/evaluations.jsonl
+  priors: outputs/stream/autotuning/stream_smac3_v4/evaluations.jsonl
 
 objective:
   metric: triad_mb_s

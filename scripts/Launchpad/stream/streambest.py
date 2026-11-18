@@ -4,10 +4,10 @@ Rank STREAM random-sweep JSONL results and summarize the strongest
 validated configurations.
 
 Usage:
-  python3 stream_best.py outputs/stream/trials.jsonl
-  python3 stream_best.py outputs/stream/trials.jsonl --top 25
-  python3 stream_best.py outputs/stream/trials.jsonl --watch 30
-  python3 stream_best.py outputs/stream/trials.jsonl --export outputs/stream/ranked.csv
+  python3 stream_best.py outputs/stream/sweep/trials.jsonl
+  python3 stream_best.py outputs/stream/sweep/trials.jsonl --top 25
+  python3 stream_best.py outputs/stream/sweep/trials.jsonl --watch 30
+  python3 stream_best.py outputs/stream/sweep/trials.jsonl --export outputs/stream/sweep/ranked.csv
 
 Only successful runs with valid benchmark results are eligible.
 The primary score is Triad bandwidth (MB/s).

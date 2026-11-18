@@ -458,6 +458,24 @@
       }
     },
     {
+      "objective": 4403.55,
+      "N": 345800,
+      "arm": "found",
+      "source": "hpl_bign",
+      "seconds": 6260.14,
+      "metrics": {
+        "core_mhz_s0": "2279",
+        "core_mhz_s1": "2358",
+        "unc_mhz_s0": "1000",
+        "unc_mhz_s1": "1000",
+        "pkg_w_s0": "249.1",
+        "pkg_w_s1": "249.3",
+        "ram_w_s0": "43.8",
+        "ram_w_s1": "45.3",
+        "tmax_c": "64"
+      }
+    },
+    {
       "objective": 4402.65,
       "N": 324520,
       "arm": "found",
@@ -473,6 +491,60 @@
         "ram_w_s0": "44.9",
         "ram_w_s1": "44.7",
         "tmax_c": "64"
+      }
+    },
+    {
+      "objective": 4402.27,
+      "N": 345800,
+      "arm": "found",
+      "source": "hpl_bign",
+      "seconds": 6261.96,
+      "metrics": {
+        "core_mhz_s0": "2279",
+        "core_mhz_s1": "2358",
+        "unc_mhz_s0": "1000",
+        "unc_mhz_s1": "1000",
+        "pkg_w_s0": "249.1",
+        "pkg_w_s1": "249.3",
+        "ram_w_s0": "43.7",
+        "ram_w_s1": "45.3",
+        "tmax_c": "65"
+      }
+    },
+    {
+      "objective": 4401.81,
+      "N": 345800,
+      "arm": "found",
+      "source": "hpl_bign",
+      "seconds": 6262.6,
+      "metrics": {
+        "core_mhz_s0": "2280",
+        "core_mhz_s1": "2357",
+        "unc_mhz_s0": "1000",
+        "unc_mhz_s1": "1000",
+        "pkg_w_s0": "249.1",
+        "pkg_w_s1": "249.2",
+        "ram_w_s0": "43.7",
+        "ram_w_s1": "45.3",
+        "tmax_c": "65"
+      }
+    },
+    {
+      "objective": 4401.79,
+      "N": 324520,
+      "arm": "found",
+      "source": "hpl_bign",
+      "seconds": 5176.15,
+      "metrics": {
+        "core_mhz_s0": "2267",
+        "core_mhz_s1": "2350",
+        "unc_mhz_s0": "1000",
+        "unc_mhz_s1": "1000",
+        "pkg_w_s0": "249.2",
+        "pkg_w_s1": "249.4",
+        "ram_w_s0": "44.9",
+        "ram_w_s1": "44.7",
+        "tmax_c": "65"
       }
     },
     {
@@ -494,129 +566,57 @@
       }
     },
     {
-      "objective": 4399.11,
-      "N": 304000,
+      "objective": 4401.38,
+      "N": 324520,
       "arm": "found",
       "source": "hpl_bign",
-      "seconds": 4257.63,
+      "seconds": 5176.64,
       "metrics": {
-        "core_mhz_s0": "2271",
-        "core_mhz_s1": "2353",
+        "core_mhz_s0": "2266",
+        "core_mhz_s1": "2350",
         "unc_mhz_s0": "1000",
         "unc_mhz_s1": "1000",
         "pkg_w_s0": "249.2",
-        "pkg_w_s1": "249.4",
-        "ram_w_s0": "44.8",
-        "ram_w_s1": "44.6",
-        "tmax_c": "64"
-      }
-    },
-    {
-      "objective": 4396.15,
-      "N": 276640,
-      "arm": "found",
-      "source": "hpl_bign",
-      "seconds": 3210.59,
-      "metrics": {
-        "core_mhz_s0": "2275",
-        "core_mhz_s1": "2357",
-        "unc_mhz_s0": "1000",
-        "unc_mhz_s1": "1000",
-        "pkg_w_s0": "249.2",
-        "pkg_w_s1": "249.3",
+        "pkg_w_s1": "249.5",
         "ram_w_s0": "44.9",
-        "ram_w_s1": "44.7",
-        "tmax_c": "63"
-      }
-    },
-    {
-      "objective": 4396.12,
-      "N": 345800,
-      "arm": "found",
-      "source": "hpl_bign",
-      "seconds": 6270.72,
-      "metrics": {
-        "core_mhz_s0": "2282",
-        "core_mhz_s1": "2358",
-        "unc_mhz_s0": "1000",
-        "unc_mhz_s1": "1000",
-        "pkg_w_s0": "249.1",
-        "pkg_w_s1": "249.3",
-        "ram_w_s0": "43.6",
-        "ram_w_s1": "45.3",
-        "tmax_c": "66"
-      }
-    },
-    {
-      "objective": 4395.18,
-      "N": 276640,
-      "arm": "found",
-      "source": "hpl_bign",
-      "seconds": 3211.3,
-      "metrics": {
-        "core_mhz_s0": "2274",
-        "core_mhz_s1": "2354",
-        "unc_mhz_s0": "1000",
-        "unc_mhz_s1": "1000",
-        "pkg_w_s0": "249.1",
-        "pkg_w_s1": "249.4",
-        "ram_w_s0": "44.8",
-        "ram_w_s1": "44.8",
-        "tmax_c": "63"
-      }
-    },
-    {
-      "objective": 4300.91,
-      "N": 258677,
-      "arm": "kubepods_confined",
-      "source": "system_ab",
-      "seconds": 2683.03,
-      "metrics": {
-        "core_mhz_s0": "2242",
-        "core_mhz_s1": "2308",
-        "unc_mhz_s0": "1200",
-        "unc_mhz_s1": "1195",
-        "pkg_w_s0": "242.7",
-        "pkg_w_s1": "241.5",
-        "ram_w_s0": "47.2",
-        "ram_w_s1": "46.9",
-        "tmax_c": "64"
-      }
-    },
-    {
-      "objective": 4279.57,
-      "N": 150000,
-      "arm": "kubepods_confined",
-      "source": "system_ab",
-      "seconds": 525.76,
-      "metrics": {
-        "core_mhz_s0": "2279",
-        "core_mhz_s1": "2340",
-        "unc_mhz_s0": "1198",
-        "unc_mhz_s1": "1193",
-        "pkg_w_s0": "240.8",
-        "pkg_w_s1": "239.4",
-        "ram_w_s0": "45.9",
-        "ram_w_s1": "45.7",
+        "ram_w_s1": "44.6",
         "tmax_c": "65"
       }
     },
     {
-      "objective": 4277.98,
-      "N": 150000,
-      "arm": "kubepods_confined",
-      "source": "system_ab",
-      "seconds": 525.96,
+      "objective": 4401.23,
+      "N": 345800,
+      "arm": "found",
+      "source": "hpl_bign",
+      "seconds": 6263.43,
       "metrics": {
-        "core_mhz_s0": "2279",
-        "core_mhz_s1": "2335",
-        "unc_mhz_s0": "1200",
-        "unc_mhz_s1": "1184",
-        "pkg_w_s0": "240.7",
-        "pkg_w_s1": "239.2",
-        "ram_w_s0": "45.8",
-        "ram_w_s1": "45.6",
-        "tmax_c": "63"
+        "core_mhz_s0": "2277",
+        "core_mhz_s1": "2357",
+        "unc_mhz_s0": "1000",
+        "unc_mhz_s1": "1000",
+        "pkg_w_s0": "249.1",
+        "pkg_w_s1": "249.4",
+        "ram_w_s0": "43.7",
+        "ram_w_s1": "45.2",
+        "tmax_c": "65"
+      }
+    },
+    {
+      "objective": 4400.47,
+      "N": 324520,
+      "arm": "found",
+      "source": "hpl_bign",
+      "seconds": 5177.7,
+      "metrics": {
+        "core_mhz_s0": "2267",
+        "core_mhz_s1": "2349",
+        "unc_mhz_s0": "1000",
+        "unc_mhz_s1": "999",
+        "pkg_w_s0": "249.2",
+        "pkg_w_s1": "249.4",
+        "ram_w_s0": "45.0",
+        "ram_w_s1": "44.7",
+        "tmax_c": "64"
       }
     }
   ]

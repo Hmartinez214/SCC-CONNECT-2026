@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run SMAC3 HPL autotuning in the launchpad environment, restarting the
 # controller if it dies. Ctrl-C (or tmux kill-session) stops it; running this
-# again resumes from outputs/autotuning/smac3_launchpad/evaluations.jsonl.
+# again resumes from outputs/hpl/autotuning/smac3_launchpad/evaluations.jsonl.
 #
 # Normally started through hpl_smac3_tmux.sh.
 

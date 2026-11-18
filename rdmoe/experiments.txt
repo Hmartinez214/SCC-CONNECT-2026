@@ -1,0 +1,41 @@
+# name | config | overrides   (one run per line; consumed by run_experiments.sh)
+D_rdmoe            | rdmoe             |
+A_transformer      | transformer       |
+A_transformer_param| transformer_param |
+B_looped           | looped            |
+C_moe              | moe               |
+abl1_no_halting    | rdmoe | model.halting=none
+abl2_fixed_expert  | rdmoe | model.router=fixed
+abl3_no_balance    | rdmoe | loss.balance=0
+abl4_random_router | rdmoe | model.router=random
+abl5_fixed_depth4  | rdmoe | model.halting=none model.n_steps=4
+abl6_no_ponder     | rdmoe | loss.ponder=0
+abl7_shuffled      | rdmoe | data.curriculum=shuffled
+abl7_no_curriculum | rdmoe | data.curriculum=none
+abl8_top2          | rdmoe | model.top_k=2
+A_transformer_shuffled | transformer | data.curriculum=shuffled
+# --- low-compute baselines (compute-matched to D's adaptive average) ---
+A_transformer_L2   | transformer | model.n_steps=2
+A_transformer_L4   | transformer | model.n_steps=4
+# --- extra seeds for the headline comparisons ---
+A_transformer_s1   | transformer | seed=1
+A_transformer_s2   | transformer | seed=2
+A_transformer_param_s1 | transformer_param | seed=1
+A_transformer_param_s2 | transformer_param | seed=2
+B_looped_s1        | looped | seed=1
+B_looped_s2        | looped | seed=2
+C_moe_s1           | moe | seed=1
+C_moe_s2           | moe | seed=2
+D_rdmoe_s1         | rdmoe | seed=1
+D_rdmoe_s2         | rdmoe | seed=2
+abl1_no_halting_s1 | rdmoe | model.halting=none seed=1
+abl1_no_halting_s2 | rdmoe | model.halting=none seed=2
+# --- is the baselines' compose/modarith plateau a step-budget artefact? ---
+A_transformer_30k  | transformer | train.steps=30000
+B_looped_30k       | looped | train.steps=30000
+# --- PonderNet halting (exact expected loss over steps) instead of ACT ---
+P_ponder           | rdmoe_ponder |
+P_ponder_s1        | rdmoe_ponder | seed=1
+P_ponder_s2        | rdmoe_ponder | seed=2
+P_ponder_lam03     | rdmoe_ponder | loss.ponder=0.03
+P_ponder_lam0      | rdmoe_ponder | loss.ponder=0

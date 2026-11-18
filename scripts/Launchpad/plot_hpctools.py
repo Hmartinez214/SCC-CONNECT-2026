@@ -4,7 +4,7 @@
     python scripts/Launchpad/plot_hpctools.py                  # -> plots/hpl/, plots/stream/
     python scripts/Launchpad/plot_hpctools.py --groups smac3_intel_hpl_fast --name hpl_fast
 
-`hpc-tune plot --input outputs/autotuning` would put every run group on one
+`hpc-tune plot --input outputs/<bench>/autotuning` would put every run group on one
 axis (STREAM's MB/s next to HPL's GFLOPS), so this picks groups per figure and
 calls the same API: load_experiments() + plot_metric() for raw values and the
 running best (cummax). Run groups seeded with priors repeat earlier groups'
@@ -25,7 +25,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from hpc_autotuner.plotting import load_experiments, plot_metric  # noqa: E402
 
-from plot_style import AUTOTUNING, REPO  # noqa: E402
+from paths import BENCHES, tuning_root  # noqa: E402
+from plot_style import REPO  # noqa: E402
 
 HPL_GROUPS = ["smac3_launchpad_ranks", "smac3_intel_hpl", "smac3_intel_hpl_v2",
               "smac3_intel_hpl_v3", "smac3_intel_hpl_fast"]
@@ -33,13 +34,14 @@ STREAM_GROUPS = ["stream_smac3"]
 
 
 def figure(groups: list[str], name: str, ylabel: str, outdir: Path, include_priors: bool = False) -> None:
-    experiments = [e for e in load_experiments(AUTOTUNING) if e["name"] in groups]
+    experiments = [e for b in BENCHES if tuning_root(b).is_dir()
+                   for e in load_experiments(tuning_root(b)) if e["name"] in groups]
     if not include_priors:
         for e in experiments:
             e["records"] = [r for r in e["records"] if not (r.get("metadata") or {}).get("imported_from")]
     experiments.sort(key=lambda e: groups.index(e["name"]))
     if not experiments:
-        raise SystemExit(f"none of {groups} found under {AUTOTUNING}")
+        raise SystemExit(f"none of {groups} found under outputs/*/autotuning")
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     plot_metric(experiments, x="attempt", y="objective", aggregate="raw", ax=axes[0],
                 title=f"{name}: {ylabel} per run")

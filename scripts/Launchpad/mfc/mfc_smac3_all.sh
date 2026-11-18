@@ -8,7 +8,7 @@
 #   scripts/Launchpad/mfc/mfc_smac3_all.sh --examples --shuffle 1 --prune-builds
 #                                                           # all of MFC's examples/, random order
 #   tmux new-session -d -s mfc-all -c "$PWD" \
-#       "scripts/Launchpad/mfc/mfc_smac3_all.sh 2>&1 | tee -a outputs/autotuning/mfc_smac3_all.log"
+#       "scripts/Launchpad/mfc/mfc_smac3_all.sh 2>&1 | tee -a outputs/mfc/autotuning/mfc_smac3_all.log"
 #
 #   --examples        add every directory of MFC's examples/ to the cases
 #   --shuffle SEED    random order (same SEED = same order, so a restart resumes it)
@@ -20,7 +20,7 @@
 #   BETWEEN="timeout --signal=INT 1800 venv/bin/python scripts/Launchpad/mfc/mfc_autotune.py \
 #            --config scripts/Launchpad/mfc/mfc_igr_extra.yaml" mfc_smac3_all.sh --examples ...
 #
-# Before tuning a case it times one plain run (outputs/mfc_runs/cases/<slug>,
+# Before tuning a case it times one plain run (outputs/mfc/runs/cases/<slug>,
 # limited to PLAIN_TIMEOUT seconds, default 600), which seeds SMAC and skips a
 # case that fails or is too slow to tune. Re-running resumes: finished run
 # groups end straight away. Ctrl-C stops the whole loop.
@@ -83,10 +83,10 @@ for c in "${CASES[@]}"; do
     n=$((n + 1))
     echo "===== $c [$n/${#CASES[@]}] ($(date)) ====="
     before="$(builds)"
-    base="outputs/mfc_runs/cases/$c"
+    base="outputs/mfc/runs/cases/$c"
     if [ ! -f "$base/result.json" ]; then
         rm -rf "$base"
-        timeout -k 30 "$PLAIN_TIMEOUT" "$MFC_SCRIPTS/runmfc.sh" --out outputs/mfc_runs/cases --label "$c" \
+        timeout -k 30 "$PLAIN_TIMEOUT" "$MFC_SCRIPTS/runmfc.sh" --out outputs/mfc/runs/cases --label "$c" \
             --gbpp "$GBPP" --steps "$STEPS" "$c" | tail -n 3
         if [ ! -f "$base/result.json" ]; then
             mkdir -p "$base"
@@ -110,7 +110,7 @@ for l in open(sys.argv[1]):
 ok = [r for r in recs.values() if r.get('success')]
 best = min(ok, key=lambda r: r['metrics']['grind_ns']) if ok else None
 print(f'{len(recs)} runs, {len(recs) - len(ok)} failed' + (f', best grind {best[\"metrics\"][\"grind_ns\"]:.4f} ns' if best else ''))
-" "outputs/autotuning/${RUN_BASE}_$c/evaluations.jsonl" 2>/dev/null || echo 'no runs')"
+" "outputs/mfc/autotuning/${RUN_BASE}_$c/evaluations.jsonl" 2>/dev/null || echo 'no runs')"
     fi
     echo "$c: ${STATE[$c]}"
     if [ "$PRUNE" -eq 1 ]; then

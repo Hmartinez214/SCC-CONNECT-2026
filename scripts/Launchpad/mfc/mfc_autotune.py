@@ -140,7 +140,7 @@ class MFCApplication(Application):
     def command(self, configuration: dict[str, Any]) -> str:
         args = shlex.join(self.runmfc_args(configuration) + [self.case])
         return "\n".join([
-            'OUT="${SLURM_SUBMIT_DIR:-$PWD}/outputs/mfc_tuning_runs"',
+            'OUT="${SLURM_SUBMIT_DIR:-$PWD}/outputs/mfc/tuning_runs"',
             f'{RUNMFC} --out "$OUT" --label "${{SLURM_JOB_ID:-local}}" {args}',
         ])
 

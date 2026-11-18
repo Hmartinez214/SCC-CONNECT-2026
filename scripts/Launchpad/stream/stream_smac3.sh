@@ -5,7 +5,7 @@
 #   DURATION=300 scripts/Launchpad/stream/stream_smac3.sh   # stop after 5 min
 #
 # Ctrl-C stops it; running it again resumes from
-# outputs/autotuning/<run_group>/evaluations.jsonl.
+# outputs/stream/autotuning/<run_group>/evaluations.jsonl.
 
 SCC_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$SCC_DIR" || exit 1

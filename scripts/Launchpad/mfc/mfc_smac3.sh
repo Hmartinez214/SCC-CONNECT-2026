@@ -6,7 +6,7 @@
 #   scripts/Launchpad/mfc/mfc_smac3.sh path/to/other.yaml
 #
 # Ctrl-C stops it; running it again resumes from
-# outputs/autotuning/mfc_smac3/evaluations.jsonl. Shares the node lock with
+# outputs/mfc/autotuning/mfc_smac3/evaluations.jsonl. Shares the node lock with
 # the HPL and STREAM tuners, so their runs never overlap.
 #
 # Uses the repo venv's Python (HPC-Tools autotuner) without sourcing

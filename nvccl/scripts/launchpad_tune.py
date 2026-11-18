@@ -15,7 +15,7 @@ Grid (empty = NCCL's default):
 
 Each point runs <coll>_perf -b <lo> -e <hi> -f 2 -g 2 -n 20 -w 5 -c 0 and is
 scored by its best out-of-place busbw. Logs, results.csv and best.env land in
-outputs/nccl_launchpad/tune_<stamp>/. Holds the node lock shared with the
+outputs/nccl/tune_<stamp>/. Holds the node lock shared with the
 autotuners. Resumes: points already in results.csv of --out are skipped.
 """
 import argparse
@@ -74,7 +74,7 @@ def main():
     ap.add_argument("--colls", nargs="+", default=COLLS)
     ap.add_argument("--sizes", nargs=2, default=["1G", "8G"])
     ap.add_argument("--pair", default="0,1")
-    ap.add_argument("--out", default=os.path.join(REPO, "outputs", "nccl_launchpad",
+    ap.add_argument("--out", default=os.path.join(REPO, "outputs", "nccl",
                                                   time.strftime("tune_%Y%m%d_%H%M%S")))
     a = ap.parse_args()
     os.makedirs(os.path.join(a.out, "logs"), exist_ok=True)
@@ -88,8 +88,10 @@ def main():
     if new:
         w.writerow(["tag", "coll", *KEYS, "peak_busbw", "peak_size", "busbw_at_max", "wrong", "rc"])
 
-    lock = open(os.path.join(REPO, "outputs", "autotuning", ".node.lock"), "w")
+    lock = open(os.path.join(REPO, "outputs", ".node.lock"), "a")
     fcntl.flock(lock, fcntl.LOCK_EX)
+    with open(os.path.join(REPO, "outputs", ".node.lock.holder"), "w") as f:  # read by `bench status`
+        f.write(f"{os.getpid()}\t{time.strftime('%Y-%m-%dT%H:%M:%S')}\tnvccl/scripts/launchpad_tune.py\n")
 
     base = {k: v for k, v in os.environ.items() if not k.startswith("NCCL_") or k == "NCCL_HOME"}
     todo = [(c, p) for c in a.colls for p in points(c) if tag(c, p) not in done]

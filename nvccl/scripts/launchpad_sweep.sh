@@ -3,7 +3,7 @@
 # the NVLink pair, everything the report asks for in one directory.
 #   scripts/launchpad_sweep.sh                 # GPUs 0,1, 3 repeats
 #   PAIR=0,1 REPEATS=5 scripts/launchpad_sweep.sh
-#   TUNED=../outputs/nccl_launchpad/tune_<stamp>/best.env scripts/launchpad_sweep.sh
+#   TUNED=../outputs/nccl/tune_<stamp>/best.env scripts/launchpad_sweep.sh
 #
 # TUNED: lines "<collective> NCCL_X=v ...", applied to that collective's runs
 # (from scripts/launchpad_tune.py); copied into the output dir.
@@ -24,7 +24,7 @@ set +e; source ./env.sh >/dev/null; set -e
 PAIR="${PAIR:-0,1}"
 REPEATS="${REPEATS:-3}"
 COLLS=(all_reduce all_gather reduce_scatter broadcast)
-OUT="${OUT:-$(cd .. && pwd)/outputs/nccl_launchpad/sweep_$(date +%Y%m%d_%H%M%S)}"
+OUT="${OUT:-$(cd .. && pwd)/outputs/nccl/sweep_$(date +%Y%m%d_%H%M%S)}"
 mkdir -p "$OUT"
 declare -A TUNE=()
 if [ -n "${TUNED:-}" ]; then
@@ -70,8 +70,8 @@ run() {  # run <log> <coll> <args...>
   grep -E "Avg bus bandwidth|Out of bounds" "$log" | sed 's/^/   /'
 }
 
-exec 9>"$(cd .. && pwd)/outputs/autotuning/.node.lock"
-flock 9
+source "$(cd .. && pwd)/scripts/Launchpad/lib/node.sh"     # node_lock
+node_lock
 
 for c in "${COLLS[@]}"; do
   NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,GRAPH \

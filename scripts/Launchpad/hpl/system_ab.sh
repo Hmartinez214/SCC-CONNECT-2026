@@ -9,16 +9,16 @@
 #     -a ATTEMPT    take the HPL config from this attempt of the run group
 #                   (default: best run of smac3_intel_hpl_v2)
 #     -u KHZ        uncore max to use for the non-uncore arms (default: as found)
-#     -o FILE       results file (default outputs/system_ab/results.tsv)
+#     -o FILE       results file (default outputs/hpl/system_ab/results.tsv)
 #
 # Arms: found | uncore25 | uncore20 | uncore16 | uncore12 | numad_on |
 #       numabal_on | numabal_off | kubepods_confined | largepage
 # Runs take the tuners' node lock, so they never overlap a tuner's job.
 
 set -uo pipefail
-SCC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
+source "$(dirname -- "${BASH_SOURCE[0]}")/../lib/node.sh"     # SCC, node_lock
 cd "$SCC" || exit 1
-N=150000; ATTEMPT=""; UNCORE=""; OUT="$SCC/outputs/system_ab/results.tsv"
+N=150000; ATTEMPT=""; UNCORE=""; OUT="$SCC/outputs/hpl/system_ab/results.tsv"
 while getopts "n:a:u:o:" opt; do
     case $opt in n) N=$OPTARG ;; a) ATTEMPT=$OPTARG ;; u) UNCORE=$OPTARG ;; o) OUT=$OPTARG ;; *) exit 2 ;; esac
 done
@@ -86,7 +86,7 @@ cfg = ExperimentConfig.from_yaml("scripts/Launchpad/hpl/hpl_smac3.yaml")
 app = common.build_application(cfg)
 # The harness controls the uncore cap itself (-u / uncore arms).
 app.manage_uncore = False
-log = f"outputs/autotuning/{cfg.run_group}/evaluations.jsonl"
+log = f"outputs/hpl/autotuning/{cfg.run_group}/evaluations.jsonl"
 if not os.path.exists(log):  # new run group not started yet: use its priors
     log = yaml.safe_load(open("scripts/Launchpad/hpl/hpl_smac3.yaml"))["experiment"]["priors"]
 recs = {}
@@ -129,7 +129,7 @@ apply_arm() {
 
 for arm in "$@"; do
     lp=0; [[ $arm == largepage ]] && lp=1
-    exec 9>"$SCC/outputs/autotuning/.node.lock"; flock 9          # wait for any tuner job
+    node_lock "system_ab.sh $arm"                     # wait for any tuner job
     apply_arm "$arm" || { flock -u 9; continue; }
     [[ $arm == kubepods_confined ]] && echo "#   kubepods effective cpuset: $(cat /sys/fs/cgroup/kubepods.slice/cpuset.cpus.effective)"
     RUN="$WORK/$(date -u +%Y%m%dT%H%M%S)_$arm"; mkdir -p "$RUN"; cp "$WORK/HPL.dat" "$RUN/"
