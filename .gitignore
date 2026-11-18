@@ -4,6 +4,7 @@ libs/clone/*
 !libs/clone/MFC
 !libs/clone/WRF
 !libs/clone/WPS
+!libs/clone/ValQyriE
 libs/spack-opt
 
 .spack-env
